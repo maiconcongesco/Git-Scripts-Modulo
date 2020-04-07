@@ -1,9 +1,9 @@
 #===========================================================================================#
-# 					 Script para exclusão de logs e arquivos desnecessarios					#
-# 					    <Filtros: Extensão e antiguidade dos arquivos>						#
-# 									Autor: Maicon Santos        							#            
-# 							   Data de Criação: 01/04/2020    								#                          
-# 							 	Ultima Modificação: 02/04/2020 								#
+#   Script para exclusão de logs e arquivos desnecessarios
+#   <Filtros: Extensão e antiguidade dos arquivos>
+#   Autor: Maicon Santos
+#   Data de Criação: 01/04/2020
+#   Ultima Modificação: 02/04/2020
 #===========================================================================================#
 # A váriavel LogPath é o caminho onde estará os logs ou arquivos que devem ser deletados.
 # Combine quantas pastas forem necessárias. 
