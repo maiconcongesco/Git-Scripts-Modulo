@@ -9,7 +9,7 @@ $FileInstallWebApp = "E:\RM_9.8.9.01\Web_Applications"
 $FileInstallWebAppDA = "E:\RM_9.8.9.01\Web_Applications\Web Applications\DataAnalytics"
 #$DirInstallWebApp = E:\
 $LogFileLoc="D:\psscripts\RestartAppPoolLog.txt"
-#$SepLine="==============================================="
+#$SepLine="===========+===================================="
 $a = Get-Date | Out-File -append $LogFileLoc
 #"Date: " + $a.ToShortDateString() | Out-File -append $LogFileLoc
 #"Time: " + $a.ToShortTimeString() | Out-File -append $LogFileLoc
