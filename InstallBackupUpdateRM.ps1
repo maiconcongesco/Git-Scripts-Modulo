@@ -1,25 +1,44 @@
 #===========================================================================================#
-#       Script para criar, parar e iniciar Aplications Pools e para realização de Deploy    #
-#								Autor: Maicon Santos        								#            
-#							 Data de criação: 01/04/2020    								#                          
-#							Ultima modificação: 13/04/2020 									#
+#								Autor: Maicon Santos        								            
+#							 Data de criação: 01/04/2020    								                          
+#							Ultima modificação: 13/04/2020
+#
+#       Criar, Restartar, Realizar Backup e Deploy dos Aplications Pools e Serviços								
+#===========================================================================================#
+
+#===========================================================================================#
+#   >>> OBSERVAÇÕES IMPORTANTES <<<
+#===========================================================================================#
+#   Necessário instalar o Microsoft Web Deploy V3 contido no "Pack Tools"
+#===========================================================================================#
+# Para o funcionamento desse script será necessário alterar a diretiva de execução de script do Windows PowerShell
+# Eu aconselho alterar para Irrestrito e após a execução do script voltar para o funcionamento origional
+# O cmdlet Set-ExecutionPolicy permite determinar quais scripts PowerShell terão permissão para executar no seu computador.
+# Get-ExecutionPolicy ### Verifica a política de execução corrente
+# O Windows PowerShell possui quatro políticas de execução diferentes:
+# Para atribuir uma política específica, basta chamar Set-ExecutionPolicy seguido pelo nome da política apropriada.
+# Set-ExecutionPolicy Restricted ### O PowerShell só pode ser usado no modo interativo. O script não poderá pode ser executado. 
+# Set-ExecutionPolicy Unrestricted ###  Todos os scripts do Windows PowerShell podem ser executados.
+# Set-ExecutionPolicy AllSigned ### Somente scripts assinados por um editor confiável podem ser executados.
+# Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por um editor confiável antes que possam ser executados.
 #===========================================================================================#
 
 $FileInstallWebApp = "E:\RM_9.8.9.01\Web_Applications"
 $FileInstallWebAppDA = "E:\RM_9.8.9.01\Web_Applications\Web Applications\DataAnalytics"
-#$DirInstallWebApp = E:\
-$LogFileLoc="D:\psscripts\RestartAppPoolLog.txt"
-#$SepLine="===========+===================================="
-$a = Get-Date | Out-File -append $LogFileLoc
-#"Date: " + $a.ToShortDateString() | Out-File -append $LogFileLoc
-#"Time: " + $a.ToShortTimeString() | Out-File -append $LogFileLoc
+$DIRbackupfullRM = "C:\temp\NewFolder"
+$DIRserviceRM = "C:\temp\NewFolder2"
+$DIRserviceMScheduler = "C:\temp\NewFolder3"
+$DIRsiteRM = "C:\temp\NewFolder3"
+$PackInstallRM = "D:\Risk Manager Install"
+$LogFileLoc="D:\psscripts\RestartAppPoolLog.txt" # Local do Arquivos de Log
+$Date = Get-Date -Format d-m-yyy # Indica data atual (dia-mês-ano) no arquivo de log
+$helper = New-Object -ComObject Shell.
+#$Destination = "C:\pastadestino"
+#$Source = "C:\arquivo.zip"
+#$files = $helper.NameSpace($Source).Items()
 
 #===========================================================================================#
-#   >>>> OBS: Necessário instalar o Microsoft Web Deploy V3 contido no "Pack Tools" <<<<    #
-# ========================================================================================= #
-
-#===========================================================================================#
-#								           Stop IIS		         							#
+#   Stop IIS
 #===========================================================================================#
 
 <#
@@ -31,7 +50,7 @@ if(-not $?)
 #>
 
 #===========================================================================================#
-# 						        Restart em Lista de WebAppPool 								#
+#   Restart em Lista de WebAppPool
 #===========================================================================================#
 <#
 Get-Content -Path '\\server\share\folder\apppoollist.txt' | ForEach-Object {
@@ -40,7 +59,7 @@ Restart-WebAppPool -Name $_
 #>
 
 #===========================================================================================#
-# 									Stop dos WebAppPool 									#
+#   Stop dos WebAppPool
 #===========================================================================================#
 
 {
@@ -48,20 +67,65 @@ Import-Module WebAdministration
 cd IIS:\
 cd .\AppPools
 } 
-# Get-WebAppPoolState DefaultAppPool | Out-File -append $
+# Get-WebAppPoolState DefaultAppPool *> "$destinyPath\log-$date.txt"
 
 {
- Stop-WebAppPool "RiskManager" # | Out-File -append $LogFileLoc
- Stop-WebAppPool "RM" # | Out-File -append $LogFileLoc
- Stop-WebAppPool "Portal" # | Out-File -append $LogFileLoc
- Stop-WebAppPool "WF" # | Out-File -append $LogFileLoc
- Stop-WebAppPool "DataAnalyticsCacher" # | Out-File -append $LogFileLoc
- Stop-WebAppPool "DataAnalyticsService" # | Out-File -append $LogFileLoc
- Stop-WebAppPool "DataAnalyticsUI" # | Out-File -append $LogFileLoc
-} 
+ Stop-WebAppPool "RiskManager" *> "$destinyPath\log-$date.txt"LogFileLoc
+ Stop-WebAppPool "RM" *> "$destinyPath\log-$date.txt"LogFileLoc
+ Stop-WebAppPool "Portal" *> "$destinyPath\log-$date.txt"LogFileLoc
+ Stop-WebAppPool "WF" *> "$destinyPath\log-$date.txt"LogFileLoc
+ Stop-WebAppPool "DataAnalyticsCacher" *> "$destinyPath\log-$date.txt"LogFileLoc
+ Stop-WebAppPool "DataAnalyticsService" *> "$destinyPath\log-$date.txt"LogFileLoc
+ Stop-WebAppPool "DataAnalyticsUI" *> "$destinyPath\log-$date.txt"LogFileLoc
+}
 
 #===========================================================================================#
-#							    	Criar o Application Pool								#
+#   Criação de diretório Backup
+#===========================================================================================#
+
+If(!(test-path $DIRbackupfullRM))
+{
+      New-Item -ItemType Directory -Force -Path $DIRbackupfullRM
+}
+
+#===========================================================================================#
+#   Fazer Backup do RiskManager
+#===========================================================================================#
+{   
+copy-item $DIRserviceRM $DIRbackupfullRM -Recurse -Verbose *> "$destinyPath\log-$date.txt"
+copy-item $DIRserviceMScheduler $DIRbackupfullRM -Recurse -Verbose *> "$destinyPath\log-$date.txt"
+copy-item $DIRsiteRM $DIRbackupfullRM -Recurse -Verbose *> "$destinyPath\log-$date.txt"
+}
+#===========================================================================================#
+#   Remover conteudo das pastas dos Serviços e APPs
+#===========================================================================================#
+{
+Remove-Item -Path $DIRserviceRM\* -Recurse *> "$destinyPath\log-$date.txt"
+Remove-Item -Path $DIRserviceMScheduler\* -Recurse *> "$destinyPath\log-$date.txt"
+Remove-Item -Path $DIRsiteRM\* -Recurse *> "$destinyPath\log-$date.txt"
+}
+#===========================================================================================#
+#   Renomear arquivos compactados dos serviço RiskManager
+#===========================================================================================#
+{
+rename-item -path $PackInstallRM\Modulo Scheduler Service.zipx -newname "Modulo Scheduler Service.zip" *> "$destinyPath\log-$date.txt"
+rename-item -path $PackInstallRM\RiskManager.Service.zipx -newname "RiskManager.Service.zipx" *> "$destinyPath\log-$date.txt"
+}
+#===========================================================================================#
+#   Descompactar arquivos compactados para a pasta dos serviços
+#===========================================================================================#
+<#
+#Na Powershell v3 extrai e copia os arquivos para pasta de destino 
+Unblock-File $Destination *> "$destinyPath\log-$date.txt" *> "$destinyPath\log-$date.txt"
+$helper.NameSpace($Destination).CopyHere($files) *> "$destinyPath\log-$date.txt"
+#>
+# No Powershell v5 você pode utilizar os seguintes cmdlets pra descompactar.
+Expand-Archive -Path $PackInstallRM\Modulo Scheduler Service.zip -DestinationPath $DIRserviceMScheduler
+Expand-Archive -Path $PackInstallRM\RiskManager.Service.zip -DestinationPath $DIRserviceRM
+
+
+#===========================================================================================#
+#   Criar o Application Pool
 #===========================================================================================#
 {
 # Navegue até interface do IIS com a conexão à Internet
@@ -113,9 +177,8 @@ if(-not $?)
 }`
 }
 
-
 #===========================================================================================#
-#									Deploy das aplicações web								#
+#    Deploy das aplicações web
 #===========================================================================================#
 {
 # Navegue até interface do IIS com a conexão à Internet
@@ -165,7 +228,7 @@ if(-not $?)
 }
 
 #===========================================================================================#
-#								Configurar a web application								#
+#   Configurar a web application
 #===========================================================================================#
 {
 # Nota: Manter o mesmo nome dos Applications Pools criados no passo “Criar o Application Pool”. 
@@ -214,27 +277,26 @@ if(-not $?)
 } 
 
 #===========================================================================================#
-# 									Start dos WebAppPool 									#
+#   Start dos WebAppPool
 #===========================================================================================#
 
 <# 
-# Get-WebAppPoolState DefaultAppPool | Out-File -append $
- Start-WebAppPool "RiskManager" | Out-File -append $LogFileLoc
- Start-WebAppPool "RM" | Out-File -append $LogFileLoc
- Start-WebAppPool "Portal" | Out-File -append $LogFileLoc
- Start-WebAppPool "WF" | Out-File -append $LogFileLoc
- Start-WebAppPool "DataAnalyticsCacher" | Out-File -append $LogFileLoc
- Start-WebAppPool "DataAnalyticsService" | Out-File -append $LogFileLoc
- Start-WebAppPool "DataAnalyticsUI" | Out-File -append $LogFileLoc
+# Get-WebAppPoolState DefaultAppPool *> "$destinyPath\log-$date.txt"
+ Start-WebAppPool "RiskManager" *> "$destinyPath\log-$date.txt"LogFileLoc
+ Start-WebAppPool "RM" *> "$destinyPath\log-$date.txt"LogFileLoc
+ Start-WebAppPool "Portal" *> "$destinyPath\log-$date.txt"LogFileLoc
+ Start-WebAppPool "WF" *> "$destinyPath\log-$date.txt"LogFileLoc
+ Start-WebAppPool "DataAnalyticsCacher" *> "$destinyPath\log-$date.txt"LogFileLoc
+ Start-WebAppPool "DataAnalyticsService" *> "$destinyPath\log-$date.txt"LogFileLoc
+ Start-WebAppPool "DataAnalyticsUI" *> "$destinyPath\log-$date.txt"LogFileLoc
 #>
 
 #===========================================================================================#
-#                       Start do DefaultAppPool com saída de Log                            #
+#   Start do DefaultAppPool com saída de Log
 #===========================================================================================#  
 <#
  Start-Sleep -s 10
- Get-WebAppPoolState DefaultAppPool | Out-File -append $LogFileLoc
+ Get-WebAppPoolState DefaultAppPool *> "$destinyPath\log-$date.txt"LogFileLoc
  Start-WebAppPool "DefaultAppPool"
- Get-WebAppPoolState DefaultAppPool | Out-File -append $LogFileLoc
- #>
- 
+ Get-WebAppPoolState DefaultAppPool *> "$destinyPath\log-$date.txt"LogFileLoc
+#>
