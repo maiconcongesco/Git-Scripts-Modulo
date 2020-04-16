@@ -23,6 +23,9 @@
 # Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por um editor confiável antes que possam ser executados.
 #===========================================================================================#
 
+#===========================================================================================#
+#   Variáveis
+#===========================================================================================#
 $FileInstallWebApp = "E:\RM_9.8.9.01\Web_Applications"
 $FileInstallWebAppDA = "E:\RM_9.8.9.01\Web_Applications\Web Applications\DataAnalytics"
 $DIRbackupfullRM = "C:\temp\NewFolder"
@@ -40,7 +43,6 @@ $helper = New-Object -ComObject Shell.
 #===========================================================================================#
 #   Stop IIS
 #===========================================================================================#
-
 <#
 cmd /c 'iisrest /stop'
 if(-not $?)
@@ -48,7 +50,6 @@ if(-not $?)
     'Falha ao parar o IIS.';
 }`
 #>
-
 #===========================================================================================#
 #   Restart em Lista de WebAppPool
 #===========================================================================================#
@@ -57,18 +58,15 @@ Get-Content -Path '\\server\share\folder\apppoollist.txt' | ForEach-Object {
 Restart-WebAppPool -Name $_
 }
 #>
-
 #===========================================================================================#
 #   Stop dos WebAppPool
 #===========================================================================================#
-
 {
 Import-Module WebAdministration
 cd IIS:\
 cd .\AppPools
 } 
 # Get-WebAppPoolState DefaultAppPool *> "$destinyPath\log-$date.txt"
-
 {
  Stop-WebAppPool "RiskManager" *> "$destinyPath\log-$date.txt"LogFileLoc
  Stop-WebAppPool "RM" *> "$destinyPath\log-$date.txt"LogFileLoc
@@ -78,16 +76,13 @@ cd .\AppPools
  Stop-WebAppPool "DataAnalyticsService" *> "$destinyPath\log-$date.txt"LogFileLoc
  Stop-WebAppPool "DataAnalyticsUI" *> "$destinyPath\log-$date.txt"LogFileLoc
 }
-
 #===========================================================================================#
 #   Criação de diretório Backup
 #===========================================================================================#
-
 If(!(test-path $DIRbackupfullRM))
 {
       New-Item -ItemType Directory -Force -Path $DIRbackupfullRM
 }
-
 #===========================================================================================#
 #   Fazer Backup do RiskManager
 #===========================================================================================#
@@ -122,8 +117,6 @@ $helper.NameSpace($Destination).CopyHere($files) *> "$destinyPath\log-$date.txt"
 # No Powershell v5 você pode utilizar os seguintes cmdlets pra descompactar.
 Expand-Archive -Path $PackInstallRM\Modulo Scheduler Service.zip -DestinationPath $DIRserviceMScheduler
 Expand-Archive -Path $PackInstallRM\RiskManager.Service.zip -DestinationPath $DIRserviceRM
-
-
 #===========================================================================================#
 #   Criar o Application Pool
 #===========================================================================================#
@@ -275,11 +268,9 @@ if(-not $?)
     'Falha na configuração do web application Data Analytics UI.';
 }`
 } 
-
 #===========================================================================================#
 #   Start dos WebAppPool
 #===========================================================================================#
-
 <# 
 # Get-WebAppPoolState DefaultAppPool *> "$destinyPath\log-$date.txt"
  Start-WebAppPool "RiskManager" *> "$destinyPath\log-$date.txt"LogFileLoc
@@ -290,7 +281,6 @@ if(-not $?)
  Start-WebAppPool "DataAnalyticsService" *> "$destinyPath\log-$date.txt"LogFileLoc
  Start-WebAppPool "DataAnalyticsUI" *> "$destinyPath\log-$date.txt"LogFileLoc
 #>
-
 #===========================================================================================#
 #   Start do DefaultAppPool com saída de Log
 #===========================================================================================#  
