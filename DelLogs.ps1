@@ -1,19 +1,14 @@
 #===========================================================================================#
 #   Script para exclusão de logs e arquivos desnecessarios
-#   <Filtros: Extensão e antiguidade dos arquivos>
+#   <Filtros: Extensões e antiguidade dos arquivos>
 #   Autor: Maicon Santos
 #   Data de Criação: 01/04/2020
 #   Ultima Modificação: 02/04/2020
 #===========================================================================================#
-# A váriavel LogPath é o caminho onde estará os logs ou arquivos que devem ser deletados.
-# Combine quantas pastas forem necessárias. 
-# Ex: "D:\RiskManager\Logs" ou "D:\RiskManager\Logs, F:\RiskManager\Logs
-$logPath = "D:\RiskManager\Logs, F:\RiskManager\Logs"
-# Defina a váriavel $XDias com a quantidade de dias que pretende reter o log.
-$XDias = 01
-# Defina a(s) extensões do(s) arquivo(s) que deverão.
-# Combine quantas extensões forem necessárias. Ex: "*.log" ou "*.log, *.xml"
-$Extensions	= "*.log, *.xml"
+
+$logPath = "D:\RiskManager\Logs, F:\RiskManager\Logs" # Separe por virgula as pastas onde estarão os logs
+$XDays = 01  # Quantidade de dias que pretende reter o log.
+$Extensions	= "*.log, *.xml" #  Separe por virgula as extensões dos arquivos
 
 #===========================================================================================#
 #===========================================================================================#
@@ -24,7 +19,7 @@ $Extensions	= "*.log, *.xml"
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 $Files = Get-Childitem $LogPath -Include $Extensions -Recurse | Where {$_.LastWriteTime -le `
-(Get-Date).AddDays(-$XDias)}
+(Get-Date).AddDays(-$XDays)}
 
 foreach ($File in $Files) 
 {
