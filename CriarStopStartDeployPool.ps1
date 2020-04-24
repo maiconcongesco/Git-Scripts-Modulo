@@ -39,7 +39,7 @@ $helper = New-Object -ComObject Shell.
 
 <#
 #===========================================================================================#
-#							    Instalação de Recursos Windows		         				#
+#							    Instalação de Recursos Windows		         				
 #===========================================================================================#
 {
 Get-WindowsFeature -Name NET-Framework-45-Core | Install-WindowsFeature
@@ -139,6 +139,7 @@ copy-item $DIRserviceRM $DIRbackupfullRM -Recurse -Verbose *> "$destinyPath\log-
 copy-item $DIRserviceMScheduler $DIRbackupfullRM -Recurse -Verbose *> "$destinyPath\log-$date.txt"
 copy-item $DIRsiteRM $DIRbackupfullRM -Recurse -Verbose *> "$destinyPath\log-$date.txt"
 }
+
 #===========================================================================================#
 #   Remover conteudo das pastas dos Serviços e APPs
 #===========================================================================================#
@@ -147,26 +148,26 @@ Remove-Item -Path $DIRserviceRM\* -Recurse *> "$destinyPath\log-$date.txt"
 Remove-Item -Path $DIRserviceMScheduler\* -Recurse *> "$destinyPath\log-$date.txt"
 Remove-Item -Path $DIRsiteRM\* -Recurse *> "$destinyPath\log-$date.txt"
 }
+
+
+<#
 #===========================================================================================#
-#   Renomear arquivos compactados dos serviço RiskManager
+#   Renomear e descompactar arquivos dos serviço RiskManager
 #===========================================================================================#
-{
 rename-item -path $PackInstallRM\Modulo Scheduler Service.zipx -newname "Modulo Scheduler Service.zip" *> "$destinyPath\log-$date.txt"
 rename-item -path $PackInstallRM\RiskManager.Service.zipx -newname "RiskManager.Service.zipx" *> "$destinyPath\log-$date.txt"
-}
-#===========================================================================================#
-#   Descompactar arquivos compactados para a pasta dos serviços
-#===========================================================================================#
-<#
-#Na Powershell v3 extrai e copia os arquivos para pasta de destino 
-Unblock-File $Destination *> "$destinyPath\log-$date.txt" *> "$destinyPath\log-$date.txt"
-$helper.NameSpace($Destination).CopyHere($files) *> "$destinyPath\log-$date.txt"
-#>
+
+# Descompactar arquivos compactados para a pasta dos serviços
+# Na Powershell v3 extrai e copia os arquivos para pasta de destino 
+# Unblock-File $Destination *> "$destinyPath\log-$date.txt" *> "$destinyPath\log-$date.txt"
+# $helper.NameSpace($Destination).CopyHere($files) *> "$destinyPath\log-$date.txt"
+
 # No Powershell v5 você pode utilizar os seguintes cmdlets pra descompactar.
 Expand-Archive -Path $PackInstallRM\Modulo Scheduler Service.zip -DestinationPath $DIRserviceMScheduler
 Expand-Archive -Path $PackInstallRM\RiskManager.Service.zip -DestinationPath $DIRserviceRM
+#>
 
-
+<#
 #===========================================================================================#
 #   Criar o Application Pool
 #===========================================================================================#
@@ -219,6 +220,8 @@ if(-not $?)
     'Falha ao criar Application Pool Data Analytics UI.';
 }`
 }
+#>
+
 
 #===========================================================================================#
 #    Deploy das aplicações web
@@ -270,6 +273,7 @@ if(-not $?)
 }`
 }
 
+<#
 #===========================================================================================#
 #   Configurar a web application
 #===========================================================================================#
@@ -318,6 +322,7 @@ if(-not $?)
     'Falha na configuração do web application Data Analytics UI.';
 }`
 } 
+#>
 
 #===========================================================================================#
 #   Start dos WebAppPool
