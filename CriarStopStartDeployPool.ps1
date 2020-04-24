@@ -19,6 +19,46 @@ $a = Get-Date | Out-File -append $LogFileLoc
 # ========================================================================================= #
 
 #===========================================================================================#
+#							    Instalação de Recursos Windows		         				#
+#===========================================================================================#
+{
+Get-WindowsFeature -Name NET-Framework-45-Core | Install-WindowsFeature
+Get-WindowsFeature -Name Web-Net-Ext45 | Install-WindowsFeature
+Get-WindowsFeature -Name Web-Asp-Net45 | Install-WindowsFeature
+Get-WindowsFeature -Name Web-ISAPI-Ext | Install-WindowsFeature
+Get-WindowsFeature -Name Web-ISAPI-Filter | Install-WindowsFeature
+Get-WindowsFeature -Name Web-Mgmt-Console | Install-WindowsFeature
+Get-WindowsFeature -Name Ferramentas de script da Web | Install-WindowsFeature
+Get-WindowsFeature -Name Search-Service | Install-WindowsFeature
+Get-WindowsFeature -Name Filtragem da Web | Install-WindowsFeature
+Get-WindowsFeature -Name Web-Basic-Auth | Install-WindowsFeature
+Get-WindowsFeature -Name Web-Windows-Auth | Install-WindowsFeature
+Get-WindowsFeature -Name Web-Default-Doc | Install-WindowsFeature
+Get-WindowsFeature -Name Web-Http-Errors | Install-WindowsFeature
+Get-WindowsFeature -Name Conteúdo estático da Web | Install-WindowsFeature
+#Opcional
+#Get-WindowsFeature -Name SMTP-Server | Install-WindowsFeature
+}`
+{
+##### Para verificar se os recursos exigidos do Windows estão instalados 
+Get-WindowsFeature -Name NET-Framework-45-Core | Select-Object Name , InstallState
+Get-WindowsFeature -Name Web-Net-Ext45 | Select-Object Name , InstallState
+Get-WindowsFeature -Name Web-Asp-Net45 | Select-Object Name , InstallState
+Get-WindowsFeature -Name Web-ISAPI-Ext  | Select-Object Name , InstallState
+Get-WindowsFeature -Name Web-ISAPI-Filter | Select-Object Name , InstallState
+Get-WindowsFeature -Name Web-Mgmt-Console | Select-Object Name , InstallState
+Get-WindowsFeature -Name Web-Scripting-Tools | Select-Object Name , InstallState
+Get-WindowsFeature -Name Search-Service  | Select-Object Name , InstallState
+Get-WindowsFeature -Name  Web-Filtering | Select-Object Name , InstallState
+Get-WindowsFeature -Name Web-Basic-Auth | Select-Object Name , InstallState
+Get-WindowsFeature -Name Web-Windows-Auth | Select-Object Name , InstallState
+Get-WindowsFeature -Name Web-Default-Doc | Select-Object Name , InstallState
+Get-WindowsFeature -Name Web-Http-Errors | Select-Object Name , InstallState
+Get-WindowsFeature -Name Web-Static-Content | Select-Object Name , InstallState
+#Optional
+#Get-WindowsFeature -Name SMTP-Server |Select-Object Name , InstallState
+}`
+#===========================================================================================#
 #								           Stop IIS		         							#
 #===========================================================================================#
 
