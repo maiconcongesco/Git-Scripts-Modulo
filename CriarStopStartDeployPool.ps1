@@ -30,10 +30,10 @@ $DIRbkpfullRM = "C:\temp\NewFolder"
 $DIRsvcRM = "C:\temp\NewFolder2"
 $DIRsvcScheduler = "C:\temp\NewFolder3"
 $DIRsiteRM = "C:\temp\NewFolder3"
-$PackInstallRM = "D:\Risk Manager Install"
-$LogFileLoc="D:\psscripts\RestartAppPoolLog.txt" # Local do Arquivos de Log
+# $PackInstallRM = "D:\Risk Manager Install"
+# $LogFileLoc="D:\psscripts\RestartAppPoolLog.txt" # Local do Arquivos de Log
 $Date = Get-Date -Format d-m-yyy # Indica data atual (dia-mês-ano) no arquivo de log
-$helper = New-Object -ComObject Shell.
+# $helper = New-Object -ComObject Shell.
 #$Destination = "C:\pastadestino"
 #$Source = "C:\arquivo.zip"
 #$files = $helper.NameSpace($Source).Items()
@@ -41,44 +41,9 @@ $helper = New-Object -ComObject Shell.
 #===========================================================================================#
 #							    Instalação de Recursos Windows		         				
 #===========================================================================================#
-{
 <#
-Get-WindowsFeature -Name NET-Framework-45-Core | Install-WindowsFeature
-Get-WindowsFeature -Name Web-Net-Ext45 | Install-WindowsFeature
-Get-WindowsFeature -Name Web-Asp-Net45 | Install-WindowsFeature
-Get-WindowsFeature -Name Web-ISAPI-Ext | Install-WindowsFeature
-Get-WindowsFeature -Name Web-ISAPI-Filter | Install-WindowsFeature
-Get-WindowsFeature -Name Web-Mgmt-Console | Install-WindowsFeature
-Get-WindowsFeature -Name Ferramentas de script da Web | Install-WindowsFeature
-Get-WindowsFeature -Name Search-Service | Install-WindowsFeature
-Get-WindowsFeature -Name Filtragem da Web | Install-WindowsFeature
-Get-WindowsFeature -Name Web-Basic-Auth | Install-WindowsFeature
-Get-WindowsFeature -Name Web-Windows-Auth | Install-WindowsFeature
-Get-WindowsFeature -Name Web-Default-Doc | Install-WindowsFeature
-Get-WindowsFeature -Name Web-Http-Errors | Install-WindowsFeature
-Get-WindowsFeature -Name Conteúdo estático da Web | Install-WindowsFeature
-#Opcional
-#Get-WindowsFeature -Name SMTP-Server | Install-WindowsFeature
+add-windowsfeature web-server, web-webserver,  web-common-http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Http-Redirect,  Web-Health, Web-Http-Logging, Web-Log-Libraries, Web-Request-Monitor, Web-Http-Tracing, Web-Performance, Web-Stat-Compression, Web-Security, Web-Filtering,  Web-App-Dev, Web-Net-Ext45, Web-AppInit, Web-ASP, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Console, Web-Mgmt-Compat, Web-Metabase, Web-Scripting-Tools, MSMQ-Services, MSMQ-Server, MSMQ-Directory, MSMQ-HTTP-Support, MSMQ-Triggers,  NET-Framework-45-Features, NET-Framework-45-Core, NET-Framework-45-ASPNET, NET-WCF-Services45, NET-WCF-TCP-PortSharing45
 
-##### Para verificar se os recursos exigidos do Windows estão instalados 
-Get-WindowsFeature -Name NET-Framework-45-Core | Select-Object Name , InstallState
-Get-WindowsFeature -Name Web-Net-Ext45 | Select-Object Name , InstallState
-Get-WindowsFeature -Name Web-Asp-Net45 | Select-Object Name , InstallState
-Get-WindowsFeature -Name Web-ISAPI-Ext  | Select-Object Name , InstallState
-Get-WindowsFeature -Name Web-ISAPI-Filter | Select-Object Name , InstallState
-Get-WindowsFeature -Name Web-Mgmt-Console | Select-Object Name , InstallState
-Get-WindowsFeature -Name Web-Scripting-Tools | Select-Object Name , InstallState
-Get-WindowsFeature -Name Search-Service  | Select-Object Name , InstallState
-Get-WindowsFeature -Name  Web-Filtering | Select-Object Name , InstallState
-Get-WindowsFeature -Name Web-Basic-Auth | Select-Object Name , InstallState
-Get-WindowsFeature -Name Web-Windows-Auth | Select-Object Name , InstallState
-Get-WindowsFeature -Name Web-Default-Doc | Select-Object Name , InstallState
-Get-WindowsFeature -Name Web-Http-Errors | Select-Object Name , InstallState
-Get-WindowsFeature -Name Web-Static-Content | Select-Object Name , InstallState
-#Optional
-#Get-WindowsFeature -Name SMTP-Server |Select-Object Name , InstallState
-#>
-}
 #===========================================================================================#
 #   Stop IIS
 #===========================================================================================#
@@ -90,7 +55,6 @@ if(-not $?)
     'Falha ao parar o IIS.';
 }`
 #>
-}
 #===========================================================================================#
 #   Restart em Lista de WebAppPool
 #===========================================================================================#
@@ -106,8 +70,8 @@ Restart-WebAppPool -Name $_
 #===========================================================================================#
 {
 Import-Module WebAdministration
-cd IIS:\
-cd .\AppPools
+Set-Location IIS:\
+Set-Location .\AppPools
 # Get-WebAppPoolState DefaultAppPool *> "$destinyPath\log-$date.txt"
 
  Stop-WebAppPool "RiskManager" *> "$destinyPath\log-$date.txt"LogFileLoc
@@ -149,7 +113,6 @@ Remove-Item -Path $DIRsiteRM\* -Recurse *> "$destinyPath\log-$date.txt"
 #===========================================================================================#
 #   Renomear e descompactar arquivos dos serviço RiskManager
 #===========================================================================================#
-}
 <#
 rename-item -path $PackInstallRM\Modulo Scheduler Service.zipx -newname "Modulo Scheduler Service.zip" *> "$destinyPath\log-$date.txt"
 rename-item -path $PackInstallRM\RiskManager.Service.zipx -newname "RiskManager.Service.zipx" *> "$destinyPath\log-$date.txt"
@@ -163,7 +126,6 @@ rename-item -path $PackInstallRM\RiskManager.Service.zipx -newname "RiskManager.
 Expand-Archive -Path $PackInstallRM\Modulo Scheduler Service.zip -DestinationPath $DIRsvcScheduler
 Expand-Archive -Path $PackInstallRM\RiskManager.Service.zip -DestinationPath $DIRsvcRM
 #>
-}
 
 #===========================================================================================#
 #   Criar o Application Pool
@@ -171,7 +133,7 @@ Expand-Archive -Path $PackInstallRM\RiskManager.Service.zip -DestinationPath $DI
 {
 <#
 # Navegue até interface do IIS com a conexão à Internet
-cd "C:\Windows\system32\inetsrv\"
+Set-Location "C:\Windows\system32\inetsrv\"
 
 # Criar o Application Pool RM:  
 #.\appcmd.exe add apppool /name:'RiskManager' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
@@ -225,7 +187,7 @@ if(-not $?)
 #===========================================================================================#
 {
 # Navegue até interface do IIS com a conexão à Internet
-cd "C:\Program Files\IIS\Microsoft Web Deploy V3"
+Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
 # Deploy da aplicação RM  
 .\msdeploy.exe -verb=sync -source:package="$FileWebApp\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/RM98"
