@@ -30,12 +30,11 @@ $FileWebApp = "E:\RM_9.8.9.01\Web_Applications"
 # $DIRsvcScheduler = "C:\temp\NewFolder3"
 $DIRsiteRM = "D:\RiskManager"
 # $PackInstallRM = "D:\Risk Manager Install"
-# $LogFileLoc="D:\psscripts\RestartAppPoolLog.txt" # Local do Arquivos de Log
 # $Date = Get-Date -Format d-m-yyy # Indica data atual (dia-mês-ano) no arquivo de log
 # $helper = New-Object -ComObject Shell.
-#$Destination = "C:\pastadestino"
-#$Source = "C:\arquivo.zip"
-#$files = $helper.NameSpace($Source).Items()
+# $Destination = "C:\pastadestino"
+# $Source = "C:\arquivo.zip"
+# $files = $helper.NameSpace($Source).Items()
 
 #===========================================================================================#
 #   Instalação de Recursos Windows		         				
