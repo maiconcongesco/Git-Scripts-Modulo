@@ -5,7 +5,7 @@
 #
 #       Criar, Restartar, Realizar Backup e Deploy dos Aplications Pools e Serviços								
 #===========================================================================================#
-{
+
 <#==========================================================================================#
 #   >>> OBSERVAÇÕES IMPORTANTES <<<
 #===========================================================================================#
@@ -23,9 +23,8 @@ Set-ExecutionPolicy Unrestricted ###  Todos os scripts do Windows PowerShell pod
 Set-ExecutionPolicy AllSigned ### Somente scripts assinados por um editor confiável podem ser executados.
 Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por um editor confiável antes que possam ser executados.
 # ===========================================================================================#>
-}
+
 $FileWebApp = "E:\RM_9.8.9.01\Web_Applications"
-$FileWebAppDA = "E:\RM_9.8.9.01\Web_Applications\Web Applications\DataAnalytics"
 # $DIRbkpfullRM = "C:\temp\NewFolder"
 # $DIRsvcRM = "C:\temp\NewFolder2"
 # $DIRsvcScheduler = "C:\temp\NewFolder3"
@@ -50,48 +49,43 @@ Get-WindowsFeature -Name web-server, web-webserver,  web-common-http, Web-Defaul
 <#===========================================================================================#
 #   Stop dos WebAppPool (Se for uma atualização)
 #===========================================================================================#
-{
+
 Import-Module WebAdministration
 Set-Location IIS:\
 Set-Location .\AppPools
 # Get-WebAppPoolState DefaultAppPool # *> "$destinyPath\log-$date.txt"
 
- Stop-WebAppPool "RiskManager" # # *> "$destinyPath\log-$date.txt"
- Stop-WebAppPool "RM" # # *> "$destinyPath\log-$date.txt"
- Stop-WebAppPool "Portal" # # *> "$destinyPath\log-$date.txt"
- Stop-WebAppPool "WF" # # *> "$destinyPath\log-$date.txt"
- Stop-WebAppPool "DataAnalyticsCacher" # # *> "$destinyPath\log-$date.txt"
- Stop-WebAppPool "DataAnalyticsService" # # *> "$destinyPath\log-$date.txt"
- Stop-WebAppPool "DataAnalyticsUI" # # *> "$destinyPath\log-$date.txt"
-}
+Stop-WebAppPool "RiskManager" # # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "RM" # # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "PORTAL" # # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "WF" # # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "DataAnalyticsCacher" # # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "DataAnalyticsService" # # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "DataAnalyticsUI" # # *> "$destinyPath\log-$date.txt"
 #>
 
 <#===========================================================================================#
 #   Criação de diretório Backup (Se for uma atualização)
 #===========================================================================================#
-{
+
 If(!(test-path $DIRbkpfullRM))
 {
       New-Item -ItemType Directory -Force -Path $DIRbkpfullRM
 }
-}
+
 #===========================================================================================#
 #   Fazer Backup do RiskManager (Se for uma atualização)
 #===========================================================================================#
-{   
 copy-item $DIRsvcRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
 copy-item $DIRsvcScheduler $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
 copy-item $DIRsiteRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
-}
 
 #===========================================================================================#
 #   Remover conteudo das pastas dos Serviços e APPs (Se for uma atualização)
 #===========================================================================================#
-{
 Remove-Item -Path $DIRsvcRM\* -Recurse # *> "$destinyPath\log-$date.txt"
 Remove-Item -Path $DIRsvcScheduler\* -Recurse # *> "$destinyPath\log-$date.txt"
 Remove-Item -Path $DIRsiteRM\* -Recurse # *> "$destinyPath\log-$date.txt"
-}
 
 #===========================================================================================#
 #   Renomear e descompactar arquivos dos serviço RiskManager
@@ -113,7 +107,7 @@ Expand-Archive -Path $PackInstallRM\RiskManager.Service.zip -DestinationPath $DI
 #===========================================================================================#
 #   Criar o Application Pool
 #===========================================================================================#
-{
+
 # Navegue até o diretório do IIS
 Set-Location "C:\Windows\system32\inetsrv\"
 
@@ -138,7 +132,6 @@ Set-Location "C:\Windows\system32\inetsrv\"
 # Criar os Application Pools Data Analytics UI:
 .\appcmd.exe add apppool /name:'DataAnalyticsUI' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 #>
-}
 
 <#===========================================================================================#
 #   Criar um certificado auto assinado para o Risk Manager
@@ -155,99 +148,62 @@ New-Website -Name "RiskManager" -ApplicationPool "RiskManager" -PhysicalPath $DI
 #===========================================================================================#
 #    Deploy das aplicações web
 #===========================================================================================#
-{
+
 # Navegue até interface do IIS com a conexão à Internet
 Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
-}
+
 # Deploy da aplicação RM  
-.\msdeploy.exe -verb=sync -source:package="$FileWebApp\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/RM"
+#.\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/RM"
 
 # Deploy da aplicação Workflow
-.\msdeploy.exe -verb=sync -source:package="$FileWebApp\Workflow.Services.Web.zip" -dest:Auto setParam:"IIS Web Application Name""=RiskManager/WF"
+.\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\Workflow.Services.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/WF"
 
 # Deploy da aplicação PORTAL  
-.\msdeploy.exe -verb=sync -source:package="$FileWebApp\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/PORTAL"
+.\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/PORTAL"
 
 # Deploy da aplicação Data Analytics Cacher 
-.\msdeploy.exe -verb=sync -source:package="$FileWebAppDA\DataAnalyticsCacher.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/DataAnalyticsCacher"
+.\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\DataAnalytics\DataAnalyticsCacher.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/DataAnalyticsCacher"
 
 # Deploy da aplicação Data Analytics Service 
-.\msdeploy.exe -verb=sync -source:package="$FileWebAppDA\DataAnalyticsService.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/DataAnalyticsService" 
+.\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\DataAnalytics\DataAnalyticsService.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/DataAnalyticsService" 
 
 # Deploy da aplicação Data Analytics UI 
-.\msdeploy.exe -verb=sync -source:package="$FileWebAppDA\DataAnalyticsUI.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/DataAnalyticsUI"
+.\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\DataAnalytics\DataAnalyticsUI.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/DataAnalyticsUI"
 
 #===========================================================================================#
 #   Configurar a web application
 #===========================================================================================#
-{
-<#
+
 # Nota: Manter o mesmo nome dos Applications Pools criados no passo “Criar o Application Pool”. 
 
 # Configurando o web application Risk Manager:  
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"RiskManager/RM" /applicationPool:"RM"  
-if(-not $?)
-{
-    'Falha na configuração do web application Risk Manager.';
-}`
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"RiskManager/RM" /applicationPool:"RM"
 
 # Configurando o web application PORTAL:  
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"RiskManager/PORTAL" /applicationPool:"PORTAL"  
-if(-not $?)
-{
-    'Falha na configuração do web application Portal.';
-}`
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"RiskManager/PORTAL" /applicationPool:"PORTAL"
 
 # Configurando o web application Workflow:  
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"RiskManager/WF" /applicationPool:"WF"  
-if(-not $?)
-{
-    'Falha na configuração do web application Workflow.';
-}`
-
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"RiskManager/WF" /applicationPool:"WF"
 # Configurando o web application DataAnalyticsCacher:  
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"RiskManager/DataAnalyticsCacher" /applicationPool:"DataAnalyticsCacher"  
-if(-not $?)
-{
-    'Falha na configuração do web application Data Analytics Cacher.';
-}`
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"RiskManager/DataAnalyticsCacher" /applicationPool:"DataAnalyticsCacher"
 
 # Configurando o web application DataAnalyticsService: 
-C:\Windows\system32\inetsrv\appcmd set app  /app.name:"RiskManager/DataAnalyticsService"  /applicationPool:"DataAnalyticsService"  
-if(-not $?)
-{
-    'Falha na configuração do web application Data Analytics Service.';
-}`
+C:\Windows\system32\inetsrv\appcmd set app  /app.name:"RiskManager/DataAnalyticsService"  /applicationPool:"DataAnalyticsService"
 
 # Configurando o web application DataAnalyticsUI:  
 C:\Windows\system32\inetsrv\appcmd set app  /app.name:"RiskManager/DataAnalyticsUI" /applicationPool:"DataAnalyticsUI"
-if(-not $?)
-{
-    'Falha na configuração do web application Data Analytics UI.';
-}`
 #>
-} 
 
 #===========================================================================================#
 #   Start dos WebAppPool
 #===========================================================================================#
 <# 
 #Get-WebAppPoolState DefaultAppPool # *> "$destinyPath\log-$date.txt"
- Start-WebAppPool "RiskManager" # # *> "$destinyPath\log-$date.txt"
- Start-WebAppPool "RM" # # *> "$destinyPath\log-$date.txt"
- Start-WebAppPool "Portal" # # *> "$destinyPath\log-$date.txt"
- Start-WebAppPool "WF" # # *> "$destinyPath\log-$date.txt"
- Start-WebAppPool "DataAnalyticsCacher" # # *> "$destinyPath\log-$date.txt"
- Start-WebAppPool "DataAnalyticsService" # # *> "$destinyPath\log-$date.txt"
- Start-WebAppPool "DataAnalyticsUI" # # *> "$destinyPath\log-$date.txt"
-#>
-
-#===========================================================================================#
-#   Start do DefaultAppPool com saída de Log
-#===========================================================================================#  
-<#
- Start-Sleep -s 10
- Get-WebAppPoolState DefaultAppPool # # *> "$destinyPath\log-$date.txt"
- Start-WebAppPool "DefaultAppPool"
- Get-WebAppPoolState DefaultAppPool # # *> "$destinyPath\log-$date.txt"
+Start-WebAppPool "RiskManager" # *> "$destinyPath\log-$date.txt"
+Start-WebAppPool "RM" # *> "$destinyPath\log-$date.txt"
+Start-WebAppPool "Portal" # *> "$destinyPath\log-$date.txt"
+Start-WebAppPool "WF" # *> "$destinyPath\log-$date.txt"
+Start-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
+Start-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
+Start-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
 #>
