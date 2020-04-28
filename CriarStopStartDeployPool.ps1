@@ -1,9 +1,9 @@
 #===========================================================================================#
-#								Autor: Maicon Santos        								            
-#							 Data de criação: 01/04/2020    								                          
-#							Ultima modificação: 24/04/2020
 #
-#       Criar, Restartar, Realizar Backup e Deploy dos Aplications Pools e Serviços								
+#   Criar, Restartar, Realizar Backup e Deploy dos Aplications Pools e Serviços
+#   Autor: Maicon Santos        								            							                          
+#   https://github.com/maiconcongesco/Git-Scripts-Modulo/blob/master/CriarStopStartDeployPool.ps1
+#
 #===========================================================================================#
 
 <#==========================================================================================#
