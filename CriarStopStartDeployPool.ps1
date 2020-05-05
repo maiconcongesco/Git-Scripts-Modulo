@@ -29,6 +29,7 @@ $FileWebApp = "E:\RM_9.8.9.01\Web_Applications"
 # $DIRsvcRM = "C:\temp\NewFolder2"
 # $DIRsvcScheduler = "C:\temp\NewFolder3"
 $DIRsiteRM = "D:\RiskManager"
+# $Site = RiskManager
 # $PackInstallRM = "D:\Risk Manager Install"
 # $Date = Get-Date -Format d-m-yyy # Indica data atual (dia-mês-ano) no arquivo de log
 # $helper = New-Object -ComObject Shell.
@@ -43,10 +44,10 @@ $DIRsiteRM = "D:\RiskManager"
 # Intalação
 Add-WindowsFeature web-server, web-webserver, web-common-http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Http-Redirect,  Web-Health, Web-Http-Logging, Web-Log-Libraries, Web-Request-Monitor, Web-Http-Tracing, Web-Performance, Web-Stat-Compression, Web-Security, Web-Filtering,  Web-App-Dev, Web-Net-Ext45, Web-AppInit, Web-ASP, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Console, Web-Mgmt-Compat, Web-Metabase, Web-Scripting-Tools, MSMQ-Services, MSMQ-Server, MSMQ-Directory, MSMQ-HTTP-Support, MSMQ-Triggers,  NET-Framework-45-Features, NET-Framework-45-Core, NET-Framework-45-ASPNET, NET-WCF-Services45, NET-WCF-TCP-PortSharing45
 # Verificação se está instalado
-Get-WindowsFeature -Name web-server, web-webserver,  web-common-http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Http-Redirect,  Web-Health, Web-Http-Logging, Web-Log-Libraries, Web-Request-Monitor, Web-Http-Tracing, Web-Performance, Web-Stat-Compression, Web-Security, Web-Filtering,  Web-App-Dev, Web-Net-Ext45, Web-AppInit, Web-ASP, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Console, Web-Mgmt-Compat, Web-Metabase, Web-Scripting-Tools, MSMQ-Services, MSMQ-Server, MSMQ-Directory, MSMQ-HTTP-Support, MSMQ-Triggers,  NET-Framework-45-Features, NET-Framework-45-Core, NET-Framework-45-ASPNET, NET-WCF-Services45, NET-WCF-TCP-PortSharing45 | Select-Object Name , InstallState
+Get-WindowsFeature -Name web-server, web-webserver,  web-common-http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Http-Redirect, Web-Health, Web-Http-Logging, Web-Log-Libraries, Web-Request-Monitor, Web-Http-Tracing, Web-Performance, Web-Stat-Compression, Web-Security, Web-Filtering,  Web-App-Dev, Web-Net-Ext45, Web-AppInit, Web-ASP, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Console, Web-Mgmt-Compat, Web-Metabase, Web-Scripting-Tools, MSMQ-Services, MSMQ-Server, MSMQ-Directory, MSMQ-HTTP-Support, MSMQ-Triggers,  NET-Framework-45-Features, NET-Framework-45-Core, NET-Framework-45-ASPNET, NET-WCF-Services45, NET-WCF-TCP-PortSharing45 | Select-Object Name , InstallState
 #>
 <#===========================================================================================#
-#   Stop dos WebAppPool (Se for uma atualização)
+#   Stop Site e WebAppPools (Se for uma atualização)
 #===========================================================================================#
 
 Import-Module WebAdministration
@@ -54,13 +55,16 @@ Set-Location IIS:\
 Set-Location .\AppPools
 # Get-WebAppPoolState DefaultAppPool # *> "$destinyPath\log-$date.txt"
 
-Stop-WebAppPool "RiskManager" # # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "RM" # # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "PORTAL" # # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "WF" # # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "DataAnalyticsCacher" # # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "DataAnalyticsService" # # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "DataAnalyticsUI" # # *> "$destinyPath\log-$date.txt"
+Stop-IISSite -Name "$Site"
+Stop-WebAppPool "RiskManager" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "RM" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "PORTAL" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "WF" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #>
 
 <#===========================================================================================#
@@ -110,7 +114,7 @@ Expand-Archive -Path $PackInstallRM\RiskManager.Service.zip -DestinationPath $DI
 # Navegue até o diretório do IIS
 Set-Location "C:\Windows\system32\inetsrv\"
 
-# Criar o Application Pool RM:  
+# Criar o Application Pool para o site RM:  
 .\appcmd.exe add apppool /name:'RiskManager' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
 
 # Criar o Application Pool RM:  
@@ -122,7 +126,7 @@ Set-Location "C:\Windows\system32\inetsrv\"
 # Criar o Application Pool Workflow:  
 .\appcmd.exe add apppool /name:'WF' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
 
-# Criar os Application Pools Data Analytics Cacher:  
+<# Criar os Application Pools Data Analytics Cacher:  
 .\appcmd.exe add apppool /name:'DataAnalyticsCacher' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  	  
 
 # Criar os Application Pools Data Analytics Service:
@@ -130,15 +134,21 @@ Set-Location "C:\Windows\system32\inetsrv\"
 
 # Criar os Application Pools Data Analytics UI:
 .\appcmd.exe add apppool /name:'DataAnalyticsUI' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
+
+# Criar os Application MMI:
+.\appcmd.exe add apppool /name:'MMI' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
+
+# Criar os Application Pools BCM:
+.\appcmd.exe add apppool /name:'BCM' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 #>
 
 <#===========================================================================================#
 #   Criar um certificado auto assinado para o Risk Manager
 #===========================================================================================#
-New-SelfSignedCertificate -CertStoreLocation Cert:\LocalMachine\My -DnsName "localhost" -FriendlyName "RiskManager" -NotAfter (Get-Date).AddYears(10) 
+### Resolver PS -- New-SelfSignedCertificate -CertStoreLocation Cert:\LocalMachine\My -DnsName "RiskManager" -FriendlyName "RiskManager" -NotAfter (Get-Date).AddYears(10) 
 #>
 
-<#===========================================================================================#
+#===========================================================================================#
 #   Criar o Site Risk Manager
 #===========================================================================================#
 New-Website -Name "RiskManager" -ApplicationPool "RiskManager" -PhysicalPath $DIRsiteRM -Port 443
@@ -152,7 +162,7 @@ New-Website -Name "RiskManager" -ApplicationPool "RiskManager" -PhysicalPath $DI
 Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
 # Deploy da aplicação RM  
-#.\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/RM"
+.\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/RM"
 
 # Deploy da aplicação Workflow
 .\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\Workflow.Services.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/WF"
@@ -160,7 +170,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 # Deploy da aplicação PORTAL  
 .\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/PORTAL"
 
-# Deploy da aplicação Data Analytics Cacher 
+<# Deploy da aplicação Data Analytics Cacher 
 .\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\DataAnalytics\DataAnalyticsCacher.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/DataAnalyticsCacher"
 
 # Deploy da aplicação Data Analytics Service 
@@ -168,6 +178,13 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
 # Deploy da aplicação Data Analytics UI 
 .\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\DataAnalytics\DataAnalyticsUI.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/DataAnalyticsUI"
+
+# Deploy da aplicação Data MMI 
+.\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/MMI" 
+
+# Deploy da aplicação BCM 
+.\msdeploy.exe -verb=sync -source:package="$FileWebApp\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/BCM"
+#>
 
 #===========================================================================================#
 #   Configurar a web application
@@ -183,7 +200,8 @@ C:\Windows\system32\inetsrv\appcmd set app /app.name:"RiskManager/PORTAL" /appli
 
 # Configurando o web application Workflow:  
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"RiskManager/WF" /applicationPool:"WF"
-# Configurando o web application DataAnalyticsCacher:  
+
+<# Configurando o web application DataAnalyticsCacher:  
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"RiskManager/DataAnalyticsCacher" /applicationPool:"DataAnalyticsCacher"
 
 # Configurando o web application DataAnalyticsService: 
@@ -191,6 +209,12 @@ C:\Windows\system32\inetsrv\appcmd set app  /app.name:"RiskManager/DataAnalytics
 
 # Configurando o web application DataAnalyticsUI:  
 C:\Windows\system32\inetsrv\appcmd set app  /app.name:"RiskManager/DataAnalyticsUI" /applicationPool:"DataAnalyticsUI"
+
+# Configurando o web application MMI: 
+C:\Windows\system32\inetsrv\appcmd set app  /app.name:"RiskManager/MMI"  /applicationPool:"MMI"
+
+# Configurando o web application BCM:  
+C:\Windows\system32\inetsrv\appcmd set app  /app.name:"RiskManager/BCM" /applicationPool:"BCM"
 #>
 
 #===========================================================================================#
@@ -205,4 +229,6 @@ Start-WebAppPool "WF" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
+Start-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
+Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #>
