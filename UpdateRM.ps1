@@ -182,6 +182,16 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 #>
 
 #===========================================================================================#
+#   Passos a incluir no script
+#===========================================================================================#
+
+# Cópia da biblioteca DevExpress
+# Cópia do arquivo de licença
+# Cópia do Manual do Módulo Risk Manager
+# Cópia do arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
+# Cópia do conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers 
+
+#===========================================================================================#
 #   Reiniciando os WebAppPool
 #===========================================================================================#
 <# 
