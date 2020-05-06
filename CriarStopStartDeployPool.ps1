@@ -24,11 +24,11 @@ Set-ExecutionPolicy AllSigned ### Somente scripts assinados por um editor confi�
 Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por um editor confiável antes que possam ser executados.
 # ===========================================================================================#>
 
-$FileWebApp = "E:\RM_9.8.9.01\Web_Applications"
-# $DIRbkpfullRM = "C:\temp\NewFolder"
-# $DIRsvcRM = "C:\temp\NewFolder2"
-# $DIRsvcScheduler = "C:\temp\NewFolder3"
+$DIRsvcRM = "C:\Program Files (x86)\Modulo Scheduler Service"
+$DIRsvcScheduler = "C:\Program Files (x86)\RiskManager.Service"
+$DIRbkpfullRM = "D:\BackupRM"
 $DIRsiteRM = "D:\RiskManager"
+$FileWebApp = "E:\RM_9.8.9.01\Web_Applications"
 # $Site = RiskManager
 # $PackInstallRM = "D:\Risk Manager Install"
 # $Date = Get-Date -Format d-m-yyy # Indica data atual (dia-mês-ano) no arquivo de log
@@ -46,16 +46,17 @@ Add-WindowsFeature web-server, web-webserver, web-common-http, Web-Default-Doc, 
 # Verificação se está instalado
 Get-WindowsFeature -Name web-server, web-webserver,  web-common-http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Http-Redirect, Web-Health, Web-Http-Logging, Web-Log-Libraries, Web-Request-Monitor, Web-Http-Tracing, Web-Performance, Web-Stat-Compression, Web-Security, Web-Filtering,  Web-App-Dev, Web-Net-Ext45, Web-AppInit, Web-ASP, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Console, Web-Mgmt-Compat, Web-Metabase, Web-Scripting-Tools, MSMQ-Services, MSMQ-Server, MSMQ-Directory, MSMQ-HTTP-Support, MSMQ-Triggers,  NET-Framework-45-Features, NET-Framework-45-Core, NET-Framework-45-ASPNET, NET-WCF-Services45, NET-WCF-TCP-PortSharing45 | Select-Object Name , InstallState
 #>
+
+#===========================================================================================#
+#   Stop os serviços Modulo Scheduler e Risk Manager (Se for uma atualização)
+#===========================================================================================#
+
+Get-Service -DisplayName "Modulo Scheduler Service", "Risk Manager Service" | Stop-Service
+
 <#===========================================================================================#
 #   Stop Site e WebAppPools (Se for uma atualização)
 #===========================================================================================#
 
-Import-Module WebAdministration
-Set-Location IIS:\
-Set-Location .\AppPools
-# Get-WebAppPoolState DefaultAppPool # *> "$destinyPath\log-$date.txt"
-
-Stop-IISSite -Name "$Site"
 Stop-WebAppPool "RiskManager" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "RM" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "PORTAL" # *> "$destinyPath\log-$date.txt"
@@ -67,7 +68,7 @@ Stop-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #>
 
-<#===========================================================================================#
+#===========================================================================================#
 #   Criação de diretório Backup (Se for uma atualização)
 #===========================================================================================#
 
@@ -75,20 +76,23 @@ If(!(test-path $DIRbkpfullRM))
 {
       New-Item -ItemType Directory -Force -Path $DIRbkpfullRM
 }
+#>
 
-#===========================================================================================#
+<#===========================================================================================#
 #   Fazer Backup do RiskManager (Se for uma atualização)
 #===========================================================================================#
 copy-item $DIRsvcRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
 copy-item $DIRsvcScheduler $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
 copy-item $DIRsiteRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
+#>
 
 #===========================================================================================#
 #   Remover conteudo das pastas dos Serviços e APPs (Se for uma atualização)
 #===========================================================================================#
-Remove-Item -Path $DIRsvcRM\* -Recurse # *> "$destinyPath\log-$date.txt"
-Remove-Item -Path $DIRsvcScheduler\* -Recurse # *> "$destinyPath\log-$date.txt"
-Remove-Item -Path $DIRsiteRM\* -Recurse # *> "$destinyPath\log-$date.txt"
+Remove-Item -Path $DIRsvcRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
+Remove-Item -Path $DIRsvcScheduler\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
+Remove-Item -Path $DIRsiteRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
+#>
 
 #===========================================================================================#
 #   Renomear e descompactar arquivos dos serviço RiskManager
