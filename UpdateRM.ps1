@@ -1,9 +1,9 @@
 #===========================================================================================#
 #===========================================================================================#
 #
-#   Criar, Restartar, Realizar Backup e Deploy dos Aplications Pools e Serviços
+#   Atualização Risk Manager
 #   Autor: Maicon Santos        								            							                          
-#   https://github.com/maiconcongesco/Git-Scripts-Modulo/blob/master/CriarStopStartDeployPool.ps1
+#   https://github.com/maiconcongesco/Git-Scripts-Modulo/blob/master/UpdateRM.ps1
 #
 #===========================================================================================#
 #===========================================================================================#
@@ -41,13 +41,13 @@ $PackInstallRM = "D:\FilesRiskManager\RM_9.9.2.7\"
 #$files = $helper.NameSpace($Source).Items()
 
 #===========================================================================================#
-#   Stop os serviços Modulo Scheduler e Risk Manager (Se for uma atualização)
+#   Parando os serviços Modulo Scheduler e Risk Manager
 #===========================================================================================#
 
 Get-Service -DisplayName "Modulo Scheduler Service", "Risk Manager Service" | Stop-Service
 
 #===========================================================================================#
-#   Stop Site e WebAppPools (Se for uma atualização)
+#   Parando os WebAppPools
 #===========================================================================================#
 Stop-WebAppPool "RiskManager" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "RM" # *> "$destinyPath\log-$date.txt"
@@ -61,12 +61,12 @@ Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #>
 
 #===========================================================================================#
-#	Remover Restrição de uso do script
+#	Removendo a Restrição de uso do script
 #===========================================================================================#
 # Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 #===========================================================================================#
-#	Limpeza de Logs		>>> ATENÇÃO! Essa remoção pode ser irreversível
+#	Limpando os Logs		>>> ATENÇÃO! Essa remoção pode ser irreversível
 #===========================================================================================#
 
 $Files = Get-Childitem $LogPath -Include $Extensions -Recurse | Where-Object {$_.LastWriteTime -le `
@@ -82,7 +82,7 @@ foreach ($File in $Files)
 }
 
 #===========================================================================================#
-#   Criação de diretório Backup (Se for uma atualização)
+#   Criando o diretório de Backup
 #===========================================================================================#
 
 If(!(test-path $DIRbkpfullRM))
@@ -92,7 +92,7 @@ If(!(test-path $DIRbkpfullRM))
 #>
 
 #===========================================================================================#
-#   Fazer Backup do RiskManager (Se for uma atualização)
+#   Fazendo o Backup do RiskManager
 #===========================================================================================#
 copy-item $DIRsvcRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
 copy-item $DIRsvcScheduler $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
@@ -100,7 +100,7 @@ copy-item $DIRsiteRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$dat
 #>
 
 #===========================================================================================#
-#   Remover conteudo das pastas dos Serviços e APPs (Se for uma atualização)
+#   Remover conteudo das pastas dos Serviços e APPs
 #===========================================================================================#
 Remove-Item -Path $DIRsvcRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
 Remove-Item -Path $DIRsvcScheduler\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
@@ -108,7 +108,7 @@ Remove-Item -Path $DIRsiteRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$
 #>
 
 #===========================================================================================#
-#    Remover os serviços Risk Manager e Modulo Scheduler
+#    Removendo os serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
 Get-Service -DisplayName "Modulo Scheduler Service", "Risk Manager Service" # Verificar status do serviço
 
@@ -124,7 +124,7 @@ Remove-Service -Name "RiskManagerService"
 (Get-WmiObject Win32_Service -filter "name='RiskManagerService'").Delete()
 
 #===========================================================================================#
-#   Renomear e descompactar arquivos dos serviços Risk Manager e Modulo Scheduler
+#   Renomeando e descompactando os arquivos dos serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
 #
 rename-item -path "$PackInstallRM\Binaries\Modulo Scheduler Service.zipx" -newname "Modulo Scheduler Service.zip" # *> "$destinyPath\log-$date.txt"
@@ -150,7 +150,7 @@ Set-Location "$DIRsvcScheduler"
 New-Service -Name "ModuloSchedulerService" -BinaryPathName Modulo.Scheduler.Host.exe
 
 #===========================================================================================#
-#    Deploy das aplicações web
+#    Realizando o Deploy das aplicações web
 #===========================================================================================#
 
 # Navegue até interface do IIS com a conexão à Internet
@@ -182,7 +182,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 #>
 
 #===========================================================================================#
-#   Start dos WebAppPool
+#   Reiniciando os WebAppPool
 #===========================================================================================#
 <# 
 #Get-WebAppPoolState DefaultAppPool # *> "$destinyPath\log-$date.txt"
