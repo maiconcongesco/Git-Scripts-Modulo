@@ -26,18 +26,18 @@ Set-ExecutionPolicy AllSigned ### Somente scripts assinados por um editor confi�
 Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por um editor confiável antes que possam ser executados.
 # ===========================================================================================#>
 
-$FileLicense = "D:\BackupRM\RiskManager\RM\modulelicenses.config"
-$FileManual = "Manual Versao 9.9 22.04.2020_v2.zip"
-$LogPath = "D:\BackupRM\"   # Separe por virgula as pastas onde estarão os logs
+$FileLicense = "D:\BackupRM\RiskManager\RM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
+$FileManual = "Manual Versao 9.9 22.04.2020_v2.zip" # Versão do arquivo de licença do Manual.
+$LogPath = "D:\BackupRM\"   # Caminho da pasta principal onde iremos buscar e limpar os logs, Separe por virgula se for mais de uma pasta.
 $XDays = 00  # Quantidade de dias que pretende reter o log.
-$Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos
-$DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service"
-$DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service"
-$DIRbkpfullRM = "D:\BackupRM"
-$DIRsiteRM = "D:\RiskManager"
-$PackInstallRM = "D:\FilesRiskManager\RM_9.9.2.7\"
-$ModuloSchedulerService = "ModuloSchedulerService"
-$RiskManagerService =  "RiskManagerService"
+$Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos que serão deletados.
+$DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
+$DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
+$DIRbkpfullRM = "D:\BackupRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
+$DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
+$PackInstallRM = "D:\FilesRiskManager\RM_9.9.2.7\" # Diretório com os arquivos de atualização do Risk Manager
+$ModuloSchedulerService = "ModuloSchedulerService" # Nome existente do Serviço do Modulo Scheduler >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
+$RiskManagerService =  "RiskManagerService" # Nome existente do Serviço do Risk Manager >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
 #$helper = New-Object -ComObject Shell.
 #$Destination = "C:\pastadestino"
 #$Source = "C:\arquivo.zip"
