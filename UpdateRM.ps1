@@ -26,6 +26,7 @@ Set-ExecutionPolicy AllSigned ### Somente scripts assinados por um editor confi�
 Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por um editor confiável antes que possam ser executados.
 # ===========================================================================================#>
 
+$FileLicense = "D:\BackupRM\RiskManager\RM\modulelicenses.config"
 $LogPath = "D:\BackupRM\"   # Separe por virgula as pastas onde estarão os logs
 $XDays = 00  # Quantidade de dias que pretende reter o log.
 $Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos
@@ -193,13 +194,24 @@ Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\b
 
 Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\Modulo.RiskManager.DataAnalytics.Bootstrap.dll" -Destination "$DIRsiteRM\RM\bin" -Force
 
+#===========================================================================================#
+#   Cópia do conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers
+#===========================================================================================#
+
+Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\DashboardDesignerInstallers\*" -Destination "$DIRsiteRM\DataAnalyticsUI\Files" -Force
+
+#===========================================================================================#
+#   Cópia do arquivo de licença
+#===========================================================================================#
+
+Copy-Item -Path "$FileLicense"  -Destination "$DIRsiteRM\RM" -Force
+
 <#===========================================================================================#
 #   Passos a incluir no script
 #===========================================================================================#
 
 # Cópia do arquivo de licença
 # Cópia do Manual do Módulo Risk Manager
-# Cópia do conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers #>
 
 #===========================================================================================#
 #   Reiniciando os WebAppPool
