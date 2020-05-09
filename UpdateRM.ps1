@@ -187,13 +187,18 @@ Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF\bi
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL\bin" -Force
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force
 
+#===========================================================================================#
+#   Cópia do arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
+#===========================================================================================#
+
+Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\Modulo.RiskManager.DataAnalytics.Bootstrap.dll" -Destination "$DIRsiteRM\RM\bin" -Force
+
 <#===========================================================================================#
 #   Passos a incluir no script
 #===========================================================================================#
 
 # Cópia do arquivo de licença
 # Cópia do Manual do Módulo Risk Manager
-# Cópia do arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
 # Cópia do conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers #>
 
 #===========================================================================================#
