@@ -27,6 +27,7 @@ Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por
 # ===========================================================================================#>
 
 $FileLicense = "D:\BackupRM\RiskManager\RM\modulelicenses.config"
+$FileManual = "Manual Versao 9.9 22.04.2020_v2.zip"
 $LogPath = "D:\BackupRM\"   # Separe por virgula as pastas onde estarão os logs
 $XDays = 00  # Quantidade de dias que pretende reter o log.
 $Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos
@@ -206,12 +207,28 @@ Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\DashboardDesigner
 
 Copy-Item -Path "$FileLicense"  -Destination "$DIRsiteRM\RM" -Force
 
-<#===========================================================================================#
-#   Passos a incluir no script
+#===========================================================================================#
+#   Criando o diretório para o Manual
 #===========================================================================================#
 
-# Cópia do arquivo de licença
-# Cópia do Manual do Módulo Risk Manager
+If(!(test-path $DIRsiteRM\RM\Manual))
+{
+      New-Item -ItemType Directory -Force -Path $DIRsiteRM\RM\Manual
+}
+#>
+
+#===========================================================================================#
+#   Extração do Manual do Risk Manager para o App RM
+#===========================================================================================#
+
+# Descompactar arquivos compactados para a pasta dos serviços
+# Na Powershell v3 extrai e copia os arquivos para pasta de destino 
+# Unblock-File $Destination # *> "$destinyPath\log-$date.txt" # *> "$destinyPath\log-$date.txt"
+# $helper.NameSpace($Destination).CopyHere($files) # *> "$destinyPath\log-$date.txt"
+
+# No Powershell v5 você pode utilizar os seguintes cmdlets pra descompactar.
+Expand-Archive -Path "$PackInstallRM\$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual"
+#>
 
 #===========================================================================================#
 #   Reiniciando os WebAppPool
