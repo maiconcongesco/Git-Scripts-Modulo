@@ -179,14 +179,22 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 #>
 
 #===========================================================================================#
+#   Cópia da biblioteca DevExpress para Apps/bin
+#===========================================================================================#
+
+Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force
+Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF\bin" -Force
+Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL\bin" -Force
+Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force
+
+<#===========================================================================================#
 #   Passos a incluir no script
 #===========================================================================================#
 
-# 
 # Cópia do arquivo de licença
 # Cópia do Manual do Módulo Risk Manager
 # Cópia do arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
-# Cópia do conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers 
+# Cópia do conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers #>
 
 #===========================================================================================#
 #   Reiniciando os WebAppPool
@@ -195,7 +203,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 #Get-WebAppPoolState DefaultAppPool # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "RiskManager" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "RM" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "Portal" # *> "$destinyPath\log-$date.txt"
+Start-WebAppPool "PORTAL" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "WF" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
