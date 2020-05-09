@@ -1,3 +1,5 @@
+#.
+
 #===========================================================================================#
 #===========================================================================================#
 #
@@ -27,16 +29,17 @@ Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por
 # ===========================================================================================#>
 
 $VersionBKPdoRM = "9.9.2.7" # Versão do RM que será arquivado (Backup)
+$DirBKPConfgs = "D:\BackupRM\Configs\$VersionBKPdoRM"
 $DIRbkpfullRM = "D:\BackupRM\$VersionBKPdoRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
 $FileLicense = "D:\BackupRM\RiskManager\RM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $FileManual = "Manual Versao 9.9 22.04.2020_v2.zip" # Versão do arquivo de licença do Manual.
-$LogPath = "D:\BackupRM\"   # Caminho da pasta principal onde iremos buscar e limpar os logs, Separe por virgula se for mais de uma pasta.
 $XDays = 00  # Quantidade de dias que pretende reter o log.
 $Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos que serão deletados.
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
-$PackInstallRM = "D:\FilesRiskManager\RM_9.9.2.7\" # Diretório com os arquivos de atualização do Risk Manager
+$PackInstallRM = "D:\FilesRiskManager\RM_9.9.2.7" # Diretório com os arquivos de atualização do Risk Manager
+$LogPath = "$DIRsvcRM, $DIRsvcScheduler, $DIRsiteRM"   # Caminho da pasta principal onde iremos buscar e limpar os logs, Separe por virgula se for mais de uma pasta.
 $ModuloSchedulerService = "ModuloSchedulerService" # Nome existente do Serviço do Modulo Scheduler >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
 $RiskManagerService =  "RiskManagerService" # Nome existente do Serviço do Risk Manager >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
 #$helper = New-Object -ComObject Shell.
@@ -47,9 +50,26 @@ $RiskManagerService =  "RiskManagerService" # Nome existente do Serviço do Risk
 #===========================================================================================#
 #   Parando os serviços Modulo Scheduler e Risk Manager
 #===========================================================================================#
-Get-Service -DisplayName "Modulo*", "Risk*" # Verificando nome do serviço
+#Get-Service -DisplayName "Modulo*", "Risk*" # Verificando nome do serviço
 
 Get-Service -DisplayName "$ModuloSchedulerService", "$RiskManagerService" | Stop-Service
+
+<#===========================================================================================#
+#    Removendo os serviços Risk Manager e Modulo Scheduler
+#===========================================================================================#
+Get-Service -DisplayName "Modulo Scheduler Service", "Risk Manager Service" # Verificar status do serviço
+
+#Remove-Service -DisplayName "Modulo Scheduler Service", "Risk Manager Service"
+
+<# Esse cmdlet foi introduzido no PowerShell 6.0
+Remove-Service -Name "ModuloSchedulerService"
+Remove-Service -Name "RiskManagerService"
+#>
+
+<# Esse é o cmdlet que funciona no PowerShell 5
+(Get-WmiObject Win32_Service -filter "name='ModuloSchedulerService'").Delete()
+(Get-WmiObject Win32_Service -filter "name='RiskManagerService'").Delete()
+#>
 
 #===========================================================================================#
 #   Parando os WebAppPools
@@ -100,28 +120,37 @@ copy-item $DIRsiteRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$dat
 #>
 
 #===========================================================================================#
+#   Criando diretório para Backup de Configs
+#===========================================================================================#
+
+If(!(test-path $DirBKPConfgs))
+{
+      New-Item -ItemType Directory -Force -Path $DirBKPConfgs
+}
+#>
+
+#===========================================================================================#
+#   Backup de Configs
+#===========================================================================================#
+
+#Copia os arquivos e a estrutura de Diretórios.
+Copy-Item "$DIRbkpfullRM" -Filter "*.config" -Destination "$DirBKPConfgs" -Recurse -Force
+
+#Get-ChildItem -Path  "$DirBKPConfgs" -Recurse -exclude "*.config" | Remove-Item -force -recurse #Matem o *config
+
+(Get-ChildItem “$DirBKPConfgs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item
+(Get-ChildItem “$DirBKPConfgs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item
+(Get-ChildItem “$DirBKPConfgs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item
+(Get-ChildItem “$DirBKPConfgs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item
+(Get-ChildItem “$DirBKPConfgs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item
+
+#===========================================================================================#
 #   Remover conteudo das pastas dos Serviços e APPs
 #===========================================================================================#
 Remove-Item -Path $DIRsvcRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
 Remove-Item -Path $DIRsvcScheduler\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
 Remove-Item -Path $DIRsiteRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
 #>
-
-#===========================================================================================#
-#    Removendo os serviços Risk Manager e Modulo Scheduler
-#===========================================================================================#
-Get-Service -DisplayName "Modulo Scheduler Service", "Risk Manager Service" # Verificar status do serviço
-
-#Remove-Service -DisplayName "Modulo Scheduler Service", "Risk Manager Service"
-
-<# Esse cmdlet foi introduzido no PowerShell 6.0
-Remove-Service -Name "ModuloSchedulerService"
-Remove-Service -Name "RiskManagerService"
-#>
-
-# Esse é o cmdlet que funciona no PowerShell 5
-(Get-WmiObject Win32_Service -filter "name='ModuloSchedulerService'").Delete()
-(Get-WmiObject Win32_Service -filter "name='RiskManagerService'").Delete()
 
 #===========================================================================================#
 #   Renomeando e descompactando os arquivos dos serviços Risk Manager e Modulo Scheduler
@@ -141,13 +170,14 @@ Expand-Archive -Path "$PackInstallRM\Binaries\Modulo Scheduler Service.zip" -Des
 Expand-Archive -Path "$PackInstallRM\Binaries\RiskManager.Service.zip" -DestinationPath $DIRsvcRM
 #>
 
-#===========================================================================================#
+<#===========================================================================================#
 #    Recriando os serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
 Set-Location "$DIRsvcRM"
 New-Service -Name "RiskManagerService" -BinaryPathName RM.Service.exe
 Set-Location "$DIRsvcScheduler"
 New-Service -Name "ModuloSchedulerService" -BinaryPathName Modulo.Scheduler.Host.exe
+#>
 
 #===========================================================================================#
 #    Realizando o Deploy das aplicações web
