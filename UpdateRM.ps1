@@ -1,5 +1,4 @@
 #.
-
 #===========================================================================================#
 #===========================================================================================#
 #
@@ -52,23 +51,16 @@ $RiskManagerService =  "RiskManagerService" # Nome existente do Serviço do Risk
 #===========================================================================================#
 #Get-Service -DisplayName "Modulo*", "Risk*" # Verificando nome do serviço
 
-Get-Service -DisplayName "$ModuloSchedulerService", "$RiskManagerService" | Stop-Service
+Get-Service -Name "$ModuloSchedulerService", "$RiskManagerService" | Stop-Service
 
-<#===========================================================================================#
+#===========================================================================================#
 #    Removendo os serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
-Get-Service -DisplayName "Modulo Scheduler Service", "Risk Manager Service" # Verificar status do serviço
+# Remove-Service -Name "ServiceName" # Esse cmdlet foi introduzido no PowerShell 6.0
+# (Get-WmiObject Win32_Service -filter "name='ServiceName'").Delete() # Esse é o cmdlet que funciona no PowerShell 5
 
-#Remove-Service -DisplayName "Modulo Scheduler Service", "Risk Manager Service"
-
-<# Esse cmdlet foi introduzido no PowerShell 6.0
-Remove-Service -Name "ModuloSchedulerService"
-Remove-Service -Name "RiskManagerService"
-#>
-
-<# Esse é o cmdlet que funciona no PowerShell 5
-(Get-WmiObject Win32_Service -filter "name='ModuloSchedulerService'").Delete()
-(Get-WmiObject Win32_Service -filter "name='RiskManagerService'").Delete()
+sc.exe delete "$RiskManagerService"
+sc.exe delete "$ModuloSchedulerService"
 #>
 
 #===========================================================================================#
@@ -153,30 +145,24 @@ Remove-Item -Path $DIRsiteRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$
 #>
 
 #===========================================================================================#
-#   Renomeando e descompactando os arquivos dos serviços Risk Manager e Modulo Scheduler
+#   Renomeando os arquivos dos serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
-#
 rename-item -path "$PackInstallRM\Binaries\Modulo Scheduler Service.zipx" -newname "Modulo Scheduler Service.zip" # *> "$destinyPath\log-$date.txt"
 rename-item -path "$PackInstallRM\Binaries\RiskManager.Service.zipx" -newname "RiskManager.Service.zip" # *> "$destinyPath\log-$date.txt"
 #>
 
-# Descompactar arquivos compactados para a pasta dos serviços
-# Na Powershell v3 extrai e copia os arquivos para pasta de destino 
-# Unblock-File $Destination # *> "$destinyPath\log-$date.txt" # *> "$destinyPath\log-$date.txt"
-# $helper.NameSpace($Destination).CopyHere($files) # *> "$destinyPath\log-$date.txt"
-
-# No Powershell v5 você pode utilizar os seguintes cmdlets pra descompactar.
+#===========================================================================================#
+#   Descompactando os arquivos dos serviços Risk Manager e Modulo Scheduler
+#===========================================================================================#
 Expand-Archive -Path "$PackInstallRM\Binaries\Modulo Scheduler Service.zip" -DestinationPath $DIRsvcScheduler
 Expand-Archive -Path "$PackInstallRM\Binaries\RiskManager.Service.zip" -DestinationPath $DIRsvcRM
 #>
 
-<#===========================================================================================#
+#===========================================================================================#
 #    Recriando os serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
-Set-Location "$DIRsvcRM"
-New-Service -Name "RiskManagerService" -BinaryPathName RM.Service.exe
-Set-Location "$DIRsvcScheduler"
-New-Service -Name "ModuloSchedulerService" -BinaryPathName Modulo.Scheduler.Host.exe
+New-Service -Name "RiskManagerService" -BinaryPathName "$DIRsvcRM/RM.Service.exe"
+New-Service -Name "ModuloSchedulerService" -BinaryPathName "$DIRsvcRM/Modulo.Scheduler.Host.exe"
 #>
 
 #===========================================================================================#
@@ -251,11 +237,6 @@ If(!(test-path $DIRsiteRM\RM\Manual))
 #===========================================================================================#
 #   Extração do Manual do Risk Manager para o App RM
 #===========================================================================================#
-
-# Descompactar arquivos compactados para a pasta dos serviços
-# Na Powershell v3 extrai e copia os arquivos para pasta de destino 
-# Unblock-File $Destination # *> "$destinyPath\log-$date.txt" # *> "$destinyPath\log-$date.txt"
-# $helper.NameSpace($Destination).CopyHere($files) # *> "$destinyPath\log-$date.txt"
 
 # No Powershell v5 você pode utilizar os seguintes cmdlets pra descompactar.
 Expand-Archive -Path "$PackInstallRM\$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual"
