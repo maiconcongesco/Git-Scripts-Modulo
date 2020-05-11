@@ -117,7 +117,7 @@ copy-item $DIRsvcScheduler $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\lo
 copy-item $DIRsiteRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
 #>
 
-<#===========================================================================================#
+#===========================================================================================#
 #   Criando diretório para Backup de Configs
 #===========================================================================================#
 
