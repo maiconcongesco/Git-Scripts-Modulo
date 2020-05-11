@@ -1,4 +1,4 @@
-#.
+<#
 #===========================================================================================#
 #===========================================================================================#
 #
@@ -9,7 +9,7 @@
 #===========================================================================================#
 #===========================================================================================#
 
-<#==========================================================================================#
+#==========================================================================================#
 #   >>> OBSERVAÇÕES IMPORTANTES <<<
 #===========================================================================================#
 #   Necessário instalar o Microsoft Web Deploy V3 contido no "Pack Tools"
@@ -28,7 +28,7 @@ Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por
 
 # Geralmente essas váriaveis precisarão ser alteradas
 $VersionBKPdoRM = "9.9.2.7" # Versão do RM que será arquivado (Backup)
-$DIRbkpfull = "D:\BackupRM" # Diretório de backup do Risk Manager
+$DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
 $FileManual = "Manual Versao 9.9 22.04.2020_v2.zip" # Versão do arquivo de licença do Manual.
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $PackInstallRM = "D:\FilesRiskManager\RM_9.9.2.7" # Diretório com os arquivos de atualização do Risk Manager
@@ -40,12 +40,12 @@ $ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Serv
 $RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -DisplayName "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Risk Manager >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
 
 # Raramente será necessário alterar essa variáveis
-$DirBKPConfgs = "$DIRbkpfull\Configs\$VersionBKPdoRM" # Diretório de backup dos configs do Risk Manager
-$DIRbkpfullRM = "$DIRbkpfull\$VersionBKPdoRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
+$DirBKPConfigs = "$DIRbkpfullRM\Configs" # Diretório de backup dos configs do Risk Manager
+$DIRbkpfullRM = "$DIRbkp\$VersionBKPdoRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
 $FileLicense = "$DIRbkpfullRM\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $XDays = 00  # Quantidade de dias que pretende reter o log.
 $Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos que serão deletados.
-$LogPath = "$DIRsvcRM, $DIRsvcScheduler, $DIRsiteRM"   # Caminho da pasta principal onde iremos buscar e limpar os logs, Separe por virgula se for mais de uma pasta.
+$LogPath = "$DIRsvcRM", "$DIRsvcScheduler", "$DIRsiteRM"   # Caminho da pasta principal onde iremos buscar e limpar os logs, Separe por virgula se for mais de uma pasta.
 
 #===========================================================================================#
 
@@ -117,13 +117,13 @@ copy-item $DIRsvcScheduler $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\lo
 copy-item $DIRsiteRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
 #>
 
-#===========================================================================================#
+<#===========================================================================================#
 #   Criando diretório para Backup de Configs
 #===========================================================================================#
 
-If(!(test-path $DirBKPConfgs))
+If(!(test-path $DirBKPConfigs))
 {
-      New-Item -ItemType Directory -Force -Path $DirBKPConfgs
+      New-Item -ItemType Directory -Force -Path $DirBKPConfigs
 }
 #>
 
@@ -132,15 +132,15 @@ If(!(test-path $DirBKPConfgs))
 #===========================================================================================#
 
 #Copia os arquivos e a estrutura de Diretórios.
-Copy-Item "$DIRbkpfullRM" -Filter "*.config" -Destination "$DirBKPConfgs" -Recurse -Force -Verbose
+Copy-Item "$DIRbkpfullRM" -Filter "*.config" -Destination "$DirBKPConfigs" -Recurse -Force -Verbose
 
-#Get-ChildItem -Path  "$DirBKPConfgs" -Recurse -exclude "*.config" | Remove-Item -force -recurse #Matem o *config
+#Get-ChildItem -Path  "$DirBKPConfigs" -Recurse -exclude "*.config" | Remove-Item -force -recurse #Matem o *config
 
-(Get-ChildItem “$DirBKPConfgs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DirBKPConfgs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DirBKPConfgs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DirBKPConfgs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DirBKPConfgs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DirBKPConfigs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DirBKPConfigs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DirBKPConfigs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DirBKPConfigs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DirBKPConfigs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
 
 #===========================================================================================#
 #   Backup do arquivo de lincença do Risk Manager
