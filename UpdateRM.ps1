@@ -14,13 +14,8 @@
 #===========================================================================================#
 #   Necessário instalar o Microsoft Web Deploy V3 contido no "Pack Tools"
 #===========================================================================================#
-# Para o funcionamento de scripts PowerShell pode ser necessário alterar a diretiva de execução de script do Windows 
-# O cmdlet "Set-ExecutionPolicy" determina se os scripts PowerShell terão permissão de execução.
-# Eu aconselho alterar para Irrestrito e após a execução do script voltar com política de execução corrente
- 
-O cmdlet "Get-ExecutionPolicy" verifica a política de execução corrente
-O Windows PowerShell possui quatro políticas de execução diferentes:
-Para atribuir uma política específica, basta chamar Set-ExecutionPolicy seguido pelo nome da política apropriada.
+# Em algumas situações pode ser necessário alterar a diretiva de execução de script do Windows.
+O cmdlet "Set-ExecutionPolicy" determina se os scripts PowerShell terão permissão de execução. O cmdlet "Get-ExecutionPolicy" verifica a política de execução corrente, o cmdlet aplica Set-ExecutionPolicy a política.
 Set-ExecutionPolicy Restricted ### O PowerShell só pode ser usado no modo interativo. O script não poderá pode ser executado. 
 Set-ExecutionPolicy Unrestricted ###  Todos os scripts do Windows PowerShell podem ser executados.
 Set-ExecutionPolicy AllSigned ### Somente scripts assinados por um editor confiável podem ser executados.
