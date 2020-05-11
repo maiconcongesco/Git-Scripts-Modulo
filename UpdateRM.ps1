@@ -131,11 +131,12 @@ If(!(test-path $DirBKPConfigs))
 #   Backup de Configs
 #===========================================================================================#
 
-#Copia os arquivos e a estrutura de Diretórios.
-Copy-Item "$DIRbkpfullRM" -Filter "*.config" -Destination "$DirBKPConfigs" -Recurse -Force -Verbose
+# Copia os arquivos e a estrutura de Diretórios.
+Copy-Item "$DIRbkpfullRM" -Filter "Web.config" -Destination "$DirBKPConfigs" -Recurse -Force -Verbose
+Copy-Item "$DIRbkpfullRM" -Filter "RM_Web.config" -Destination "$DirBKPConfigs" -Recurse -Force -Verbose
+Copy-Item "$DIRbkpfullRM" -Filter "tenants.config" -Destination "$DirBKPConfigs" -Recurse -Force -Verbose
 
-#Get-ChildItem -Path  "$DirBKPConfigs" -Recurse -exclude "*.config" | Remove-Item -force -recurse #Matem o *config
-
+# Apaga diretórios vazios
 (Get-ChildItem “$DirBKPConfigs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
 (Get-ChildItem “$DirBKPConfigs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
 (Get-ChildItem “$DirBKPConfigs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
