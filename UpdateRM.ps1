@@ -268,4 +268,5 @@ Start-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #>
 
-$command.EndExecutionTime # Inicio da execução do Script
+Write-Output "Inicio da execução do Script" $command.StartExecutionTime
+Write-Output "Fim da execução do Script" date
