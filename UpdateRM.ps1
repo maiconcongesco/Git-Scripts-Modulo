@@ -252,10 +252,9 @@ If(!(test-path $DIRsiteRM\RM\Manual))
 Expand-Archive -Path "$PackInstallRM\$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual" -Verbose
 #>
 
-#===========================================================================================#
+<#===========================================================================================#
 #   Reiniciando os WebAppPool
-#===========================================================================================#
-<# 
+#===========================================================================================# 
 #Get-WebAppPoolState DefaultAppPool # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "RiskManager" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "RM" # *> "$destinyPath\log-$date.txt"
@@ -268,5 +267,14 @@ Start-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #>
 
+<#===========================================================================================#
+#   Iniciado os serviços Modulo Scheduler e Risk Manager
+#===========================================================================================#
+Get-Service -Name "$ModuloSchedulerService", "$RiskManagerService" | Start-Service
+#>
+
+
 Write-Output "Inicio da execução do Script" $command.StartExecutionTime
+
+
 Write-Output "Fim da execução do Script" date
