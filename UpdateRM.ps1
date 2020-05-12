@@ -40,7 +40,6 @@ $ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Serv
 $RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -DisplayName "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Risk Manager >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
 
 # Raramente será necessário alterar essa variáveis
-$DirBKPConfigs = "$DIRbkpfullRM\Configs" # Diretório de backup dos configs do Risk Manager
 $DIRbkpfullRM = "$DIRbkp\$VersionBKPdoRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
 $FileLicense = "$DIRbkpfullRM\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $XDays = 00  # Quantidade de dias que pretende reter o log.
@@ -121,32 +120,31 @@ copy-item $DIRsiteRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$dat
 #   Criando diretório para Backup de Configs
 #===========================================================================================#
 
-If(!(test-path $DirBKPConfigs))
+If(!(test-path $DIRbkpfullRM\Configs))
 {
-      New-Item -ItemType Directory -Force -Path $DirBKPConfigs
+      New-Item -ItemType Directory -Force -Path $DIRbkpfullRM\Configs
 }
 #>
 
 #===========================================================================================#
-#   Backup de Configs
+#   Backup de Configs do arquivo de lincença do Risk Manager
 #===========================================================================================#
 
 # Copia os arquivos e a estrutura de Diretórios.
-Copy-Item "$DIRbkpfullRM" -Filter "Web.config" -Destination "$DirBKPConfigs" -Recurse -Force -Verbose
-Copy-Item "$DIRbkpfullRM" -Filter "RM_Web.config" -Destination "$DirBKPConfigs" -Recurse -Force -Verbose
-Copy-Item "$DIRbkpfullRM" -Filter "tenants.config" -Destination "$DirBKPConfigs" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config, tenants.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkpfullRM\LicenseRM" -Recurse -Force -Verbose
 
 # Apaga diretórios vazios
-(Get-ChildItem “$DirBKPConfigs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DirBKPConfigs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DirBKPConfigs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DirBKPConfigs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DirBKPConfigs” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-
-#===========================================================================================#
-#   Backup do arquivo de lincença do Risk Manager
-#===========================================================================================#
-Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkpfullRM\LicenseRM" -Recurse -Force -Verbose
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+#>
 
 #===========================================================================================#
 #   Remover conteudo das pastas dos Serviços e APPs
