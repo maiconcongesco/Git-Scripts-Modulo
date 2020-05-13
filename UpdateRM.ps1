@@ -36,8 +36,8 @@ $PackInstallRM = "D:\FilesRiskManager\RM_9.9.2.7" # Diretório com os arquivos d
 # Ocasionalmente pode ser necessário alterar essa variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
-$ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Service -DisplayName "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
-$RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -DisplayName "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Risk Manager >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
+$ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
+$RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Risk Manager >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
 
 # Raramente será necessário alterar essa variáveis
 $DIRbkpfullRM = "$DIRbkp\$VersionBKPdoRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
@@ -112,7 +112,8 @@ If(!(test-path $DIRbkpfullRM))
 #   Fazendo o Backup do RiskManager
 #===========================================================================================#
 copy-item $DIRsvcRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
-copy-item $DIRsvcScheduler $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
+copy-item $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
+copy-item $DIRsvcScheduler -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
 copy-item $DIRsiteRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
 #>
 
@@ -270,7 +271,8 @@ Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 <#===========================================================================================#
 #   Iniciado os serviços Modulo Scheduler e Risk Manager
 #===========================================================================================#
-Get-Service -Name "$ModuloSchedulerService", "$RiskManagerService" | Start-Service
+Get-Service -Name "$RiskManagerService" | Start-Service
+Get-Service -Name "$ModuloSchedulerService" | Start-Service
 #>
 
 
