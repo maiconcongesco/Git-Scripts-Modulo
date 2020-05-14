@@ -4,7 +4,7 @@
 #
 #   Instalação Risk Manager
 #   Autor: Maicon Santos        								            							                          
-#   https://github.com/maiconcongesco/Git-Scripts-Modulo/blob/master/UpdateRM.ps1
+#   https://github.com/maiconcongesco/Git-Scripts-Modulo/blob/master/InstallRM.ps1
 #
 #===========================================================================================#
 #===========================================================================================#
@@ -38,16 +38,11 @@ $PackRMZIP = "D:\RM_9.9.2.07.zip"
 # Ocasionalmente pode ser necessário alterar essa variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
-$ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
-$RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Risk Manager >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
 $NameSite="RiskManager"
 
 # Raramente será necessário alterar essa variáveis
 $DIRbkpfullRM = "$DIRbkp\$VersionBKPdoRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
 $FileLicense = "$DIRbkpfullRM\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
-$XDays = 00  # Quantidade de dias que pretende reter o log.
-$Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos que serão deletados.
-$LogPath = "$DIRsvcRM", "$DIRsvcScheduler", "$DIRsiteRM"   # Caminho da pasta principal onde iremos buscar e limpar os logs, Separe por virgula se for mais de uma pasta.
 
 #===========================================================================================#
 
