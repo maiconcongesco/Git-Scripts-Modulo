@@ -29,20 +29,20 @@ Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por
 # Geralmente essas váriaveis precisarão ser alteradas
 $VersionRM = "9.9.2.7" # Versão do RM que será arquivado (Backup)
 $DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
-$FileManual = "D:\Manual Versao 9.9 22.04.2020_v2.zip" # Versão do arquivo de licença do Manual.
+$FileManual = "D:\Manual Versao 9.9 22.04.2020_v2.zip" # Caminho do Manual compactado.
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
-$PackInstallRM = "D:\FilesRiskManager\RM_9.9.2.7" # Diretório com os arquivos de atualização do Risk Manager
-$RaizInstall = "D:\FilesRiskManager"
-$PackRMZIP = "D:\RM_9.9.2.07.zip"
+$RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
+$PackInstallRM = "$RaizInstall\RM_9.9.2.7" # Diretório descompactado dos arquivos de instalação do Risk Manager
+$PackRMZIP = "D:\RM_9.9.2.07.zip" # Caminho com o pacote de intalação compactado do Risk Manager
 
-# Ocasionalmente pode ser necessário alterar essa variáveis
+# Ocasionalmente pode ser necessário alterar essas variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
 $ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
 $RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Risk Manager >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
-$NameSite="RiskManager"
+$NameSite="RiskManager" # Nome do Site do Risk Manager no IIS
 
-# Raramente será necessário alterar essa variáveis
+# Raramente será necessário alterar essas variáveis
 $DIRbkpfullRM = "$DIRbkp\$VersionRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
 $FileLicense = "$DIRbkpfullRM\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $XDays = 00  # Quantidade de dias que pretende reter o log.
