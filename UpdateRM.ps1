@@ -29,15 +29,18 @@ Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por
 # Geralmente essas váriaveis precisarão ser alteradas
 $VersionBKPdoRM = "9.9.2.7" # Versão do RM que será arquivado (Backup)
 $DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
-$FileManual = "Manual Versao 9.9 22.04.2020_v2.zip" # Versão do arquivo de licença do Manual.
+$FileManual = "D:\Manual Versao 9.9 22.04.2020_v2.zip" # Versão do arquivo de licença do Manual.
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $PackInstallRM = "D:\FilesRiskManager\RM_9.9.2.7" # Diretório com os arquivos de atualização do Risk Manager
+$RaizInstall = "D:\FilesRiskManager"
+$PackRMZIP = "D:\RM_9.9.2.07.zip"
 
 # Ocasionalmente pode ser necessário alterar essa variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
 $ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
 $RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Risk Manager >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
+$NameSite="RiskManager"
 
 # Raramente será necessário alterar essa variáveis
 $DIRbkpfullRM = "$DIRbkp\$VersionBKPdoRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
@@ -51,6 +54,11 @@ $LogPath = "$DIRsvcRM", "$DIRsvcScheduler", "$DIRsiteRM"   # Caminho da pasta pr
 # Inicio da execução do Script
 $command = Get-History -Count 1 # Vai Cronometrar o tempo que o script levará em execução
 $command.StartExecutionTime 
+
+#===========================================================================================#
+#   Descompactando os arquivos das aplicações do Risk Manager
+#===========================================================================================#
+Expand-Archive -Path "$PackRMZIP" -DestinationPath "$RaizInstall" -Verbose
 
 #===========================================================================================#
 #   Parando os serviços Modulo Scheduler e Risk Manager
@@ -80,6 +88,7 @@ Stop-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
+#Stop-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
 #>
 
 #===========================================================================================#
@@ -111,10 +120,9 @@ If(!(test-path $DIRbkpfullRM))
 #===========================================================================================#
 #   Fazendo o Backup do RiskManager
 #===========================================================================================#
-copy-item $DIRsvcRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
-copy-item $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
-copy-item $DIRsvcScheduler -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
-copy-item $DIRsiteRM $DIRbkpfullRM -Recurse -Verbose # *> "$destinyPath\log-$date.txt"
+copy-item $DIRsvcRM $DIRbkpfullRM -Recurse -Verbose # Backup do Serviço do RiskManager
+copy-item $DIRsvcScheduler $DIRbkpfullRM -Recurse -Verbose # Backup do Serviço do Modulo Scheduler
+copy-item $DIRsiteRM $DIRbkpfullRM -Recurse -Verbose # Backup das Aplicações do Risk Manager
 #>
 
 #===========================================================================================#
@@ -133,7 +141,7 @@ If(!(test-path $DIRbkpfullRM\Configs))
 
 # Copia os arquivos e a estrutura de Diretórios.
 Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config, tenants.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
 Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
 Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkpfullRM\LicenseRM" -Recurse -Force -Verbose
 
@@ -184,28 +192,33 @@ New-Service -BinaryPathName $DIRsvcScheduler/Modulo.Scheduler.Host.exe -Name Mod
 Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
 # Deploy da aplicação RM  
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/RM"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/RM"
 
 # Deploy da aplicação Workflow
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Workflow.Services.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/WF"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Workflow.Services.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/WF"
 
 # Deploy da aplicação PORTAL  
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/PORTAL"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/PORTAL"
 
 # Deploy da aplicação Data Analytics Cacher 
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsCacher.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/DataAnalyticsCacher"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsCacher.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsCacher"
 
 # Deploy da aplicação Data Analytics Service 
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsService.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/DataAnalyticsService" 
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsService.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsService" 
 
 # Deploy da aplicação Data Analytics UI 
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsUI.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/DataAnalyticsUI"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsUI.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsUI"
 
 # Deploy da aplicação Data MMI 
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/MMI" 
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI" 
 
 # Deploy da aplicação BCM 
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=RiskManager/BCM"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
+
+# Deploy da aplicação ETL 
+#.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETLProcessor"
+#>
+
 #>
 
 #===========================================================================================#
@@ -239,9 +252,9 @@ Copy-Item -Path "$FileLicense"  -Destination "$DIRsiteRM\RM" -Force -Verbose
 #   Criando o diretório para o Manual
 #===========================================================================================#
 
-If(!(test-path $DIRsiteRM\RM\Manual))
+If(!(test-path $DIRsiteRM\RM\Manual\pt))
 {
-      New-Item -ItemType Directory -Force -Path $DIRsiteRM\RM\Manual -Verbose
+      New-Item -ItemType Directory -Force -Path $DIRsiteRM\RM\Manual\pt -Verbose
 }
 #>
 
@@ -250,7 +263,7 @@ If(!(test-path $DIRsiteRM\RM\Manual))
 #===========================================================================================#
 
 # No Powershell v5 você pode utilizar os seguintes cmdlets pra descompactar.
-Expand-Archive -Path "$PackInstallRM\$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual" -Verbose
+Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -Verbose
 #>
 
 <#===========================================================================================#
@@ -266,6 +279,7 @@ Start-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
+#Start-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
 #>
 
 <#===========================================================================================#
@@ -276,7 +290,12 @@ Get-Service -Name "$ModuloSchedulerService" | Start-Service
 #>
 
 
-Write-Output "Inicio da execução do Script" $command.StartExecutionTime
+Write-Output "Inicio da execução do Script" 
+
+$command.StartExecutionTime
 
 
-Write-Output "Fim da execução do Script" date
+
+Write-Output "Fim da execução do Script" 
+
+Get-Date
