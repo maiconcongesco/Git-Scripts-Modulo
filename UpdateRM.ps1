@@ -219,8 +219,6 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 #.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETLProcessor"
 #>
 
-#>
-
 #===========================================================================================#
 #   Cópia da biblioteca DevExpress para Apps/bin
 #===========================================================================================#
