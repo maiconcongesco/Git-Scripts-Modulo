@@ -75,7 +75,7 @@ Expand-Archive -Path "$PackRMZIP" -DestinationPath "$RaizInstall" -Verbose
 #===========================================================================================#
 #   Criar o Site Risk Manager
 #===========================================================================================#
-New-Website -Name "RiskManager" -ApplicationPool "RiskManager" -PhysicalPath $DIRsiteRM -Port 443
+New-Website -Name "$NameSite" -ApplicationPool "RiskManager" -PhysicalPath $DIRsiteRM -Port 443
 #>
 
 #===========================================================================================#
