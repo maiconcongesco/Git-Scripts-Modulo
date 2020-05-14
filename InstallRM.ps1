@@ -27,7 +27,7 @@ Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por
 #===========================================================================================#
 
 # Geralmente essas váriaveis precisarão ser alteradas
-$VersionBKPdoRM = "9.9.2.7" # Versão do RM que será arquivado (Backup)
+$VersionRM = "9.9.2.7" # Versão do RM que será arquivado (Backup)
 $DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
 $FileManual = "D:\Manual Versao 9.9 22.04.2020_v2.zip" # Versão do arquivo de licença do Manual.
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
@@ -41,7 +41,7 @@ $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretóri
 $NameSite="RiskManager"
 
 # Raramente será necessário alterar essa variáveis
-$DIRbkpfullRM = "$DIRbkp\$VersionBKPdoRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
+$DIRbkpfullRM = "$DIRbkp\$VersionRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
 $FileLicense = "$DIRbkpfullRM\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 
 #===========================================================================================#
