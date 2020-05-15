@@ -241,6 +241,12 @@ Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\Modulo.RiskManage
 Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\DashboardDesignerInstallers\*" -Destination "$DIRsiteRM\DataAnalyticsUI\Files" -Force -Verbose
 
 #===========================================================================================#
+#   Cópia de DLLs para o MMI
+#===========================================================================================#
+
+Copy-Item -Path "$PackInstallRM\Web.Applications\MMI\bin\rm\*" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
+
+#===========================================================================================#
 #   Cópia do arquivo de licença
 #===========================================================================================#
 
