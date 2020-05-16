@@ -27,13 +27,13 @@ Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por
 #===========================================================================================#
 
 # Geralmente essas váriaveis precisarão ser alteradas
-$VersionRM = "9.9.2.7" # Versão do RM que será arquivado (Backup)
-$DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
-$FileManual = "D:\Manual Versao 9.9 22.04.2020_v2.zip" # Caminho do Manual compactado.
-$DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
+$VersionRM = "9.9.2.07" # Versão do RM que será arquivado (Backup)
 $RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
-$PackInstallRM = "$RaizInstall\RM_9.9.2.7" # Diretório descompactado dos arquivos de instalação do Risk Manager
-$PackRMZIP = "D:\RM_9.9.2.07.zip" # Caminho com o pacote de intalação compactado do Risk Manager
+$DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
+$FileManual = "$RaizInstall\Manual_RM_9.9_pt_br.zip" # Caminho do Manual compactado.
+$DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
+$PackInstallRM = "$RaizInstall\RM_9.9.2.07" # Diretório descompactado dos arquivos de instalação do Risk Manager
+$PackRMZIP = "$RaizInstall\RM_9.9.2.07.zip" # Caminho com o pacote de intalação compactado do Risk Manager
 
 # Ocasionalmente pode ser necessário alterar essas variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
