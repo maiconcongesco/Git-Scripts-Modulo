@@ -34,13 +34,14 @@ $FileManual = "$RaizInstall\Manual_RM_9.9_pt_br.zip" # Caminho do Manual compact
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $PackInstallRM = "$RaizInstall\RM_9.9.2.07" # Diretório descompactado dos arquivos de instalação do Risk Manager
 $PackRMZIP = "$RaizInstall\RM_9.9.2.07.zip" # Caminho com o pacote de intalação compactado do Risk Manager
+$NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
+$ConfigRM = "$RaizInstall/ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 
 # Ocasionalmente pode ser necessário alterar essas variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
 $ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
 $RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Risk Manager >>> ATENÇÃO: Esse nome deve está correto, caso contrário o script não irá excluir o serviço antigo.
-$NameSite="RiskManager" # Nome do Site do Risk Manager no IIS
 
 # Raramente será necessário alterar essas variáveis
 $DIRbkpfullRM = "$DIRbkp\$VersionRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
@@ -274,9 +275,10 @@ Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -V
 #   Atualização dos arquivos de Config
 #===========================================================================================#
 
-Expand-Archive -Path "$RaizInstall/ConfigRM.zip" -DestinationPath "$DIRsiteRM" -Force -Verbose
+Expand-Archive -Path "$ConfigRM" -DestinationPath "$DIRsiteRM" -Force -Verbose
 Copy-Item -Path "$DIRsiteRM/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
 Remove-Item -Path "$DIRsiteRM/RiskManager.Service/" -Force -Recurse -Verbose
+#>
 
 <#===========================================================================================#
 #   Reiniciando os WebAppPool

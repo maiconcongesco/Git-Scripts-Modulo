@@ -34,6 +34,7 @@ $PackInstallRM = "D:\$RaizInstall\RM_9.9.2.7" # Diretório descompactado dos arq
 $PackRMZIP = "D:\RM_9.9.2.07.zip" # Caminho com o pacote de intalação compactado do Risk Manager
 $NameSite="RiskManager" # Nome do Site do Risk Manager no IIS
 $FileLicense = "D:\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
+$ConfigRM = "$RaizInstall/ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 
 # Ocasionalmente pode ser necessário alterar essa variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
@@ -255,9 +256,10 @@ Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -V
 #   Atualização dos arquivos de Config
 #===========================================================================================#
 
-Expand-Archive -Path "$RaizInstall/ConfigRM.zip" -DestinationPath "$DIRsiteRM" -Force -Verbose
+Expand-Archive -Path "$ConfigRM" -DestinationPath "$DIRsiteRM" -Force -Verbose
 Copy-Item -Path "$DIRsiteRM/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
 Remove-Item -Path "$DIRsiteRM/RiskManager.Service/" -Force -Recurse -Verbose
+#>
 
 <#===========================================================================================#
 #   Reiniciando os WebAppPool
