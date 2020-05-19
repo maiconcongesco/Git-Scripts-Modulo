@@ -261,7 +261,7 @@ Copy-Item -Path "$DIRsiteRM/RiskManager.Service/*.config" -Destination "$DIRsvcR
 Remove-Item -Path "$DIRsiteRM/RiskManager.Service/" -Force -Recurse -Verbose
 #>
 
-<#===========================================================================================#
+#===========================================================================================#
 #   Reiniciando os WebAppPool
 #===========================================================================================# 
 #Get-WebAppPoolState DefaultAppPool # *> "$destinyPath\log-$date.txt"
