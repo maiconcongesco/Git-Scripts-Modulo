@@ -67,7 +67,7 @@ Expand-Archive -Path "$PackRMZIP" -DestinationPath "$RaizInstall" -Verbose
 
 Get-Service -Name "$ModuloSchedulerService", "$RiskManagerService" | Stop-Service
 
-#===========================================================================================#
+<#===========================================================================================#
 #    Removendo os serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
 # Remove-Service -Name "ServiceName" # Esse cmdlet foi introduzido no PowerShell 6.0
@@ -178,7 +178,7 @@ Expand-Archive -Path "$PackInstallRM\Binaries\Modulo Scheduler Service.zip" -Des
 Expand-Archive -Path "$PackInstallRM\Binaries\RiskManager.Service.zip" -DestinationPath $DIRsvcRM -Verbose
 #>
 
-#===========================================================================================#
+<#===========================================================================================#
 #    Recriando os serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
 New-Service -BinaryPathName $DIRsvcRM/RM.Service.exe -Name RiskManagerService -Description "Risk Manager Background Service Host" -DisplayName "Risk Manager Service" -Verbose
