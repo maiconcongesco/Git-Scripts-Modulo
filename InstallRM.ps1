@@ -1,5 +1,5 @@
-<#
-#===========================================================================================#
+##
+<#===========================================================================================#
 #===========================================================================================#
 #
 #   Instalação Risk Manager
@@ -7,9 +7,29 @@
 #   https://github.com/maiconcongesco/Git-Scripts-Modulo/blob/master/InstallRM.ps1
 #
 #===========================================================================================#
+#===========================================================================================#>
+
+
+#===========================================================================================#
+#   Variáveis >>> ATENÇÃO: Um erro no preenchimento dessas variaveis e todo o script é comprometido
 #===========================================================================================#
 
-#==========================================================================================#
+# Geralmente essas váriaveis precisarão ser alteradas
+$FileManual = "D:\Manual Versao 9.9 22.04.2020_v2.zip" # Caminho do Manual compactado.
+$DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
+$RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
+$PackInstallRM = "D:\$RaizInstall\RM_9.9.2.7" # Diretório descompactado dos arquivos de instalação do Risk Manager
+$PackRMZIP = "D:\RM_9.9.2.07.zip" # Caminho com o pacote de intalação compactado do Risk Manager
+$NameSite="RiskManager" # Nome do Site do Risk Manager no IIS
+$FileLicense = "D:\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
+$ConfigRM = "$RaizInstall/ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
+
+# Ocasionalmente pode ser necessário alterar essa variáveis
+$DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
+$DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
+
+
+<#==========================================================================================#
 #   >>> OBSERVAÇÕES IMPORTANTES <<<
 #===========================================================================================#
 #   Necessário instalar o Microsoft Web Deploy V3 contido no "Pack Tools"
@@ -30,28 +50,7 @@ Set-ExecutionPolicy Unrestricted ###  Todos os scripts do Windows PowerShell pod
 Set-ExecutionPolicy AllSigned ### Somente scripts assinados por um editor confiável podem ser executados.
 Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por um editor confiável antes que possam ser executados.
 #===========================================================================================#
-#===========================================================================================#
-#>
-
-#===========================================================================================#
-#   Variáveis >>> ATENÇÃO: Um erro no preenchimento dessas variaveis e todo o script é comprometido
-#===========================================================================================#
-
-# Geralmente essas váriaveis precisarão ser alteradas
-$FileManual = "D:\Manual Versao 9.9 22.04.2020_v2.zip" # Caminho do Manual compactado.
-$DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
-$RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
-$PackInstallRM = "D:\$RaizInstall\RM_9.9.2.7" # Diretório descompactado dos arquivos de instalação do Risk Manager
-$PackRMZIP = "D:\RM_9.9.2.07.zip" # Caminho com o pacote de intalação compactado do Risk Manager
-$NameSite="RiskManager" # Nome do Site do Risk Manager no IIS
-$FileLicense = "D:\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
-$ConfigRM = "$RaizInstall/ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
-
-# Ocasionalmente pode ser necessário alterar essa variáveis
-$DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
-$DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
-
-#===========================================================================================#
+#===========================================================================================#>
 
 # Inicio da execução do Script
 $command = Get-History -Count 1 # Vai Cronometrar o tempo que o script levará em execução
