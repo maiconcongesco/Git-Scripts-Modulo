@@ -52,7 +52,10 @@ Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por
 
 # Inicio da execução do Script
 $command = Get-History -Count 1 # Vai Cronometrar o tempo que o script levará em execução
-$command.StartExecutionTime 
+$command.StartExecutionTime
+
+# Versão do PowerShell
+$PSVersionTable
 
 #===========================================================================================#
 #   Instalação de Recursos Windows		         				
@@ -291,6 +294,10 @@ Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 Get-Service -Name "$RiskManagerService" | Start-Service
 Get-Service -Name "$ModuloSchedulerService" | Start-Service
 #>
+
+
+# Versão do PowerShell
+$PSVersionTable
 
 
 Write-Output "Inicio da execução do Script" 
