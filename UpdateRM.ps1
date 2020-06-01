@@ -22,7 +22,7 @@ $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $PackInstallRM = "$RaizInstall\RM_9.9.2.09" # Diretório descompactado dos arquivos de instalação do Risk Manager
 $PackRMZIP = "$RaizInstall\RM_9.9.2.09.zip" # Caminho com o pacote de intalação compactado do Risk Manager
 $NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
-$ConfigRM = "$RaizInstall/ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
+$ConfigRM = "$RaizInstall/Config_9.9.2.07.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 
 # Ocasionalmente pode ser necessário alterar essas variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
@@ -307,7 +307,7 @@ Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #Start-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
 #>
 
-<#===========================================================================================#
+#===========================================================================================#
 #   Iniciado os serviços Modulo Scheduler e Risk Manager
 #===========================================================================================#
 Get-Service -Name "$RiskManagerService" | Start-Service
