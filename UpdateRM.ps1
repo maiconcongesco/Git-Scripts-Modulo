@@ -19,8 +19,8 @@ $RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do
 $DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
 $FileManual = "$RaizInstall\Manual_RM_9.9_pt_br.zip" # Caminho do Manual compactado.
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
-$PackInstallRM = "$RaizInstall\RM_9.9.2.07" # Diretório descompactado dos arquivos de instalação do Risk Manager
-$PackRMZIP = "$RaizInstall\RM_9.9.2.07.zip" # Caminho com o pacote de intalação compactado do Risk Manager
+$PackInstallRM = "$RaizInstall\RM_9.9.2.09" # Diretório descompactado dos arquivos de instalação do Risk Manager
+$PackRMZIP = "$RaizInstall\RM_9.9.2.09.zip" # Caminho com o pacote de intalação compactado do Risk Manager
 $NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
 $ConfigRM = "$RaizInstall/ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 
