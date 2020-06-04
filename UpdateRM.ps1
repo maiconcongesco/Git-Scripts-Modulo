@@ -286,9 +286,10 @@ Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -V
 #   Atualização dos arquivos de Config
 #===========================================================================================#
 
-Expand-Archive -Path "$ConfigRM" -DestinationPath "$DIRsiteRM" -Force -Verbose
-Copy-Item -Path "$DIRsiteRM/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
-Remove-Item -Path "$DIRsiteRM/RiskManager.Service/" -Force -Recurse -Verbose
+Expand-Archive -Path "$ConfigRM" -DestinationPath "$DIRsiteRM/Config" -Force -Verbose
+Copy-Item "$DIRsiteRM/Config/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
+Copy-Item "$DIRsiteRM/Config/RiskManager/*" -Destination "$DIRsiteRM" -Force -Recurse -Verbose
+Remove-Item -Path "$DIRsiteRM/Config/" -Force -Recurse -Verbose
 #>
 
 #===========================================================================================#
