@@ -21,7 +21,7 @@ $PackInstallRM = "D:\$RaizInstall\RM_9.9.2.7" # Diretório descompactado dos arq
 $PackRMZIP = "D:\RM_9.9.2.07.zip" # Caminho com o pacote de intalação compactado do Risk Manager
 $NameSite="RiskManager" # Nome do Site do Risk Manager no IIS
 $FileLicense = "D:\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
-$ConfigRM = "$RaizInstall/ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
+#$ConfigRM = "$RaizInstall/ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 
 # Ocasionalmente pode ser necessário alterar essa variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
@@ -123,7 +123,7 @@ Set-Location "C:\Windows\system32\inetsrv\"
 #>
 
 #===========================================================================================#
-#   Renomeando os arquivos dos serviços Risk Manager e Modulo Scheduler
+#   Alterando extensão dos arquivos dos serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
 rename-item -path "$PackInstallRM\Binaries\Modulo Scheduler Service.zipx" -newname "Modulo Scheduler Service.zip" -Verbose # *> "$destinyPath\log-$date.txt"
 rename-item -path "$PackInstallRM\Binaries\RiskManager.Service.zipx" -newname "RiskManager.Service.zip" -Verbose # *> "$destinyPath\log-$date.txt"
@@ -137,7 +137,7 @@ Expand-Archive -Path "$PackInstallRM\Binaries\RiskManager.Service.zip" -Destinat
 #>
 
 #===========================================================================================#
-#    Recriando os serviços Risk Manager e Modulo Scheduler
+#    Criando os serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
 New-Service -BinaryPathName $DIRsvcRM/RM.Service.exe -Name RiskManagerService -Description "Risk Manager Background Service Host" -DisplayName "Risk Manager Service" -Verbose
 New-Service -BinaryPathName $DIRsvcScheduler/Modulo.Scheduler.Host.exe -Name ModuloSchedulerService -Description "Modulo Scheduler Background Service Host" -DisplayName "Modulo Scheduler Service" -Verbose
@@ -179,7 +179,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 #>
 
 #===========================================================================================#
-#   Configurar a web application
+#   Configurando o web application
 #===========================================================================================#
 
 # Nota: Manter o mesmo nome dos Applications Pools criados no passo “Criar o Application Pool”. 
@@ -263,7 +263,7 @@ If(!(test-path $DIRsiteRM\RM\Manual\pt))
 Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -Verbose
 #>
 
-#===========================================================================================#
+<#===========================================================================================#
 #   Atualização dos arquivos de Config
 #===========================================================================================#
 
@@ -273,7 +273,7 @@ Remove-Item -Path "$DIRsiteRM/RiskManager.Service/" -Force -Recurse -Verbose
 #>
 
 #===========================================================================================#
-#   Reiniciando os WebAppPool
+#   Iniciando os WebAppPool
 #===========================================================================================# 
 #Get-WebAppPoolState DefaultAppPool # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "RiskManager" # *> "$destinyPath\log-$date.txt"
@@ -289,7 +289,7 @@ Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #>
 
 <#===========================================================================================#
-#   Iniciado os serviços Modulo Scheduler e Risk Manager
+#   Iniciando os serviços Modulo Scheduler e Risk Manager
 #===========================================================================================#
 Get-Service -Name "$RiskManagerService" | Start-Service
 Get-Service -Name "$ModuloSchedulerService" | Start-Service
