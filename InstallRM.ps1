@@ -58,7 +58,7 @@ $command.StartExecutionTime
 $PSVersionTable
 
 #===========================================================================================#
-#   Instalação de Recursos Windows		         				
+#   Instalando os Recursos Windows		         				
 #===========================================================================================#
 <#
 Add-WindowsFeature web-server, web-webserver, web-common-http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Http-Redirect,  Web-Health, Web-Http-Logging, Web-Log-Libraries, Web-Request-Monitor, Web-Http-Tracing, Web-Performance, Web-Stat-Compression, Web-Security, Web-Filtering,  Web-App-Dev, Web-Net-Ext45, Web-AppInit, Web-ASP, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Console, Web-Mgmt-Compat, Web-Metabase, Web-Scripting-Tools, MSMQ-Services, MSMQ-Server, MSMQ-Directory, MSMQ-HTTP-Support, MSMQ-Triggers,  NET-Framework-45-Features, NET-Framework-45-Core, NET-Framework-45-ASPNET, NET-WCF-Services45, NET-WCF-TCP-PortSharing45
@@ -73,19 +73,19 @@ Expand-Archive -Path "$PackRMZIP" -DestinationPath "$RaizInstall" -Verbose
 #>
 
 <#===========================================================================================#
-#   Criar um certificado auto assinado para o Risk Manager
+#   Criando um certificado auto assinado para o Risk Manager
 #===========================================================================================#
 ### Resolver PS -- New-SelfSignedCertificate -CertStoreLocation Cert:\LocalMachine\My -DnsName "RiskManager" -FriendlyName "RiskManager" -NotAfter (Get-Date).AddYears(10) 
 #>
 
 #===========================================================================================#
-#   Criar o Site Risk Manager
+#   Criando o Site Risk Manager
 #===========================================================================================#
 New-Website -Name "$NameSite" -ApplicationPool "RiskManager" -PhysicalPath $DIRsiteRM -Port 443
 #>
 
 #===========================================================================================#
-#   Criar o Application Pool
+#   Criando os Applications Pool
 #===========================================================================================#
 
 # Navegue até o diretório do IIS
@@ -197,23 +197,23 @@ C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/WF" /application
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsCacher" /applicationPool:"DataAnalyticsCacher"
 
 # Configurando o web application DataAnalyticsService: 
-C:\Windows\system32\inetsrv\appcmd set app  /app.name:"$NameSite/DataAnalyticsService"  /applicationPool:"DataAnalyticsService"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsService"  /applicationPool:"DataAnalyticsService"
 
 # Configurando o web application DataAnalyticsUI:  
-C:\Windows\system32\inetsrv\appcmd set app  /app.name:"$NameSite/DataAnalyticsUI" /applicationPool:"DataAnalyticsUI"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsUI" /applicationPool:"DataAnalyticsUI"
 
 # Configurando o web application MMI: 
-C:\Windows\system32\inetsrv\appcmd set app  /app.name:"$NameSite/MMI"  /applicationPool:"MMI"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/MMI"  /applicationPool:"MMI"
 
 # Configurando o web application BCM:  
-C:\Windows\system32\inetsrv\appcmd set app  /app.name:"$NameSite/BCM" /applicationPool:"BCM"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/BCM" /applicationPool:"BCM"
 
 # Configurando o web application ETL:  
-C:\Windows\system32\inetsrv\appcmd set app  /app.name:"$NameSite/ETL" /applicationPool:"ETL"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETL" /applicationPool:"ETL"
 #>
 
 #===========================================================================================#
-#   Cópia da biblioteca DevExpress para Apps/bin
+#   Copiando a biblioteca DevExpress para Apps/bin
 #===========================================================================================#
 
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
@@ -222,25 +222,25 @@ Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTA
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
 
 #===========================================================================================#
-#   Cópia do arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
+#   Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
 #===========================================================================================#
 
 Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\Modulo.RiskManager.DataAnalytics.Bootstrap.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 
 #===========================================================================================#
-#   Cópia do conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers
+#   Copiando o conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers
 #===========================================================================================#
 
 Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\DashboardDesignerInstallers\*" -Destination "$DIRsiteRM\DataAnalyticsUI\Files" -Force -Verbose
 
 #===========================================================================================#
-#   Cópia de arquivos bin do MMI para o RM
+#   Copiando os arquivos bin do MMI para o RM
 #===========================================================================================#
 
 Copy-Item -Path "$PackInstallRM\Web.Applications\MMI\bin\rm\*" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 
 #===========================================================================================#
-#   Cópia do arquivo de licença
+#   Copiando o arquivo de licença
 #===========================================================================================#
 
 Copy-Item -Path "$FileLicense"  -Destination "$DIRsiteRM\RM" -Force -Verbose
@@ -256,7 +256,7 @@ If(!(test-path $DIRsiteRM\RM\Manual\pt))
 #>
 
 #===========================================================================================#
-#   Extração do Manual do Risk Manager para o App RM
+#   Extraindo do Manual do Risk Manager para o App RM
 #===========================================================================================#
 
 # No Powershell v5 você pode utilizar os seguintes cmdlets pra descompactar.

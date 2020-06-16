@@ -148,7 +148,7 @@ If(!(test-path $DIRbkpfullRM\Configs))
 #>
 
 #===========================================================================================#
-#   Backup de Configs do arquivo de lincença do Risk Manager
+#   Backup de Configs do arquivo de licença do Risk Manager
 #===========================================================================================#
 
 # Copia os arquivos e a estrutura de Diretórios.
@@ -168,7 +168,7 @@ Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkp
 #>
 
 #===========================================================================================#
-#   Remover conteudo das pastas dos Serviços e APPs
+#   Removeendo conteúdo das pastas dos Serviços e APPs
 #===========================================================================================#
 Remove-Item -Path $DIRsvcRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
 Remove-Item -Path $DIRsvcScheduler\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
@@ -232,7 +232,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 #>
 
 #===========================================================================================#
-#   Cópia da biblioteca DevExpress para Apps/bin
+#   Copiando a biblioteca DevExpress para Apps/bin
 #===========================================================================================#
 
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
@@ -241,25 +241,25 @@ Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTA
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
 
 #===========================================================================================#
-#   Cópia do arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
+#   Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
 #===========================================================================================#
 
 Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\Modulo.RiskManager.DataAnalytics.Bootstrap.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 
 #===========================================================================================#
-#   Cópia do conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers
+#   Copiando o conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers
 #===========================================================================================#
 
 Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\DashboardDesignerInstallers\*" -Destination "$DIRsiteRM\DataAnalyticsUI\Files" -Force -Verbose
 
 #===========================================================================================#
-#   Cópia de arquivos bin do MMI para o RM
+#   Copiando os arquivos bin do MMI para o RM
 #===========================================================================================#
 
 Copy-Item -Path "$PackInstallRM\Web.Applications\MMI\bin\rm\*" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 
 #===========================================================================================#
-#   Cópia do arquivo de licença
+#   Copiando o arquivo de licença
 #===========================================================================================#
 
 Copy-Item -Path "$FileLicense"  -Destination "$DIRsiteRM\RM" -Force -Verbose
@@ -275,7 +275,7 @@ If(!(test-path $DIRsiteRM\RM\Manual\pt))
 #>
 
 #===========================================================================================#
-#   Extração do Manual do Risk Manager para o App RM
+#   Extraindo o Manual do Risk Manager para o App RM
 #===========================================================================================#
 
 # No Powershell v5 você pode utilizar os seguintes cmdlets pra descompactar.
@@ -283,7 +283,7 @@ Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -V
 #>
 
 #===========================================================================================#
-#   Atualização dos arquivos de Config
+#   Atualizando os arquivos de Config
 #===========================================================================================#
 
 Expand-Archive -Path "$ConfigRM" -DestinationPath "$DIRsiteRM/Config" -Force -Verbose
@@ -309,7 +309,7 @@ Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #>
 
 #===========================================================================================#
-#   Iniciado os serviços Modulo Scheduler e Risk Manager
+#   Iniciando os serviços Modulo Scheduler e Risk Manager
 #===========================================================================================#
 Get-Service -Name "$RiskManagerService" | Start-Service
 Get-Service -Name "$ModuloSchedulerService" | Start-Service
