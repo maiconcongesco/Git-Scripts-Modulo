@@ -1,27 +1,26 @@
-# Copiaremos os arquivos deste disco
-$Fonte  = "D:\RiskManager" 
+# Geralmente essas váriaveis precisarão ser alteradas
+$DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
+$DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
+$VersionRM = "9.9.2.07" # Versão do RM que será arquivado (Backup)
 
-# Colocamos a data e hora nesta variável 
-$Agora   = (Get-Date).ToString('MM_dd_yy_HH_mm_ss') 
+# Ocasionalmente pode ser necessário alterar essas variáveis
+$DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 
-# Concatenamos o disco de destino com a variável acima para abaixo criarmos o diretório.
-$Dest    = "$("D:\CONFIG_")$($Agora)" 
+# Raramente será necessário alterar essas variáveis
+$DIRbkpfullRM = "$DIRbkp\$VersionRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
 
-# Cria o diretorio de destino
-New-Item -ItemType Directory $Dest -Force
+# Copia os arquivos e a estrutura de Diretórios.
+Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkpfullRM\LicenseRM" -Recurse -Force -Verbose
 
-# Atenção aqui.......CUIDADO: se existir arquivos com o mesmo nome; o anterior sera sobrescrito.
-# Copiamos apenas os arquivos, (repetindo) porem se existir arquivos com o mesmo nome; o anterior sera sobrescrito.
-#Get-ChildItem $Fonte -Filter "Web.config" -Recurse -file | Copy-Item -Destination $Dest -Force
-
-#Copia os arquivos e a estrutura de Diretórios.
-Copy-Item "$Fonte" -Filter "*.config" -Destination "$Dest" -Recurse -Force
-
-#Get-ChildItem -Path  "$Dest" -Recurse -exclude "*.config" | Remove-Item -force -recurse #Matem o *config
-
-# Removendo pastas vazias (à última sub-pasta), executado varias vezes pra ir removendo as novas sub-pastas vazias.
-(Get-ChildItem “$Dest” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object {$_.GetFileSystemInfos().Count -eq 0} | remove-item
-(Get-ChildItem “$Dest” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object {$_.GetFileSystemInfos().Count -eq 0} | remove-item
-(Get-ChildItem “$Dest” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object {$_.GetFileSystemInfos().Count -eq 0} | remove-item
-(Get-ChildItem “$Dest” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object {$_.GetFileSystemInfos().Count -eq 0} | remove-item
-(Get-ChildItem “$Dest” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object {$_.GetFileSystemInfos().Count -eq 0} | remove-item
+# Apaga diretórios vazios - Removendo pastas vazias (à última sub-pasta), executado varias vezes pra ir removendo as novas sub-pastas vazias.
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+#>
