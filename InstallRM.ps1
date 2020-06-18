@@ -118,7 +118,7 @@ Set-Location "C:\Windows\system32\inetsrv\"
 # Criar os Application Pools BCM:
 .\appcmd.exe add apppool /name:'BCM' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 
-# Criar os Application Pools ETL:
+<# Criar os Application Pools ETL:
 .\appcmd.exe add apppool /name:'ETL' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 #>
 
@@ -208,7 +208,7 @@ C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/MMI"  /applicati
 # Configurando o web application BCM:  
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/BCM" /applicationPool:"BCM"
 
-# Configurando o web application ETL:  
+<# Configurando o web application ETL:  
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETL" /applicationPool:"ETL"
 #>
 
