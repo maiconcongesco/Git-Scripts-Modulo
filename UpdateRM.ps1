@@ -13,16 +13,20 @@
 #   Variáveis >>> ATENÇÃO: Um erro no preenchimento dessas variaveis e todo o script é comprometido
 #===========================================================================================#
 
-# Geralmente essas váriaveis precisarão ser alteradas
+# Será necessário alterar para os diretórios corretos
 $VersionRM = "9.9.2.07" # Versão do RM que será arquivado (Backup)
-$RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
-$DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
+$DIRbkp = "F:\BackupRM" # Diretório de backup do Risk Manager
+$DIRsiteRM = "F:\IIS\Sites\rm-support-01.corp.modulo.com" # Diretório do Site do Risk Manager
+$RaizInstall = "F:\Builds" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
+
+# Será necessário alterar para o endereço do site configurado no ISS
+$NameSite = "rm-support-01.corp.modulo.com" # Nome do Site do Risk Manager no IIS
+
+# Será necessário alterar com o caminho dos arquivos "Manual", "BildRM" e "Configs"
 $FileManual = "$RaizInstall\Manual_RM_9.9_pt_br.zip" # Caminho do Manual compactado.
-$DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $PackInstallRM = "$RaizInstall\RM_9.9.2.09" # Diretório descompactado dos arquivos de instalação do Risk Manager
 $PackRMZIP = "$RaizInstall\RM_9.9.2.09.zip" # Caminho com o pacote de intalação compactado do Risk Manager
-$NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
-$ConfigRM = "$RaizInstall/Config_9.9.2.07.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
+$ConfigRM = "$RaizInstall/ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 
 # Ocasionalmente pode ser necessário alterar essas variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
@@ -277,18 +281,16 @@ If(!(test-path $DIRsiteRM\RM\Manual\pt))
 #===========================================================================================#
 #   Extraindo o Manual do Risk Manager para o App RM
 #===========================================================================================#
-
-# No Powershell v5 você pode utilizar os seguintes cmdlets pra descompactar.
 Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -Verbose
 #>
 
 #===========================================================================================#
 #   Atualizando os arquivos de Config
 #===========================================================================================#
-
 Expand-Archive -Path "$ConfigRM" -DestinationPath "$DIRsiteRM/Config" -Force -Verbose
-Copy-Item "$DIRsiteRM/Config/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
-Copy-Item "$DIRsiteRM/Config/RiskManager/*" -Destination "$DIRsiteRM" -Force -Recurse -Verbose
+Copy-Item -Path "$DIRsiteRM/Config/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
+Remove-Item -Path "$DIRsiteRM/Config/RiskManager.Service/" -Force -Recurse -Verbose
+Copy-Item -Path "$DIRsiteRM/Config/*" -Destination "$DIRsiteRM" -Force -Recurse -Verbose
 Remove-Item -Path "$DIRsiteRM/Config/" -Force -Recurse -Verbose
 #>
 
@@ -308,7 +310,7 @@ Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #Start-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
 #>
 
-#===========================================================================================#
+<#===========================================================================================#
 #   Iniciando os serviços Modulo Scheduler e Risk Manager
 #===========================================================================================#
 Get-Service -Name "$RiskManagerService" | Start-Service

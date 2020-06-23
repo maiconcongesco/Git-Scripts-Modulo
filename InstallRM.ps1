@@ -136,7 +136,7 @@ Expand-Archive -Path "$PackInstallRM\Binaries\Modulo Scheduler Service.zip" -Des
 Expand-Archive -Path "$PackInstallRM\Binaries\RiskManager.Service.zip" -DestinationPath $DIRsvcRM -Verbose
 #>
 
-#===========================================================================================#
+<#===========================================================================================#
 #    Criando os serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
 New-Service -BinaryPathName $DIRsvcRM/RM.Service.exe -Name RiskManagerService -Description "Risk Manager Background Service Host" -DisplayName "Risk Manager Service" -Verbose
