@@ -263,10 +263,9 @@ If(!(test-path $DIRsiteRM\RM\Manual\pt))
 Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -Verbose
 #>
 
-<#===========================================================================================#
+#===========================================================================================#
 #   Atualização dos arquivos de Config
 #===========================================================================================#
-
 Expand-Archive -Path "$ConfigRM" -DestinationPath "$DIRsiteRM" -Force -Verbose
 Copy-Item -Path "$DIRsiteRM/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
 Remove-Item -Path "$DIRsiteRM/RiskManager.Service/" -Force -Recurse -Verbose
