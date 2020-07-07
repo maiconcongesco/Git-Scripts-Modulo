@@ -116,7 +116,7 @@ Set-Location "C:\Windows\system32\inetsrv\"
 .\appcmd.exe add apppool /name:'MMI' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
 
 # Criar os Application Pools BCM:
-.\appcmd.exe add apppool /name:'BCM' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
+#.\appcmd.exe add apppool /name:'BCM' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 
 <# Criar os Application Pools ETL:
 .\appcmd.exe add apppool /name:'ETL' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
@@ -172,7 +172,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI" 
 
 # Deploy da aplicação BCM 
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
+#.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
 
 # Deploy da aplicação ETL 
 #.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETL"
@@ -206,7 +206,7 @@ C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsUI"
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/MMI"  /applicationPool:"MMI"
 
 # Configurando o web application BCM:  
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/BCM" /applicationPool:"BCM"
+#C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/BCM" /applicationPool:"BCM"
 
 <# Configurando o web application ETL:  
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETL" /applicationPool:"ETL"
@@ -284,7 +284,7 @@ Start-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
+#Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #Start-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
 #>
 
