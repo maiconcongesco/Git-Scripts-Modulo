@@ -12,20 +12,23 @@
 #===========================================================================================#
 #   Variáveis >>> ATENÇÃO: Um erro no preenchimento dessas variaveis e todo o script é comprometido
 #===========================================================================================#
-
+# >>> ATENÇÃO <<< 
 # Geralmente essas váriaveis precisarão ser alteradas
-$FileManual = "D:\Manual Versao 9.9 22.04.2020_v2.zip" # Caminho do Manual compactado.
+
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
-$PackInstallRM = "D:\$RaizInstall\RM_9.9.2.7" # Diretório descompactado dos arquivos de instalação do Risk Manager
-$PackRMZIP = "D:\RM_9.9.2.07.zip" # Caminho com o pacote de intalação compactado do Risk Manager
+$VersionInstall = "9.9.2.13" # Versão do que será instalada do Risk Manager
 $NameSite="RiskManager" # Nome do Site do Risk Manager no IIS
-$FileLicense = "D:\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
-#$ConfigRM = "$RaizInstall/ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
-
+#===========================================================================================#
 # Ocasionalmente pode ser necessário alterar essa variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
+$FileLicense = "$RaizInstall\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
+$ConfigRM = "$RaizInstall\ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
+$PackInstallRM = "$RaizInstall\RM_$VersionInstall" # Diretório descompactado dos arquivos de instalação do Risk Manager
+$PackRMZIP = "$RaizInstall\RM_$VersionInstall.zip" # Caminho com o pacote de intalação compactado do Risk Manager
+$FileManual = "$RaizInstall\Manual_RM_9.9_pt_br.zip" # Caminho do Manual compactado.
+#===========================================================================================#
 
 <#==========================================================================================#
 #   >>> OBSERVAÇÕES IMPORTANTES <<<
@@ -76,18 +79,36 @@ Expand-Archive -Path "$PackRMZIP" -DestinationPath "$RaizInstall" -Verbose
 #   Criando um certificado auto assinado para o Risk Manager
 #===========================================================================================#
 ### Resolver PS -- New-SelfSignedCertificate -CertStoreLocation Cert:\LocalMachine\My -DnsName "RiskManager" -FriendlyName "RiskManager" -NotAfter (Get-Date).AddYears(10) 
+
+$cert = New-SelfSignedCertificate -Type Custom -KeySpec Signature `
+-Subject "CN=RiskManager" -KeyExportPolicy Exportable `
+-HashAlgorithm sha256 -KeyLength 2048 `
+-CertStoreLocation "Cert:\LocalMachine\My" -KeyUsageProperty Sign -KeyUsage CertSign -NotAfter (Get-Date).AddYears(10) 
+#>
+
+<# Esse cmdlet retorna uma lista de certificados instalados para CurrentUser ou LocalComputer
+# Get-ChildItem -Path "Cert:\CurrentUser\My"
+Get-ChildItem -Path "Cert:\LocalMachine\My"
+#>
+
+#===========================================================================================#
+#   Criando o diretório para o site
+#===========================================================================================#
+If(!(test-path $DIRsiteRM))
+{
+      New-Item -ItemType Directory -Force -Path $DIRsiteRM
+}
 #>
 
 #===========================================================================================#
 #   Criando o Site Risk Manager
 #===========================================================================================#
-New-Website -Name "$NameSite" -ApplicationPool "RiskManager" -PhysicalPath $DIRsiteRM -Port 443
+New-Website -Name "$NameSite" -ApplicationPool "RiskManager" -PhysicalPath "$DIRsiteRM" -Port 4433
 #>
 
 #===========================================================================================#
 #   Criando os Applications Pool
 #===========================================================================================#
-
 # Navegue até o diretório do IIS
 Set-Location "C:\Windows\system32\inetsrv\"
 
@@ -115,10 +136,10 @@ Set-Location "C:\Windows\system32\inetsrv\"
 # Criar os Application MMI:
 .\appcmd.exe add apppool /name:'MMI' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
 
-# Criar os Application Pools BCM:
-#.\appcmd.exe add apppool /name:'BCM' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
+#Criar os Application Pools BCM:
+.\appcmd.exe add apppool /name:'BCM' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 
-<# Criar os Application Pools ETL:
+#Criar os Application Pools ETL:
 .\appcmd.exe add apppool /name:'ETL' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 #>
 
@@ -136,7 +157,7 @@ Expand-Archive -Path "$PackInstallRM\Binaries\Modulo Scheduler Service.zip" -Des
 Expand-Archive -Path "$PackInstallRM\Binaries\RiskManager.Service.zip" -DestinationPath $DIRsvcRM -Verbose
 #>
 
-<#===========================================================================================#
+#===========================================================================================#
 #    Criando os serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
 New-Service -BinaryPathName $DIRsvcRM/RM.Service.exe -Name RiskManagerService -Description "Risk Manager Background Service Host" -DisplayName "Risk Manager Service" -Verbose
@@ -146,7 +167,6 @@ New-Service -BinaryPathName $DIRsvcScheduler/Modulo.Scheduler.Host.exe -Name Mod
 #===========================================================================================#
 #    Realizando o Deploy das aplicações web
 #===========================================================================================#
-
 # Navegue até interface do IIS com a conexão à Internet
 Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
@@ -181,8 +201,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 #===========================================================================================#
 #   Configurando o web application
 #===========================================================================================#
-
-# Nota: Manter o mesmo nome dos Applications Pools criados no passo “Criar o Application Pool”. 
+# Nota: Manter o mesmo nome dos Applications Pools criados anteriormente.
 
 # Configurando o web application Risk Manager:  
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/RM" /applicationPool:"RM"
@@ -208,47 +227,41 @@ C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/MMI"  /applicati
 # Configurando o web application BCM:  
 #C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/BCM" /applicationPool:"BCM"
 
-<# Configurando o web application ETL:  
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETL" /applicationPool:"ETL"
+# Configurando o web application ETL:  
+#C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETL" /applicationPool:"ETL"
 #>
 
 #===========================================================================================#
 #   Copiando a biblioteca DevExpress para Apps/bin
 #===========================================================================================#
-
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL\bin" -Force -Verbose
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
+# Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
 #===========================================================================================#
-
 Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\Modulo.RiskManager.DataAnalytics.Bootstrap.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers
 #===========================================================================================#
-
 Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\DashboardDesignerInstallers\*" -Destination "$DIRsiteRM\DataAnalyticsUI\Files" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando os arquivos bin do MMI para o RM
 #===========================================================================================#
-
 Copy-Item -Path "$PackInstallRM\Web.Applications\MMI\bin\rm\*" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o arquivo de licença
 #===========================================================================================#
-
 Copy-Item -Path "$FileLicense"  -Destination "$DIRsiteRM\RM" -Force -Verbose
 
 #===========================================================================================#
 #   Criando o diretório para o Manual
 #===========================================================================================#
-
 If(!(test-path $DIRsiteRM\RM\Manual\pt))
 {
       New-Item -ItemType Directory -Force -Path $DIRsiteRM\RM\Manual\pt -Verbose
@@ -258,9 +271,7 @@ If(!(test-path $DIRsiteRM\RM\Manual\pt))
 #===========================================================================================#
 #   Extraindo do Manual do Risk Manager para o App RM
 #===========================================================================================#
-
-# No Powershell v5 você pode utilizar os seguintes cmdlets pra descompactar.
-Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -Verbose
+Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -Force -Verbose
 #>
 
 #===========================================================================================#
@@ -269,6 +280,14 @@ Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -V
 Expand-Archive -Path "$ConfigRM" -DestinationPath "$DIRsiteRM" -Force -Verbose
 Copy-Item -Path "$DIRsiteRM/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
 Remove-Item -Path "$DIRsiteRM/RiskManager.Service/" -Force -Recurse -Verbose
+#>
+
+#===========================================================================================#
+#   Aplicando permissões para Network Service nos diretórios, subdiretórios e arquivos
+#===========================================================================================#
+icacls "$DIRsiteRM" /grant NetworkService:"(OI)(CI)F"
+icacls "$DIRsvcRM" /grant NetworkService:"(OI)(CI)F"
+icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 #>
 
 #===========================================================================================#

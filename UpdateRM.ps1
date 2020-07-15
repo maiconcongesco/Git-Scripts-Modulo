@@ -79,7 +79,6 @@ Expand-Archive -Path "$PackRMZIP" -DestinationPath "$RaizInstall" -Verbose
 #===========================================================================================#
 #   Parando os serviços Modulo Scheduler e Risk Manager
 #===========================================================================================#
-
 Get-Service -Name "$ModuloSchedulerService", "$RiskManagerService" | Stop-Service
 
 <#===========================================================================================#
@@ -103,14 +102,13 @@ Stop-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
+#Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #Stop-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
 #>
 
 #===========================================================================================#
 #	Limpando os Logs		>>> ATENÇÃO! Essa remoção pode ser irreversível
 #===========================================================================================#
-
 $Files = Get-Childitem $LogPath -Include $Extensions -Recurse | Where-Object {$_.LastWriteTime -le `
 (Get-Date).AddDays(-$XDays)}
 
@@ -126,7 +124,6 @@ foreach ($File in $Files)
 #===========================================================================================#
 #   Criando o diretório de Backup
 #===========================================================================================#
-
 If(!(test-path $DIRbkpfullRM))
 {
       New-Item -ItemType Directory -Force -Path $DIRbkpfullRM
@@ -144,7 +141,6 @@ copy-item $DIRsiteRM $DIRbkpfullRM -Recurse -Verbose # Backup das Aplicações d
 #===========================================================================================#
 #   Criando diretório para Backup de Configs
 #===========================================================================================#
-
 If(!(test-path $DIRbkpfullRM\Configs))
 {
       New-Item -ItemType Directory -Force -Path $DIRbkpfullRM\Configs
@@ -229,7 +225,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI" 
 
 # Deploy da aplicação BCM 
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
+# .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
 
 # Deploy da aplicação ETL 
 #.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETLProcessor"
@@ -238,40 +234,34 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 #===========================================================================================#
 #   Copiando a biblioteca DevExpress para Apps/bin
 #===========================================================================================#
-
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL\bin" -Force -Verbose
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
+# Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
 #===========================================================================================#
-
 Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\Modulo.RiskManager.DataAnalytics.Bootstrap.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers
 #===========================================================================================#
-
 Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\DashboardDesignerInstallers\*" -Destination "$DIRsiteRM\DataAnalyticsUI\Files" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando os arquivos bin do MMI para o RM
 #===========================================================================================#
-
 Copy-Item -Path "$PackInstallRM\Web.Applications\MMI\bin\rm\*" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o arquivo de licença
 #===========================================================================================#
-
 Copy-Item -Path "$FileLicense"  -Destination "$DIRsiteRM\RM" -Force -Verbose
 
 #===========================================================================================#
 #   Criando o diretório para o Manual
 #===========================================================================================#
-
 If(!(test-path $DIRsiteRM\RM\Manual\pt))
 {
       New-Item -ItemType Directory -Force -Path $DIRsiteRM\RM\Manual\pt -Verbose
@@ -284,14 +274,30 @@ If(!(test-path $DIRsiteRM\RM\Manual\pt))
 Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -Verbose
 #>
 
-#===========================================================================================#
-#   Atualizando os arquivos de Config
+<#===========================================================================================#
+#   Atualizando os arquivos de Config a partir do Backup
 #===========================================================================================#
 Expand-Archive -Path "$ConfigRM" -DestinationPath "$DIRsiteRM/Config" -Force -Verbose
 Copy-Item -Path "$DIRsiteRM/Config/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
 Remove-Item -Path "$DIRsiteRM/Config/RiskManager.Service/" -Force -Recurse -Verbose
 Copy-Item -Path "$DIRsiteRM/Config/*" -Destination "$DIRsiteRM" -Force -Recurse -Verbose
 Remove-Item -Path "$DIRsiteRM/Config/" -Force -Recurse -Verbose
+#>
+
+#===========================================================================================#
+#   Atualização dos arquivos de config a partir de um pacote de configs
+#===========================================================================================#
+Expand-Archive -Path "$ConfigRM" -DestinationPath "$DIRsiteRM" -Force -Verbose
+Copy-Item -Path "$DIRsiteRM/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
+Remove-Item -Path "$DIRsiteRM/RiskManager.Service/" -Force -Recurse -Verbose
+#>
+
+#===========================================================================================#
+#   Aplicando permissões para Network Service nos diretórios, subdiretórios e arquivos
+#===========================================================================================#
+icacls "$DIRsiteRM" /grant NetworkService:"(OI)(CI)F"
+icacls "$DIRsvcRM" /grant NetworkService:"(OI)(CI)F"
+icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 #>
 
 #===========================================================================================#
@@ -306,7 +312,7 @@ Start-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
+#Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #Start-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
 #>
 
