@@ -54,11 +54,11 @@ Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por
 <#===========================================================================================#>
 <#===========================================================================================#>
 
-# Inicio da execução do Script
+<# Inicio da execução do Script #>
 $command = Get-History -Count 1 # Vai Cronometrar o tempo que o script levará em execução
 $command.StartExecutionTime
 
-# Versão do PowerShell
+<# Versão do PowerShell #>
 $PSVersionTable
 
 <#===========================================================================================#>
@@ -113,7 +113,7 @@ New-Website -Name "$NameSite" -ApplicationPool "RiskManager" -PhysicalPath "$DIR
 <#===========================================================================================#>
 <#
 New-WebBinding -Name "RiskManager" -IP "*" -Port 443 -Protocol https
-# Pode listar  listar a binding collection com o seguinte comando:
+<# Pode listar  listar a binding collection com o seguinte comando:
 Get-WebBinding 'RiskManager'
 
 $cert = Get-ChildItem -Path cert:\LocalMachine\My\EEDEF61D4FF6EDBAAD538BB08CCAADDC3EE28FF
@@ -160,8 +160,8 @@ Set-Location "C:\Windows\system32\inetsrv\"
 <#===========================================================================================#>
 <#  Alterando extensão dos arquivos dos serviços Risk Manager e Modulo Scheduler
 <#===========================================================================================#>
-rename-item -path "$PackInstallRM\Binaries\Modulo Scheduler Service.zipx" -newname "Modulo Scheduler Service.zip" -Verbose # *> "$destinyPath\log-$date.txt"
-rename-item -path "$PackInstallRM\Binaries\RiskManager.Service.zipx" -newname "RiskManager.Service.zip" -Verbose # *> "$destinyPath\log-$date.txt"
+rename-item -path "$PackInstallRM\Binaries\Modulo Scheduler Service.zipx" -newname "Modulo Scheduler Service.zip" -Verbose
+rename-item -path "$PackInstallRM\Binaries\RiskManager.Service.zipx" -newname "RiskManager.Service.zip" -Verbose
 #>
 
 <#===========================================================================================#>
@@ -184,31 +184,31 @@ New-Service -BinaryPathName $DIRsvcScheduler/Modulo.Scheduler.Host.exe -Name Mod
 # Navegue até interface do IIS com a conexão à Internet
 Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
-# Deploy da aplicação RM  
+<# Deploy da aplicação RM #>
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/RM"
 
-# Deploy da aplicação Workflow
+<# Deploy da aplicação Workflow #>
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Workflow.Services.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/WF"
 
-# Deploy da aplicação PORTAL  
+<# Deploy da aplicação PORTAL #>
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/PORTAL"
 
-# Deploy da aplicação Data Analytics Cacher 
+<# Deploy da aplicação Data Analytics Cacher #>
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsCacher.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsCacher"
 
-# Deploy da aplicação Data Analytics Service 
+<# Deploy da aplicação Data Analytics Service #>
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsService.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsService" 
 
-# Deploy da aplicação Data Analytics UI 
+<# Deploy da aplicação Data Analytics UI #>
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsUI.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsUI"
 
-# Deploy da aplicação Data MMI 
+<# Deploy da aplicação Data MMI #>
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI" 
 
-# Deploy da aplicação BCM 
+<# Deploy da aplicação BCM #>
 #.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
 
-# Deploy da aplicação ETL 
+<# Deploy da aplicação ETL #>
 #.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETL"
 #>
 
@@ -217,31 +217,31 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 <#===========================================================================================#>
 # Nota: Manter o mesmo nome dos Applications Pools criados anteriormente.
 
-# Configurando o web application Risk Manager:  
+<# Configurando o web application Risk Manager: #>
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/RM" /applicationPool:"RM"
 
-# Configurando o web application PORTAL:  
+<# Configurando o web application PORTAL: #>
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/PORTAL" /applicationPool:"PORTAL"
 
-# Configurando o web application Workflow:  
+<# Configurando o web application Workflow: #>
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/WF" /applicationPool:"WF"
 
-# Configurando o web application DataAnalyticsCacher:  
+<# Configurando o web application DataAnalyticsCacher: #>
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsCacher" /applicationPool:"DataAnalyticsCacher"
 
-# Configurando o web application DataAnalyticsService: 
+<# Configurando o web application DataAnalyticsService: #>
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsService"  /applicationPool:"DataAnalyticsService"
 
-# Configurando o web application DataAnalyticsUI:  
+<# Configurando o web application DataAnalyticsUI: #>
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsUI" /applicationPool:"DataAnalyticsUI"
 
-# Configurando o web application MMI: 
+<# Configurando o web application MMI: #>
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/MMI"  /applicationPool:"MMI"
 
-# Configurando o web application BCM:  
+<# Configurando o web application BCM: #>
 #C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/BCM" /applicationPool:"BCM"
 
-# Configurando o web application ETL:  
+<# Configurando o web application ETL: #>
 #C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETL" /applicationPool:"ETL"
 #>
 
@@ -307,17 +307,17 @@ icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 <#===========================================================================================#>
 <#  Iniciando os WebAppPool
 <#===========================================================================================#> 
-#Get-WebAppPoolState DefaultAppPool # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "RiskManager" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "RM" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "PORTAL" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "WF" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
-#Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
-#Start-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
+#Get-WebAppPoolState DefaultAppPool
+Start-WebAppPool "RiskManager"
+Start-WebAppPool "RM"
+Start-WebAppPool "PORTAL"
+Start-WebAppPool "WF"
+Start-WebAppPool "DataAnalyticsCacher"
+Start-WebAppPool "DataAnalyticsService"
+Start-WebAppPool "DataAnalyticsUI"
+Start-WebAppPool "MMI"
+#Start-WebAppPool "BCM"
+#Start-WebAppPool "ETLProcessor"
 #>
 
 <#===========================================================================================#>
@@ -328,7 +328,7 @@ Get-Service -Name "$ModuloSchedulerService" | Start-Service
 #>
 
 
-# Versão do PowerShell
+<# Versão do PowerShell #>
 $PSVersionTable
 
 
