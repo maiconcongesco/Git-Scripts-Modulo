@@ -323,8 +323,8 @@ Start-WebAppPool "MMI"
 <#===========================================================================================#>
 <#  Iniciando os serviços Modulo Scheduler e Risk Manager
 <#===========================================================================================#>
-Get-Service -Name "$RiskManagerService" | Start-Service
-Get-Service -Name "$ModuloSchedulerService" | Start-Service
+Get-Service -Name "RiskManagerService" | Start-Service
+Get-Service -Name "ModuloSchedulerService" | Start-Service
 #>
 
 
