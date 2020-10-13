@@ -14,28 +14,25 @@
 #===========================================================================================#
 
 # Será necessário alterar para os diretórios corretos
-$VersionRM = "9.9.2.07" # Versão do RM que será arquivado (Backup)
-$DIRbkp = "F:\BackupRM" # Diretório de backup do Risk Manager
-$DIRsiteRM = "F:\IIS\Sites\rm-support-01.corp.modulo.com" # Diretório do Site do Risk Manager
-$RaizInstall = "F:\Builds" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
-
-# Será necessário alterar para o endereço do site configurado no ISS
-$NameSite = "rm-support-01.corp.modulo.com" # Nome do Site do Risk Manager no IIS
-
-# Será necessário alterar com o caminho dos arquivos "Manual", "BildRM" e "Configs"
+$VersionRM = "9.10.2.4"
+$VersionBKPRM = "9.9.2.13" # Versão do RM que será arquivado (Backup)
+$DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
+$DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
+$RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
+$NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
 $FileManual = "$RaizInstall\Manual_RM_9.9_pt_br.zip" # Caminho do Manual compactado.
-$PackInstallRM = "$RaizInstall\RM_9.9.2.09" # Diretório descompactado dos arquivos de instalação do Risk Manager
-$PackRMZIP = "$RaizInstall\RM_9.9.2.09.zip" # Caminho com o pacote de intalação compactado do Risk Manager
-$ConfigRM = "$RaizInstall\ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 
 # Ocasionalmente pode ser necessário alterar essas variáveis
+$PackInstallRM = "$RaizInstall\RM_$VersionRM" # Diretório descompactado dos arquivos de instalação do Risk Manager
+$PackRMZIP = "$RaizInstall\RM_$VersionRM.zip" # Caminho com o pacote de intalação compactado do Risk Manager
+$ConfigRM = "$RaizInstall\ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
-$ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler
-$RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*"] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler
+$ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*" | ft -Autosize] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler
+$RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*" | ft -Autosize] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler
 
 # Raramente será necessário alterar essas variáveis
-$DIRbkpfullRM = "$DIRbkp\$VersionRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
+$DIRbkpfullRM = "$DIRbkp\$VersionBKPRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
 $FileLicense = "$DIRbkpfullRM\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $XDays = 00  # Quantidade de dias que pretende reter o log.
 $Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos que serão deletados.
@@ -102,7 +99,7 @@ Stop-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
-#Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #Stop-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
 #>
 
@@ -225,7 +222,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI" 
 
 # Deploy da aplicação BCM 
-# .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
 
 # Deploy da aplicação ETL 
 #.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETLProcessor"
@@ -237,7 +234,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL\bin" -Force -Verbose
-# Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
+Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
@@ -300,10 +297,24 @@ icacls "$DIRsvcRM" /grant NetworkService:"(OI)(CI)F"
 icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 #>
 
+<#===========================================================================================#
+#   Parando os WebAppPools
 #===========================================================================================#
-#   Reiniciando os WebAppPool
+Stop-WebAppPool "RiskManager" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "RM" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "PORTAL" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "WF" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
+#Stop-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
+#>
+
+<#===========================================================================================#
+#   Iniciando os WebAppPool
 #===========================================================================================# 
-#Get-WebAppPoolState DefaultAppPool # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "RiskManager" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "RM" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "PORTAL" # *> "$destinyPath\log-$date.txt"
@@ -312,20 +323,30 @@ Start-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
 Start-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
-#Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
+Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #Start-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
+#>
+
+<#===========================================================================================#
+#   Verifcando os serviços Modulo Scheduler e Risk Manager
+#===========================================================================================#
+Get-Service -Name "Modulo*", "Risk*"
+#>
+
+<#===========================================================================================#
+#   Parando os serviços Modulo Scheduler e Risk Manager
+#===========================================================================================#
+Get-Service -Name "RiskManagerService" | Stop-Service
+Get-Service -Name "ModuloSchedulerService" | Stop-Service
 #>
 
 <#===========================================================================================#
 #   Iniciando os serviços Modulo Scheduler e Risk Manager
 #===========================================================================================#
-Get-Service -Name "$RiskManagerService" | Start-Service
-Get-Service -Name "$ModuloSchedulerService" | Start-Service
+Get-Service -Name "RiskManagerService" | Start-Service
+Get-Service -Name "ModuloSchedulerService" | Start-Service
 #>
 
-
-# Versão do PowerShell
-$PSVersionTable
 
 
 Write-Output "Inicio da execução do Script" 
