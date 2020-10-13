@@ -23,7 +23,7 @@ $NameSite="RiskManager" # Nome do Site do Risk Manager no IIS
 <# Ocasionalmente pode ser necessário alterar essa variáveis #>
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
-$Tools = "$RaizInstall\Tools\Web Deploy\WebDeploy_amd64_en-US.msi"
+# $Tools = "$RaizInstall\Tools\Web Deploy\WebDeploy_amd64_en-US.msi"
 $FileLicense = "$RaizInstall\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $ConfigRM = "$RaizInstall\ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 $PackInstallRM = "$RaizInstall\RM_$VersionInstall" # Diretório descompactado dos arquivos de instalação do Risk Manager
@@ -72,7 +72,7 @@ $PSVersionTable
 <#  Instalando o WebDeploy		         				
 <#===========================================================================================#>
 # Set-Location "$Tools"
-# MsiExec.exe /i WebDeploy_x86_en-US.msi ADDLOCAL=ALL /qn /norestart LicenseAccepted=”0″
+MsiExec.exe /i WebDeploy_x86_en-US.msi ADDLOCAL=ALL /qn /norestart LicenseAccepted=”0″
 
 <#===========================================================================================#>
 <#  Descompactando os arquivos das aplicações do Risk Manager
@@ -123,7 +123,7 @@ $enrollResult = Get-Certificate -Template SslWebServer -DnsName www.contoso.com 
 <#===========================================================================================#>
 <#  Criando os Applications Pool
 <#===========================================================================================#>
-<# Navegue até o diretório do IIS
+<# Navegue até o diretório do IIS #>
 Set-Location "C:\Windows\system32\inetsrv\"
 
 <# Criar o Application Pool para o site RM #>  
@@ -338,6 +338,6 @@ $command.StartExecutionTime
 
 
 
-Write-Output "Fim da execução do Script" 
+Write-Output "Fim da execução do Script"
 
 Get-Date
