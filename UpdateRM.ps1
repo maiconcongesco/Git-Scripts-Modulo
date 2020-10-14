@@ -14,11 +14,7 @@
 #===========================================================================================#
 
 # Será necessário alterar para os diretórios corretos
-<<<<<<< HEAD
 $VersionRM = "9.10.2.4" # Versão do RM que será instalada
-=======
-$VersionRM = "9.10.2.4"
->>>>>>> 1d2554b5643c8a7a8225e9a5369d45289fa4c449
 $VersionBKPRM = "9.9.2.13" # Versão do RM que será arquivado (Backup)
 $DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
