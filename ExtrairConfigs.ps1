@@ -28,7 +28,7 @@ Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por
 # Geralmente essas váriaveis precisarão ser alteradas
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
-$VersionRM = "9.9.2.07" # Versão do RM que será arquivado (Backup)
+$VersionRM = "9.10.2.4" # Versão do RM que será arquivado (Backup)
 
 # Ocasionalmente pode ser necessário alterar essas variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
@@ -41,6 +41,14 @@ Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkpfullRM\Configs"
 Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
 Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
 Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkpfullRM\LicenseRM" -Recurse -Force -Verbose
+
+# Removendo os configs e estrutura de diretórios desnecessários.
+Remove-Item D:\BackupRM\$VersionRM\Configs\BCM\Views -Recurse -Verbose -Force
+Remove-Item D:\BackupRM\$VersionRM\Configs\DataAnalyticsService\Views -Recurse -Verbose -Force
+Remove-Item D:\BackupRM\$VersionRM\Configs\DataAnalyticsUI\Views -Recurse -Verbose -Force
+Remove-Item D:\BackupRM\$VersionRM\Configs\MMI\Areas -Recurse -Verbose -Force
+Remove-Item D:\BackupRM\$VersionRM\Configs\MMI\Views -Recurse -Verbose -Force
+Remove-Item D:\BackupRM\$VersionRM\Configs\RM\MVC -Recurse -Verbose -Force
 
 # Apaga diretórios vazios - Removendo pastas vazias (à última sub-pasta), executado varias vezes pra ir removendo as novas sub-pastas vazias.
 (Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
