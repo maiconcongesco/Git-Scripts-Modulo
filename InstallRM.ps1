@@ -24,7 +24,7 @@ $SubjectSSL = "RiskManager" # Subject do Certificado SSL
 <# Ocasionalmente pode ser necessário alterar essa variáveis #>
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
-# $Tools = "$RaizInstall\Tools\Web Deploy\WebDeploy_amd64_en-US.msi"
+$Tools = "$RaizInstall\Tools\Web Deploy\WebDeploy_amd64_en-US.msi"
 $FileLicense = "$RaizInstall\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $ConfigRM = "$RaizInstall\ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 $PackInstallRM = "$RaizInstall\RM_$VersionInstall" # Diretório descompactado dos arquivos de instalação do Risk Manager
@@ -83,9 +83,15 @@ $PSVersionTable
 # Get-WmiObject -Class Win32_Processor | Select-Object -Property PSComputerName, Name, NumberOfCores, ThreadCount   
 
 <#===========================================================================================#>
+<#  Descompactando o pacote de "Tools"
+<#===========================================================================================#>
+Expand-Archive -Path "Tools.zip" -DestinationPath "$RaizInstall" -Verbose
+#>
+
+<#===========================================================================================#>
 <#  Instalando o WebDeploy		         				
 <#===========================================================================================#>
-# Set-Location "$Tools"
+Set-Location "$Tools"
 MsiExec.exe /i WebDeploy_x86_en-US.msi ADDLOCAL=ALL /qn /norestart LicenseAccepted=”0″
 
 <#===========================================================================================#>
