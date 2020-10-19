@@ -343,11 +343,49 @@ Start-WebAppPool "MMI"
 #>
 
 <#===========================================================================================#>
+<# Instruções de ações a ser realizadas antes de subir os serviços
+<#===========================================================================================#> 
+<# 
+1. Confira se os Confgs estão OK, caso eles não tenham sido editados previamente será nessário editálos para que a aplicação funcione.
+
+2. Ative a licença do Módulo Risk Manager, O servidor web deve ter acesso à Internet, podendo acessar via navegador o endereço: https://app.riskmanager.modulo.com/ActivationService Este acesso é responsável pela realização da ativação do sistema).  
+2.1.	No servidor web, abra o navegador de internet e o seguinte endereço:   https://localhost/RM/Activation/Activation.aspx  
+2.2.	Preencher os campos Serial Number, Username e Password, de acordo com as informações enviadas pela área de suporte do Módulo Risk Manager e clique em Activate.  
+2.3.	Ao terminar a ativação do sistema será exibida a tela do aplicativo de migração do banco de dados. >>> ATENÇÃO: Não aplique a migração neste momento.<<<
+Nota: Caso o servidor web não tenha acesso à internet, será necessário a realização da ativação offline.  
+
+3. Carga inicial do sistema Módulo Risk Manager  
+3.1.	Para dar início ao processo de carga inicial do Módulo Risk Manager, no navegador de internet, digite o endereço a seguir:   https://localhost/RM/Support/InitialLoad.aspx  
+3.2.	Após acessar o endereço acima, será mostrada a tela de seleção do idioma padrão que será utilizado pelo Módulo Risk Manager. No campo Please select the Base Language for this system selecione a opção desejada (inglês ou português) e clique em Generate Initial Load.  
+Nota: a escolha do idioma nesta etapa determinará a linguagem de todo o conteúdo (ameaças, knowledge bases, pesquisas, documentos de referência e outros) utilizado pelo Módulo Risk Manager, não podendo ser alterada posteriormente.  
+3.3.	>> ATENÇÃO: Após a geração da carga inicial, salve as informações de autenticação exibidas (Username e Password), pois este é o único usuário criado no sistema e essas informações não serão exibidas novamente.<<
+3.4.	No topo da tela, clique na opção [Support Home]. Será então exibida a tela Database Migrations. Clique em Apply Pending Migrations para que seja executada a segunda fase da rotina de carga inicial.  
+3.5.	Após a execução da rotina do passo anterior, será mostrada uma tela com a lista das sub-rotinas executadas, na aba Applied Migrations.
+3.6.	Após o processo de carga inicial é necessário iniciar o serviço do Módulo Risk Manager e do Modulo Scheduler Service.  
+#>
+
+<#===========================================================================================#>
 <#  Iniciando os serviços Modulo Scheduler e Risk Manager
 <#===========================================================================================#>
 Get-Service -Name "RiskManagerService" | Start-Service
 Get-Service -Name "ModuloSchedulerService" | Start-Service
 
+<#
+3.7.	No topo da tela, clique na opção [Support Home]. Será então exibida a tela Database Migrations. Clique em Apply Pending Migrations para que seja executada a segunda fase da rotina de carga inicial.  
+3.8.	Após a execução da rotina do passo anterior, será mostrada uma tela com a lista das sub-rotinas executadas, na aba Applied Migrations.  
+3.9.	Para verificar se as informações de registro do sistema estão corretas, acesse o sistema, através do endereço: https://[WEBSERVERFQDN]/RM  
+3.10.	Informe as credenciais fornecidas no passo 3.3.  
+
+4. Carga de conteúdo:   Após a correta instalação do sistema Módulo Risk Manager deve ser realizada a carga do conteúdo (ameaças, knowledge bases, pesquisas, documentos de referência e outros).  
+4.1.	Acesse o sistema Módulo Risk Manager, através do endereço:  https://[WEBSERVERFQDN]/RM  
+4.2.	Acesse o sistema utilizando as credenciais administrativas.  
+4.3.	Na tela principal do sistema, clique na aba Conhecimento.  
+4.4.	Na seção Atualização de Conhecimento, clique em Exportar/Importar.  
+4.5.	Na aba Importar Pacote de Conhecimento, clique em Browser.  
+4.6.	Selecione o arquivo de Pacote Unificado - RM_PTBR - XX.XX.pkg , onde XX-XX corresponde a versão do conteúdo a ser importado. A linguagem deve ser a mesma definida no tópico Carga inicial do sistema Módulo Risk Manager.  
+4.7.	Clique em Importar Pacote de Conhecimento.  
+4.8.	Após a importação do pacote de conhecimento o sistema apresentará uma mensagem informando o sucesso da importação.  
+#>
 
 
 <# Versão do PowerShell #>
