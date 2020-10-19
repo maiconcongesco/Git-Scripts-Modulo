@@ -20,10 +20,11 @@ $RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do
 $VersionInstall = "9.9.2.13" # Versão do que será instalada do Risk Manager
 $NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
 $SubjectSSL = "RiskManager" # Subject do Certificado SSL
+$Instance = ""
 <#===========================================================================================#>
 <# Ocasionalmente pode ser necessário alterar essa variáveis #>
-$DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
-$DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
+$DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service$Instance" # Diretório do Serviço do Risk Manager.
+$DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service$Instance" # Diretório do Serviço do Modulo Scheduler.
 $Tools = "$RaizInstall\Tools\Web Deploy\WebDeploy_amd64_en-US.msi"
 $FileLicense = "$RaizInstall\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $ConfigRM = "$RaizInstall\ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
@@ -144,34 +145,34 @@ $binding.AddSslCertificate($cert.GetCertHashString(),'My')
 Set-Location "C:\Windows\system32\inetsrv\"
 
 <# Criar o Application Pool para o site RM #>  
-.\appcmd.exe add apppool /name:'RiskManager' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
+.\appcmd.exe add apppool /name:"RiskManager$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
 
 <# Criar o Application Pool RM #>
-.\appcmd.exe add apppool /name:'RM' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
+.\appcmd.exe add apppool /name:"RM$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
 
 <# Criar o Application Pool PORTAL #>
-.\appcmd.exe add apppool /name:'PORTAL' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
+.\appcmd.exe add apppool /name:"PORTAL$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
 
 <# Criar o Application Pool Workflow #>
-.\appcmd.exe add apppool /name:'WF' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
+.\appcmd.exe add apppool /name:"WF$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
 
 <# Criar os Application Pools Data Analytics Cacher #>
-.\appcmd.exe add apppool /name:'DataAnalyticsCacher' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  	  
+.\appcmd.exe add apppool /name:"DataAnalyticsCacher$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  	  
 
 <# Criar os Application Pools Data Analytics Service #>
-.\appcmd.exe add apppool /name:'DataAnalyticsService' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  	  
+.\appcmd.exe add apppool /name:"DataAnalyticsService$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  	  
 
 <# Criar os Application Pools Data Analytics UI #>
-.\appcmd.exe add apppool /name:'DataAnalyticsUI' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
+.\appcmd.exe add apppool /name:"DataAnalyticsUI$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 
 <# Criar os Application MMI #>
-.\appcmd.exe add apppool /name:'MMI' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
+.\appcmd.exe add apppool /name:"MMI$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
 
 <# Criar os Application Pools BCM #>
-# .\appcmd.exe add apppool /name:'BCM' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
+# .\appcmd.exe add apppool /name:"BCM$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 
 <# Criar os Application Pools ETL #>
-# .\appcmd.exe add apppool /name:'ETL' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
+# .\appcmd.exe add apppool /name:"ETL$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 #>
 
 <#===========================================================================================#>
@@ -181,31 +182,31 @@ Set-Location "C:\Windows\system32\inetsrv\"
 Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
 <# Deploy da aplicação RM #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/RM"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/RM$Instance"
 
 <# Deploy da aplicação Workflow #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Workflow.Services.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/WF"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Workflow.Services.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/WF$Instance"
 
 <# Deploy da aplicação PORTAL #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/PORTAL"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/PORTAL$Instance"
 
 <# Deploy da aplicação Data Analytics Cacher #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsCacher.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsCacher"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsCacher.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsCacher$Instance"
 
 <# Deploy da aplicação Data Analytics Service #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsService.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsService" 
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsService.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsService$Instance" 
 
 <# Deploy da aplicação Data Analytics UI #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsUI.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsUI"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsUI.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsUI$Instance"
 
 <# Deploy da aplicação Data MMI #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI" 
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI$Instance" 
 
 <# Deploy da aplicação BCM #>
-#.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
+#.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM$Instance"
 
 <# Deploy da aplicação ETL #>
-#.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETL"
+#.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETL$Instance"
 #>
 
 <#===========================================================================================#>
@@ -214,74 +215,74 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 # Nota: Manter o mesmo nome dos Applications Pools criados anteriormente.
 
 <# Configurando o web application Risk Manager: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/RM" /applicationPool:"RM"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/RM" /applicationPool:"RM$Instance"
 
 <# Configurando o web application PORTAL: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/PORTAL" /applicationPool:"PORTAL"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/PORTAL" /applicationPool:"PORTAL$Instance"
 
 <# Configurando o web application Workflow: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/WF" /applicationPool:"WF"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/WF" /applicationPool:"WF$Instance"
 
 <# Configurando o web application DataAnalyticsCacher: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsCacher" /applicationPool:"DataAnalyticsCacher"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsCacher" /applicationPool:"DataAnalyticsCacher$Instance"
 
 <# Configurando o web application DataAnalyticsService: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsService"  /applicationPool:"DataAnalyticsService"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsService"  /applicationPool:"DataAnalyticsService$Instance"
 
 <# Configurando o web application DataAnalyticsUI: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsUI" /applicationPool:"DataAnalyticsUI"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsUI" /applicationPool:"DataAnalyticsUI$Instance"
 
 <# Configurando o web application MMI: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/MMI"  /applicationPool:"MMI"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/MMI"  /applicationPool:"MMI$Instance"
 
 <# Configurando o web application BCM: #>
-#C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/BCM" /applicationPool:"BCM"
+#C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/BCM" /applicationPool:"BCM$Instance"
 
 <# Configurando o web application ETL: #>
-#C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETL" /applicationPool:"ETL"
+#C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETL" /applicationPool:"ETL$Instance"
 #>
 
 <#===========================================================================================#>
 <#  Copiando a biblioteca DevExpress para Apps/bin
 <#===========================================================================================#>
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF\bin" -Force -Verbose
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL\bin" -Force -Verbose
+Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM$Instance\bin" -Force -Verbose
+Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF$Instance\bin" -Force -Verbose
+Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL$Instance\bin" -Force -Verbose
 # Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
 
 <#===========================================================================================#>
 <#  Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
 <#===========================================================================================#>
-Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\Modulo.RiskManager.DataAnalytics.Bootstrap.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
+Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\Modulo.RiskManager.DataAnalytics.Bootstrap.dll" -Destination "$DIRsiteRM\RM$Instance\bin" -Force -Verbose
 
 <#===========================================================================================#>
 <#  Copiando o conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers
 <#===========================================================================================#>
-Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\DashboardDesignerInstallers\*" -Destination "$DIRsiteRM\DataAnalyticsUI\Files" -Force -Verbose
+Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\DashboardDesignerInstallers\*" -Destination "$DIRsiteRM\DataAnalyticsUI$Instance\Files" -Force -Verbose
 
 <#===========================================================================================#>
 <#  Copiando os arquivos bin do MMI para o RM
 <#===========================================================================================#>
-Copy-Item -Path "$PackInstallRM\Web.Applications\MMI\bin\rm\*" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
+Copy-Item -Path "$PackInstallRM\Web.Applications\MMI\bin\rm\*" -Destination "$DIRsiteRM\RM$Instance\bin" -Force -Verbose
 
 <#===========================================================================================#>
 <#  Copiando o arquivo de licença
 <#===========================================================================================#>
-Copy-Item -Path "$FileLicense"  -Destination "$DIRsiteRM\RM" -Force -Verbose
+Copy-Item -Path "$FileLicense"  -Destination "$DIRsiteRM\RM$Instance" -Force -Verbose
 
 <#===========================================================================================#>
 <#  Criando o diretório para o Manual
 <#===========================================================================================#>
-If(!(test-path $DIRsiteRM\RM\Manual\pt))
+If(!(test-path $DIRsiteRM\RM$Instance\Manual\pt))
 {
-      New-Item -ItemType Directory -Force -Path $DIRsiteRM\RM\Manual\pt -Verbose
+      New-Item -ItemType Directory -Force -Path $DIRsiteRM\RM$Instance\Manual\pt -Verbose
 }
 #>
 
 <#===========================================================================================#>
 <#  Extraindo do Manual do Risk Manager para o App RM
 <#===========================================================================================#>
-Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -Force -Verbose
+Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM$Instance\Manual\pt" -Force -Verbose
 #>
 
 <#===========================================================================================#>
@@ -301,8 +302,8 @@ Expand-Archive -Path "$PackInstallRM\Binaries\RiskManager.Service.zip" -Destinat
 <#===========================================================================================#>
 <#   Criando os serviços Risk Manager e Modulo Scheduler
 <#===========================================================================================#>
-New-Service -BinaryPathName $DIRsvcRM/RM.Service.exe -Name RiskManagerService -Description "Risk Manager Background Service Host" -DisplayName "Risk Manager Service" -Verbose
-New-Service -BinaryPathName $DIRsvcScheduler/Modulo.Scheduler.Host.exe -Name ModuloSchedulerService -Description "Modulo Scheduler Background Service Host" -DisplayName "Modulo Scheduler Service" -Verbose
+New-Service -BinaryPathName $DIRsvcRM/RM.Service.exe -Name RiskManagerService$Instance -Description "$Instance Risk Manager Background Service Host" -DisplayName "$Instance Risk Manager Service" -Verbose
+New-Service -BinaryPathName $DIRsvcScheduler/Modulo.Scheduler.Host.exe -Name ModuloSchedulerService$Instance -Description "$Instance Modulo Scheduler Background Service Host" -DisplayName "$Instance Modulo Scheduler Service" -Verbose
 #>
 
 <#===========================================================================================#>
@@ -330,16 +331,16 @@ icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 <#  Iniciando os WebAppPool
 <#===========================================================================================#> 
 #Get-WebAppPoolState DefaultAppPool
-Start-WebAppPool "RiskManager"
-Start-WebAppPool "RM"
-Start-WebAppPool "PORTAL"
-Start-WebAppPool "WF"
-Start-WebAppPool "DataAnalyticsCacher"
-Start-WebAppPool "DataAnalyticsService"
-Start-WebAppPool "DataAnalyticsUI"
-Start-WebAppPool "MMI"
-#Start-WebAppPool "BCM"
-#Start-WebAppPool "ETLProcessor"
+Start-WebAppPool "RiskManager$Instance"
+Start-WebAppPool "RM$Instance"
+Start-WebAppPool "PORTAL$Instance"
+Start-WebAppPool "WF$Instance"
+Start-WebAppPool "DataAnalyticsCacher$Instance"
+Start-WebAppPool "DataAnalyticsService$Instance"
+Start-WebAppPool "DataAnalyticsUI$Instance"
+Start-WebAppPool "MMI$Instance"
+#Start-WebAppPool "BCM$Instance"
+#Start-WebAppPool "ETLProcessor$Instance"
 #>
 
 <#===========================================================================================#>
@@ -349,13 +350,13 @@ Start-WebAppPool "MMI"
 1. Confira se os Confgs estão OK, caso eles não tenham sido editados previamente será nessário editálos para que a aplicação funcione.
 
 2. Ative a licença do Módulo Risk Manager, O servidor web deve ter acesso à Internet, podendo acessar via navegador o endereço: https://app.riskmanager.modulo.com/ActivationService Este acesso é responsável pela realização da ativação do sistema).  
-2.1.	No servidor web, abra o navegador de internet e o seguinte endereço:   https://localhost/RM/Activation/Activation.aspx  
+2.1.	No servidor web, abra o navegador de internet e o seguinte endereço:   https://localhost/[RM.WebApplication]/Activation/Activation.aspx  
 2.2.	Preencher os campos Serial Number, Username e Password, de acordo com as informações enviadas pela área de suporte do Módulo Risk Manager e clique em Activate.  
 2.3.	Ao terminar a ativação do sistema será exibida a tela do aplicativo de migração do banco de dados. >>> ATENÇÃO: Não aplique a migração neste momento.<<<
 Nota: Caso o servidor web não tenha acesso à internet, será necessário a realização da ativação offline.  
 
 3. Carga inicial do sistema Módulo Risk Manager  
-3.1.	Para dar início ao processo de carga inicial do Módulo Risk Manager, no navegador de internet, digite o endereço a seguir:   https://localhost/RM/Support/InitialLoad.aspx  
+3.1.	Para dar início ao processo de carga inicial do Módulo Risk Manager, no navegador de internet, digite o endereço a seguir:   https://localhost/[RM.WebApplication]/Support/InitialLoad.aspx  
 3.2.	Após acessar o endereço acima, será mostrada a tela de seleção do idioma padrão que será utilizado pelo Módulo Risk Manager. No campo Please select the Base Language for this system selecione a opção desejada (inglês ou português) e clique em Generate Initial Load.  
 Nota: a escolha do idioma nesta etapa determinará a linguagem de todo o conteúdo (ameaças, knowledge bases, pesquisas, documentos de referência e outros) utilizado pelo Módulo Risk Manager, não podendo ser alterada posteriormente.  
 3.3.	>> ATENÇÃO: Após a geração da carga inicial, salve as informações de autenticação exibidas (Username e Password), pois este é o único usuário criado no sistema e essas informações não serão exibidas novamente.<<
@@ -367,17 +368,17 @@ Nota: a escolha do idioma nesta etapa determinará a linguagem de todo o conteú
 <#===========================================================================================#>
 <#  Iniciando os serviços Modulo Scheduler e Risk Manager
 <#===========================================================================================#>
-Get-Service -Name "RiskManagerService" | Start-Service
-Get-Service -Name "ModuloSchedulerService" | Start-Service
+Get-Service -Name "RiskManagerService$Instance" | Start-Service
+Get-Service -Name "ModuloSchedulerService$Instance" | Start-Service
 
 <#
 3.7.	No topo da tela, clique na opção [Support Home]. Será então exibida a tela Database Migrations. Clique em Apply Pending Migrations para que seja executada a segunda fase da rotina de carga inicial.  
 3.8.	Após a execução da rotina do passo anterior, será mostrada uma tela com a lista das sub-rotinas executadas, na aba Applied Migrations.  
-3.9.	Para verificar se as informações de registro do sistema estão corretas, acesse o sistema, através do endereço: https://[WEBSERVERFQDN]/RM  
+3.9.	Para verificar se as informações de registro do sistema estão corretas, acesse o sistema, através do endereço: https://[WEBSERVERFQDN]/[RM.WebApplication]  
 3.10.	Informe as credenciais fornecidas no passo 3.3.  
 
 4. Carga de conteúdo:   Após a correta instalação do sistema Módulo Risk Manager deve ser realizada a carga do conteúdo (ameaças, knowledge bases, pesquisas, documentos de referência e outros).  
-4.1.	Acesse o sistema Módulo Risk Manager, através do endereço:  https://[WEBSERVERFQDN]/RM  
+4.1.	Acesse o sistema Módulo Risk Manager, através do endereço:  https://[WEBSERVERFQDN]/[RM.WebApplication]  
 4.2.	Acesse o sistema utilizando as credenciais administrativas.  
 4.3.	Na tela principal do sistema, clique na aba Conhecimento.  
 4.4.	Na seção Atualização de Conhecimento, clique em Exportar/Importar.  
