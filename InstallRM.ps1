@@ -18,7 +18,8 @@
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
 $VersionInstall = "9.9.2.13" # Versão do que será instalada do Risk Manager
-$NameSite="RiskManager" # Nome do Site do Risk Manager no IIS
+$NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
+$SubjectSSL = "RiskManager" # Subject do Certificado SSL
 <#===========================================================================================#>
 <# Ocasionalmente pode ser necessário alterar essa variáveis #>
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
@@ -85,13 +86,16 @@ Expand-Archive -Path "$PackRMZIP" -DestinationPath "$RaizInstall" -Verbose
 <#===========================================================================================#>
 <#
 $cert = New-SelfSignedCertificate -Type Custom -KeySpec Signature `
--Subject "CN=RiskManager" -KeyExportPolicy Exportable `
+-Subject "CN=$SubjectSSL" -KeyExportPolicy Exportable `
 -HashAlgorithm sha256 -KeyLength 2048 `
 -CertStoreLocation "Cert:\LocalMachine\My" -KeyUsageProperty Sign -KeyUsage CertSign -NotAfter (Get-Date).AddYears(10) 
 #>
 
-<# Esse cmdlet retorna uma lista de certificados instalados para CurrentUser "Cert:\CurrentUser\My" ou LocalComputer "Cert:\LocalMachine\My" #>
-# Get-ChildItem -Path "Cert:\LocalMachine\My" | findstr RiskManager
+<#===========================================================================================#>
+<#  Listando o certificado auto assinado criado para o Risk Manager
+<#===========================================================================================#>
+<# Esse cmdlet retorna uma lista de certificados instalados para CurrentUser "Cert:\CurrentUser\My" ou LocalComputer trocando para "Cert:\LocalMachine\My" #>
+# Get-ChildItem -Path "Cert:\LocalMachine\My" | findstr RiskManager # Use "Get-ChildItem -Path "*" | Format-List" para mais detalhes 
 
 <#===========================================================================================#>
 <#  Criando o diretório para o site
@@ -105,20 +109,14 @@ If(!(test-path $DIRsiteRM))
 <#===========================================================================================#>
 <#  Criando o Site Risk Manager
 <#===========================================================================================#>
-New-Website -Name "$NameSite" -ApplicationPool "RiskManager" -PhysicalPath "$DIRsiteRM" -Port 4433
-#>
+New-Website -Name "$NameSite" -ApplicationPool "RiskManager" -IPAddress "*" -PhysicalPath "$DIRsiteRM" -Port "443" -Ssl
 
 <#===========================================================================================#>
 <#  Adicionando a ligação SSL ao site
 <#===========================================================================================#>
-<#
-New-WebBinding -Name "RiskManager" -IP "*" -Port 443 -Protocol https
-<# Pode listar  listar a binding collection com o seguinte comando:
-Get-WebBinding 'RiskManager'
-
-$cert = Get-ChildItem -Path cert:\LocalMachine\My\EEDEF61D4FF6EDBAAD538BB08CCAADDC3EE28FF
-$enrollResult = Get-Certificate -Template SslWebServer -DnsName www.contoso.com -Url https://www.contoso.com/policy/service.svc -Credential $cert -CertStoreLocation cert:\LocalMachine\My
-#>
+$cert = Get-ChildItem -Path 'Cert:\LocalMachine\My' | Where-Object {$_.Subject -match '$SubjectSSL'}
+$binding = Get-WebBinding -Name '$NameSite'
+$binding.AddSslCertificate($cert.GetCertHashString(),'My')
 
 <#===========================================================================================#>
 <#  Criando os Applications Pool
@@ -155,27 +153,6 @@ Set-Location "C:\Windows\system32\inetsrv\"
 
 <# Criar os Application Pools ETL #>
 # .\appcmd.exe add apppool /name:'ETL' /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
-#>
-
-<#===========================================================================================#>
-<#  Alterando extensão dos arquivos dos serviços Risk Manager e Modulo Scheduler
-<#===========================================================================================#>
-rename-item -path "$PackInstallRM\Binaries\Modulo Scheduler Service.zipx" -newname "Modulo Scheduler Service.zip" -Verbose
-rename-item -path "$PackInstallRM\Binaries\RiskManager.Service.zipx" -newname "RiskManager.Service.zip" -Verbose
-#>
-
-<#===========================================================================================#>
-<#  Descompactando os arquivos dos serviços Risk Manager e Modulo Scheduler
-<#===========================================================================================#>
-Expand-Archive -Path "$PackInstallRM\Binaries\Modulo Scheduler Service.zip" -DestinationPath $DIRsvcScheduler -Verbose
-Expand-Archive -Path "$PackInstallRM\Binaries\RiskManager.Service.zip" -DestinationPath $DIRsvcRM -Verbose
-#>
-
-<#===========================================================================================#>
-<#   Criando os serviços Risk Manager e Modulo Scheduler
-<#===========================================================================================#>
-New-Service -BinaryPathName $DIRsvcRM/RM.Service.exe -Name RiskManagerService -Description "Risk Manager Background Service Host" -DisplayName "Risk Manager Service" -Verbose
-New-Service -BinaryPathName $DIRsvcScheduler/Modulo.Scheduler.Host.exe -Name ModuloSchedulerService -Description "Modulo Scheduler Background Service Host" -DisplayName "Modulo Scheduler Service" -Verbose
 #>
 
 <#===========================================================================================#>
@@ -287,6 +264,33 @@ If(!(test-path $DIRsiteRM\RM\Manual\pt))
 <#===========================================================================================#>
 Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -Force -Verbose
 #>
+
+
+<#===========================================================================================#>
+<#  Alterando extensão dos arquivos dos serviços Risk Manager e Modulo Scheduler
+<#===========================================================================================#>
+rename-item -path "$PackInstallRM\Binaries\Modulo Scheduler Service.zipx" -newname "Modulo Scheduler Service.zip" -Verbose
+rename-item -path "$PackInstallRM\Binaries\RiskManager.Service.zipx" -newname "RiskManager.Service.zip" -Verbose
+#>
+
+<#===========================================================================================#>
+<#  Descompactando os arquivos dos serviços Risk Manager e Modulo Scheduler
+<#===========================================================================================#>
+Expand-Archive -Path "$PackInstallRM\Binaries\Modulo Scheduler Service.zip" -DestinationPath $DIRsvcScheduler -Verbose
+Expand-Archive -Path "$PackInstallRM\Binaries\RiskManager.Service.zip" -DestinationPath $DIRsvcRM -Verbose
+#>
+
+<#===========================================================================================#>
+<#   Criando os serviços Risk Manager e Modulo Scheduler
+<#===========================================================================================#>
+New-Service -BinaryPathName $DIRsvcRM/RM.Service.exe -Name RiskManagerService -Description "Risk Manager Background Service Host" -DisplayName "Risk Manager Service" -Verbose
+New-Service -BinaryPathName $DIRsvcScheduler/Modulo.Scheduler.Host.exe -Name ModuloSchedulerService -Description "Modulo Scheduler Background Service Host" -DisplayName "Modulo Scheduler Service" -Verbose
+#>
+
+<#===========================================================================================#>
+<#   Verificando se os serviços foram criados adequadamente
+<#===========================================================================================#>
+Get-Service -Name "$ModuloSchedulerService", "$RiskManagerService" | Format-Table -Property Status,Name,DisplayName -AutoSize -Wrap
 
 <#===========================================================================================#>
 <#  Atualização dos arquivos de Config
