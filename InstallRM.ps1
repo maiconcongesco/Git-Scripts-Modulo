@@ -84,6 +84,11 @@ $PSVersionTable
 # Get-WmiObject -Class Win32_Processor | Select-Object -Property PSComputerName, Name, NumberOfCores, ThreadCount   
 
 <#===========================================================================================#>
+<#  Desbloqueando arquivos baixados da internet
+<#===========================================================================================#>
+Unblock-File -Path "$RaizInstall\*"
+
+<#===========================================================================================#>
 <#  Descompactando o pacote de "Tools"
 <#===========================================================================================#>
 Expand-Archive -Path "Tools.zip" -DestinationPath "$RaizInstall" -Verbose
