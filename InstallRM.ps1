@@ -20,7 +20,7 @@ $RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do
 $VersionInstall = "9.9.2.13" # Versão do que será instalada do Risk Manager
 $NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
 $SubjectSSL = "RiskManager" # Subject do Certificado SSL
-$Instance = ""
+$Instance = "" # Sigla do nome da instancia, caso essa instalação não seja intanciada deixe as aspas vazias ""
 <#===========================================================================================#>
 <# Ocasionalmente pode ser necessário alterar essa variáveis #>
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service$Instance" # Diretório do Serviço do Risk Manager.
