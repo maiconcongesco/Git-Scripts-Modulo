@@ -17,7 +17,7 @@
 
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
-$VersionInstall = "9.9.2.13" # Versão do que será instalada do Risk Manager
+$VersionInstall = "RM_9.9.2.13" # Versão do que será instalada do Risk Manager ou do LGPD Manager (RM_x.x.x.x ou LGPD_x.x.x.x)
 $NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
 $SubjectSSL = "RiskManager" # Subject do Certificado SSL
 $Instance = "" # Sigla do nome da instancia, caso essa instalação não seja intanciada deixe as aspas vazias ""
@@ -28,8 +28,8 @@ $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service$Instance" # 
 $Tools = "$RaizInstall\Tools" # Diretório onde ficam as ferramentas de troubleshooting.
 $FileLicense = "$RaizInstall\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $ConfigRM = "$RaizInstall\ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
-$PackInstallRM = "$RaizInstall\RM_$VersionInstall" # Diretório descompactado dos arquivos de instalação do Risk Manager
-$PackRMZIP = "$RaizInstall\RM_$VersionInstall.zip" # Caminho com o pacote de intalação compactado do Risk Manager
+$PackInstallRM = "$RaizInstall\$VersionInstall" # Diretório descompactado dos arquivos de instalação do Risk Manager
+$PackRMZIP = "$RaizInstall\$VersionInstall.zip" # Caminho com o pacote de intalação compactado do Risk Manager
 $FileManual = "$RaizInstall\Manual_RM_9.9_pt_br.zip" # Caminho do Manual compactado.
 <#===========================================================================================#>
 
@@ -134,7 +134,7 @@ If(!(test-path $DIRsiteRM))
 <#===========================================================================================#>
 <#  Criando o Site Risk Manager
 <#===========================================================================================#>
-New-Website -Name "$NameSite" -ApplicationPool "RiskManager" -IPAddress "*" -PhysicalPath "$DIRsiteRM" -Port "443" -Ssl
+New-Website -Name "$NameSite" -ApplicationPool "$NameSite" -IPAddress "*" -PhysicalPath "$DIRsiteRM" -Port "443" -Ssl
 
 <#===========================================================================================#>
 <#  Adicionando a ligação SSL ao site
@@ -150,7 +150,7 @@ $binding.AddSslCertificate($cert.GetCertHashString(),'My')
 Set-Location "C:\Windows\system32\inetsrv\"
 
 <# Criar o Application Pool para o site RM #>  
-.\appcmd.exe add apppool /name:"RiskManager$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
+.\appcmd.exe add apppool /name:"$NameSite" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
 
 <# Criar o Application Pool RM #>
 .\appcmd.exe add apppool /name:"RM$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
@@ -180,6 +180,9 @@ Set-Location "C:\Windows\system32\inetsrv\"
 # .\appcmd.exe add apppool /name:"ETL$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 #>
 
+<# Criar os Application LGPD #>
+.\appcmd.exe add apppool /name:"LGPD" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
+
 <#===========================================================================================#>
 <#   Realizando o Deploy das aplicações web
 <#===========================================================================================#>
@@ -204,7 +207,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 <# Deploy da aplicação Data Analytics UI #>
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsUI.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsUI$Instance"
 
-<# Deploy da aplicação Data MMI #>
+<# Deploy da aplicação MMI #>
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI$Instance" 
 
 <# Deploy da aplicação BCM #>
@@ -213,6 +216,9 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 <# Deploy da aplicação ETL #>
 #.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETL$Instance"
 #>
+
+<# Deploy da aplicação LGPD #>
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\LGPD.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/LGPD" 
 
 <#===========================================================================================#>
 <#  Configurando o web application
@@ -247,12 +253,16 @@ C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/MMI"  /applicati
 #C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETL" /applicationPool:"ETL$Instance"
 #>
 
+<# Configurando o web application LGPD: #>
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/LGPD"  /applicationPool:"LGPD$Instance"
+
 <#===========================================================================================#>
 <#  Copiando a biblioteca DevExpress para Apps/bin
 <#===========================================================================================#>
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM$Instance\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF$Instance\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL$Instance\bin" -Force -Verbose
+Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\LGPD\bin" -Force -Verbose
 # Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
 
 <#===========================================================================================#>
@@ -314,7 +324,7 @@ New-Service -BinaryPathName $DIRsvcScheduler/Modulo.Scheduler.Host.exe -Name Mod
 <#===========================================================================================#>
 <#   Verificando se os serviços foram criados adequadamente
 <#===========================================================================================#>
-Get-Service -Name "$ModuloSchedulerService", "$RiskManagerService" | Format-Table -Property Status,Name,DisplayName -AutoSize -Wrap
+Get-Service -Name "ModuloSchedulerService", "RiskManagerService" | Format-Table -Property Status,Name,DisplayName -AutoSize -Wrap
 
 <#===========================================================================================#>
 <#  Atualização dos arquivos de Config
@@ -333,6 +343,14 @@ icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 #>
 
 <#===========================================================================================#>
+<# Instruções de ações a ser realizadas antes de subir os serviços
+<#===========================================================================================#> 
+<#
+
+1. Confira se os Confgs estão OK, caso eles não tenham sido editados previamente será nessário editálos para que a aplicação funcione.
+1.1. Inicie os Web Aplications
+
+<#===========================================================================================#>
 <#  Iniciando os WebAppPool
 <#===========================================================================================#> 
 #Get-WebAppPoolState DefaultAppPool
@@ -347,13 +365,7 @@ Start-WebAppPool "MMI$Instance"
 #Start-WebAppPool "BCM$Instance"
 #Start-WebAppPool "ETLProcessor$Instance"
 #>
-
-<#===========================================================================================#>
-<# Instruções de ações a ser realizadas antes de subir os serviços
-<#===========================================================================================#> 
-<# 
-1. Confira se os Confgs estão OK, caso eles não tenham sido editados previamente será nessário editálos para que a aplicação funcione.
-
+<#
 2. Ative a licença do Módulo Risk Manager, O servidor web deve ter acesso à Internet, podendo acessar via navegador o endereço: https://app.riskmanager.modulo.com/ActivationService Este acesso é responsável pela realização da ativação do sistema).  
 2.1.	No servidor web, abra o navegador de internet e o seguinte endereço:   https://localhost/[RM.WebApplication]/Activation/Activation.aspx  
 2.2.	Preencher os campos Serial Number, Username e Password, de acordo com as informações enviadas pela área de suporte do Módulo Risk Manager e clique em Activate.  
