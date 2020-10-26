@@ -43,12 +43,12 @@ Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkpfullRM\Confi
 Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkpfullRM\LicenseRM" -Recurse -Force -Verbose
 
 # Removendo os configs e estrutura de diretórios desnecessários.
-Remove-Item D:\BackupRM\$VersionRM\Configs\BCM\Views -Recurse -Verbose -Force
-Remove-Item D:\BackupRM\$VersionRM\Configs\DataAnalyticsService\Views -Recurse -Verbose -Force
-Remove-Item D:\BackupRM\$VersionRM\Configs\DataAnalyticsUI\Views -Recurse -Verbose -Force
-Remove-Item D:\BackupRM\$VersionRM\Configs\MMI\Areas -Recurse -Verbose -Force
-Remove-Item D:\BackupRM\$VersionRM\Configs\MMI\Views -Recurse -Verbose -Force
-Remove-Item D:\BackupRM\$VersionRM\Configs\RM\MVC -Recurse -Verbose -Force
+Remove-Item "$DIRbkp\$VersionRM\Configs\BCM\Views" -Recurse -Verbose -Force
+Remove-Item "$DIRbkp\$VersionRM\Configs\DataAnalyticsService\Views" -Recurse -Verbose -Force
+Remove-Item "$DIRbkp\$VersionRM\Configs\DataAnalyticsUI\Views" -Recurse -Verbose -Force
+Remove-Item "$DIRbkp\$VersionRM\Configs\MMI\Areas" -Recurse -Verbose -Force
+Remove-Item "$DIRbkp\$VersionRM\Configs\MMI\Views" -Recurse -Verbose -Force
+Remove-Item "$DIRbkp\$VersionRM\Configs\RM\MVC" -Recurse -Verbose -Force
 
 # Apaga diretórios vazios - Removendo pastas vazias (à última sub-pasta), executado varias vezes pra ir removendo as novas sub-pastas vazias.
 (Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
