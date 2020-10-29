@@ -103,7 +103,7 @@ Add-Type -Assembly "System.IO.Compression.FileSystem"
 
 # Abrindo pasta
 Set-Location "$DIRbkp\$VersionRM"
-start .
+Start-Process .
 
 
 #===========================================================================================#
