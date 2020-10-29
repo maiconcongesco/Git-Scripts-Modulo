@@ -1,7 +1,9 @@
+#
+#===========================================================================================#
 #===========================================================================================#
 #   Get Config - Extração de configs da apalicação instalada
 #   Autor: Maicon Santos
-#   Data de Criação: 01/04/2020
+#===========================================================================================#
 #===========================================================================================#
 
 <#==========================================================================================#
@@ -29,18 +31,53 @@ Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
 $VersionRM = "9.10.2.4" # Versão do RM que será arquivado (Backup)
+$XDays = 00  # Quantidade de dias que pretende reter o log.
+$Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos
 
 # Ocasionalmente pode ser necessário alterar essas variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 
 # Raramente será necessário alterar essas variáveis
-$DIRbkpfullRM = "$DIRbkp\$VersionRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
+$LogPath = "$DIRsvcRM", "$DIRsiteRM " # Separe por virgula as pastas onde estarão os logs
+
+
+#===========================================================================================#
+#===========================================================================================#
+#   Removendo Logs
+#===========================================================================================#
+#===========================================================================================#
+
+# ATENÇÃO: Se o Serviço e os Application pools não estiverem parados os logs do dia NÃO serão removidos.
+# Uma messagem de erro em vermelho aparecerá (...The process cannot access the file...because it is being used by another process...)
+# Não se preocupe, apesar de parecer um erro não é, a aplicação precisa manter-se escrevendo esse log, esse "erro" é esperado.
+
+
+# Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+
+$Files = Get-Childitem $LogPath -Include $Extensions -Recurse | Where-Object {$_.LastWriteTime -le `
+    (Get-Date).AddDays(-$XDays)}
+    
+    foreach ($File in $Files) 
+    {
+        if ($NULL -ne $File)
+        {
+            write-host "Deleting File $File" -ForegroundColor "DarkRed"
+            Remove-Item $File.FullName | out-null
+        }
+    }
+
+
+#===========================================================================================#
+#===========================================================================================#
+#   Extraindo Configs
+#===========================================================================================#
+#===========================================================================================#
 
 # Copia os arquivos e a estrutura de Diretórios.
-Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkpfullRM\LicenseRM" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkp\$VersionRM\LicenseRM" -Recurse -Force -Verbose
 
 # Removendo os configs e estrutura de diretórios desnecessários.
 Remove-Item "$DIRbkp\$VersionRM\Configs\BCM\Views" -Recurse -Verbose -Force
@@ -51,11 +88,27 @@ Remove-Item "$DIRbkp\$VersionRM\Configs\MMI\Views" -Recurse -Verbose -Force
 Remove-Item "$DIRbkp\$VersionRM\Configs\RM\MVC" -Recurse -Verbose -Force
 
 # Apaga diretórios vazios - Removendo pastas vazias (à última sub-pasta), executado varias vezes pra ir removendo as novas sub-pastas vazias.
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
 #>
+
+# Compactando Pasta com configs
+Add-Type -Assembly "System.IO.Compression.FileSystem"
+[System.IO.Compression.ZipFile]::CreateFromDirectory("$DIRbkp\$VersionRM\Configs", "$DIRbkp\$VersionRM\Configs.zip")
+
+# Abrindo pasta
+Set-Location "$DIRbkp\$VersionRM"
+start .
+
+
+#===========================================================================================#
+#   ERRO EM REMOÇÃO DE LOGS? PODE SER APENAS UM ERRO ESPERADO.
+#===========================================================================================#
+# ATENÇÃO: Se o Serviço e os Application pools não estiverem parados os logs do dia NÃO serão removidos.
+# Uma messagem de erro em vermelho aparecerá (...The process cannot access the file...because it is being used by another process...)
+# Não se preocupe, apesar de parecer um erro não é, a aplicação precisa manter-se escrevendo esse log, esse "erro" é esperado.
