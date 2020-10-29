@@ -32,8 +32,7 @@ $ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Serv
 $RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*" | ft -Autosize] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler
 
 # Raramente será necessário alterar essas variáveis
-$DIRbkpfullRM = "$DIRbkp\$VersionBKPRM" # Diretório onde faremos o Backup de todo o conteúdo dos serviços e sites do Risk Manager, se ela não existir o script a criará.
-$FileLicense = "$DIRbkpfullRM\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
+$FileLicense = "$DIRbkp\$VersionBKPRM\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $XDays = 00  # Quantidade de dias que pretende reter o log.
 $Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos que serão deletados.
 $LogPath = "$DIRsvcRM", "$DIRsvcScheduler", "$DIRsiteRM"   # Caminho da pasta principal onde iremos buscar e limpar os logs, Separe por virgula se for mais de uma pasta.
@@ -131,26 +130,26 @@ foreach ($File in $Files)
 #===========================================================================================#
 #   Criando o diretório de Backup
 #===========================================================================================#
-If(!(test-path $DIRbkpfullRM))
+If(!(test-path $DIRbkp\$VersionBKPRM))
 {
-      New-Item -ItemType Directory -Force -Path $DIRbkpfullRM
+      New-Item -ItemType Directory -Force -Path $DIRbkp\$VersionBKPRM
 }
 #>
 
 #===========================================================================================#
 #   Fazendo o Backup do RiskManager
 #===========================================================================================#
-copy-item $DIRsvcRM $DIRbkpfullRM -Recurse -Verbose # Backup do Serviço do RiskManager
-copy-item $DIRsvcScheduler $DIRbkpfullRM -Recurse -Verbose # Backup do Serviço do Modulo Scheduler
-copy-item $DIRsiteRM $DIRbkpfullRM -Recurse -Verbose # Backup das Aplicações do Risk Manager
+copy-item $DIRsvcRM "$DIRbkp\$VersionBKPRM" -Recurse -Verbose # Backup do Serviço do RiskManager
+copy-item $DIRsvcScheduler "$DIRbkp\$VersionBKPRM" -Recurse -Verbose # Backup do Serviço do Modulo Scheduler
+copy-item $DIRsiteRM "$DIRbkp\$VersionBKPRM" -Recurse -Verbose # Backup das Aplicações do Risk Manager
 #>
 
 #===========================================================================================#
 #   Criando diretório para Backup de Configs
 #===========================================================================================#
-If(!(test-path $DIRbkpfullRM\Configs))
+If(!(test-path "$DIRbkp\$VersionBKPRM\Configs"))
 {
-      New-Item -ItemType Directory -Force -Path $DIRbkpfullRM\Configs
+      New-Item -ItemType Directory -Force -Path "$DIRbkp\$VersionBKPRM\Configs"
 }
 #>
 
@@ -159,27 +158,27 @@ If(!(test-path $DIRbkpfullRM\Configs))
 #===========================================================================================#
 
 # Copia os arquivos e a estrutura de Diretórios.
-Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkpfullRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkpfullRM\LicenseRM" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkp\$VersionBKPRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkp\$VersionBKPRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionBKPRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkp\$VersionBKPRM\LicenseRM" -Recurse -Force -Verbose
 
 # Removendo os configs e estrutura de diretórios desnecessários.
-Remove-Item "$DIRbkp\$VersionRM\Configs\BCM\Views" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionRM\Configs\DataAnalyticsService\Views" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionRM\Configs\DataAnalyticsUI\Views" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionRM\Configs\MMI\Areas" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionRM\Configs\MMI\Views" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionRM\Configs\RM\MVC" -Recurse -Verbose -Force
+Remove-Item "$DIRbkp\$VersionBKPRM\Configs\BCM\Views" -Recurse -Verbose -Force
+Remove-Item "$DIRbkp\$VersionBKPRM\Configs\DataAnalyticsService\Views" -Recurse -Verbose -Force
+Remove-Item "$DIRbkp\$VersionBKPRM\Configs\DataAnalyticsUI\Views" -Recurse -Verbose -Force
+Remove-Item "$DIRbkp\$VersionBKPRM\Configs\MMI\Areas" -Recurse -Verbose -Force
+Remove-Item "$DIRbkp\$VersionBKPRM\Configs\MMI\Views" -Recurse -Verbose -Force
+Remove-Item "$DIRbkp\$VersionBKPRM\Configs\RM\MVC" -Recurse -Verbose -Force
 
 # Apaga diretórios vazios - Removendo pastas vazias (à última sub-pasta), executado varias vezes pra ir removendo as novas sub-pastas vazias.
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkpfullRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
+(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
 #>
 
 #===========================================================================================#
