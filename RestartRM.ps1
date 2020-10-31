@@ -62,9 +62,9 @@ Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #>
 
 #===========================================================================================#
-#   Verifcando os serviços Modulo Scheduler e Risk Manager
+#   Verificando status dos WebAppPools
 #===========================================================================================#
-Get-Service -Name "Modulo*", "Risk*"
+Get-IISAppPool
 
 #===========================================================================================#
 #   Parando os serviços Modulo Scheduler e Risk Manager
@@ -79,3 +79,8 @@ Get-Service -Name "ModuloSchedulerService" | Stop-Service
 Get-Service -Name "RiskManagerService" | Start-Service
 Get-Service -Name "ModuloSchedulerService" | Start-Service
 #
+
+#===========================================================================================#
+#   Verifcando os serviços Modulo Scheduler e Risk Manager
+#===========================================================================================#
+Get-Service -Name "Modulo*", "Risk*"
