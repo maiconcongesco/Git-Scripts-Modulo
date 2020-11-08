@@ -218,10 +218,9 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
 <# Deploy da aplicação ETL #>
 #.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETL$Instance"
-#>
 
 <# Deploy da aplicação LGPD #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\LGPD.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/LGPD" 
+#.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\LGPD.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/LGPD" 
 
 <#===========================================================================================#>
 <#  Configurando o web application
@@ -254,7 +253,6 @@ C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/MMI"  /applicati
 
 <# Configurando o web application ETL: #>
 #C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETL" /applicationPool:"ETL$Instance"
-#>
 
 <# Configurando o web application LGPD: #>
 #C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/LGPD"  /applicationPool:"LGPD$Instance"
