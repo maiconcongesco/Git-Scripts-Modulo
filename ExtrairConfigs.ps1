@@ -24,8 +24,11 @@ Set-ExecutionPolicy Restricted ### O PowerShell só pode ser usado no modo inter
 Set-ExecutionPolicy Unrestricted ###  Todos os scripts do Windows PowerShell podem ser executados.
 Set-ExecutionPolicy AllSigned ### Somente scripts assinados por um editor confiável podem ser executados.
 Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por um editor confiável antes que possam ser executados.
-#===========================================================================================#
 #===========================================================================================#>
+
+#===========================================================================================#
+#   Variáveis >>> ATENÇÃO: Um erro no preenchimento dessas variaveis e todo o script é comprometido
+#===========================================================================================#
 
 # Geralmente essas váriaveis precisarão ser alteradas
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
@@ -40,8 +43,12 @@ $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviç
 # Raramente será necessário alterar essas variáveis
 $LogPath = "$DIRsvcRM", "$DIRsiteRM " # Separe por virgula as pastas onde estarão os logs
 
+#===========================================================================================#>
 
-#===========================================================================================#
+# Liberação de execução de script
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted
+
+<#===========================================================================================#
 #===========================================================================================#
 #   Removendo Logs
 #===========================================================================================#
@@ -50,9 +57,6 @@ $LogPath = "$DIRsvcRM", "$DIRsiteRM " # Separe por virgula as pastas onde estar�
 # ATENÇÃO: Se o Serviço e os Application pools não estiverem parados os logs do dia NÃO serão removidos.
 # Uma messagem de erro em vermelho aparecerá (...The process cannot access the file...because it is being used by another process...)
 # Não se preocupe, apesar de parecer um erro não é, a aplicação precisa manter-se escrevendo esse log, esse "erro" é esperado.
-
-
-# Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 $Files = Get-Childitem $LogPath -Include $Extensions -Recurse | Where-Object {$_.LastWriteTime -le `
     (Get-Date).AddDays(-$XDays)}
@@ -65,6 +69,7 @@ $Files = Get-Childitem $LogPath -Include $Extensions -Recurse | Where-Object {$_
             Remove-Item $File.FullName | out-null
         }
     }
+#>
 
 #===========================================================================================#
 #   Criando diretório para Backup de Configs
@@ -88,22 +93,7 @@ Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionRM\
 Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkp\$VersionRM\LicenseRM" -Recurse -Force -Verbose
 
 # Removendo os configs e estrutura de diretórios desnecessários.
-Remove-Item "$DIRbkp\$VersionRM\Configs\BCM\Views" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionRM\Configs\DataAnalyticsService\Views" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionRM\Configs\DataAnalyticsUI\Views" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionRM\Configs\MMI\Areas" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionRM\Configs\MMI\Views" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionRM\Configs\RM\MVC" -Recurse -Verbose -Force
-
-# Apaga diretórios vazios - Removendo pastas vazias (à última sub-pasta), executado varias vezes pra ir removendo as novas sub-pastas vazias.
-(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkp\$VersionRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-#>
+Remove-Item -recurse $DIRbkp\$VersionRM\Configs\*\* -exclude *.config -Verbose
 
 # Compactando Pasta com configs
 Add-Type -Assembly "System.IO.Compression.FileSystem"
