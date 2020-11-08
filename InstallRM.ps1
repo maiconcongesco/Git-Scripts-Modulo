@@ -364,10 +364,10 @@ icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 & $Tools\Notepad++\notepad++.exe $DirSiteRM\DataAnalyticsUI$Instance\Web.config
 & $Tools\Notepad++\notepad++.exe $DIRsvcRM\RM.Service.exe.config
 & $Tools\Notepad++\notepad++.exe $DIRsvcRM\tenants.config
-#>
 
 1.1. Inicie os Web Aplications
 
+#>
 <#===========================================================================================#>
 <#  Iniciando os WebAppPool
 <#===========================================================================================#> 
