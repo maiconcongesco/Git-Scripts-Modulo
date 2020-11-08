@@ -34,42 +34,14 @@ Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
 $VersionRM = "9.10.2.4" # Versão do RM que será arquivado (Backup)
-$XDays = 00  # Quantidade de dias que pretende reter o log.
-$Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos
 
 # Ocasionalmente pode ser necessário alterar essas variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
-
-# Raramente será necessário alterar essas variáveis
-$LogPath = "$DIRsvcRM", "$DIRsiteRM " # Separe por virgula as pastas onde estarão os logs
 
 #===========================================================================================#>
 
 # Liberação de execução de script
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted
-
-<#===========================================================================================#
-#===========================================================================================#
-#   Removendo Logs
-#===========================================================================================#
-#===========================================================================================#
-
-# ATENÇÃO: Se o Serviço e os Application pools não estiverem parados os logs do dia NÃO serão removidos.
-# Uma messagem de erro em vermelho aparecerá (...The process cannot access the file...because it is being used by another process...)
-# Não se preocupe, apesar de parecer um erro não é, a aplicação precisa manter-se escrevendo esse log, esse "erro" é esperado.
-
-$Files = Get-Childitem $LogPath -Include $Extensions -Recurse | Where-Object {$_.LastWriteTime -le `
-    (Get-Date).AddDays(-$XDays)}
-    
-    foreach ($File in $Files) 
-    {
-        if ($NULL -ne $File)
-        {
-            write-host "Deleting File $File" -ForegroundColor "DarkRed"
-            Remove-Item $File.FullName | out-null
-        }
-    }
-#>
 
 #===========================================================================================#
 #   Criando diretório para Backup de Configs
@@ -102,7 +74,6 @@ Add-Type -Assembly "System.IO.Compression.FileSystem"
 # Abrindo pasta
 Set-Location "$DIRbkp\$VersionRM"
 Start-Process .
-
 
 #===========================================================================================#
 #   ERRO EM REMOÇÃO DE LOGS? PODE SER APENAS UM ERRO ESPERADO.
