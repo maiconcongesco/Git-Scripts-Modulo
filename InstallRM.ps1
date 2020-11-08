@@ -354,7 +354,7 @@ icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 
 <#===========================================================================================#>
 <#  Abrindo os configs com Notepad++ do pacote Tools
-<#===========================================================================================# 
+<#===========================================================================================#>
 & $Tools\Notepad++\notepad++.exe $DirSiteRM\RM$Instance\Web.config
 & $Tools\Notepad++\notepad++.exe $DirSiteRM\PORTAL$Instance\Web.config
 & $Tools\Notepad++\notepad++.exe $DirSiteRM\WF$Instance\Web.config
@@ -364,10 +364,10 @@ icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 & $Tools\Notepad++\notepad++.exe $DirSiteRM\DataAnalyticsUI$Instance\Web.config
 & $Tools\Notepad++\notepad++.exe $DIRsvcRM\RM.Service.exe.config
 & $Tools\Notepad++\notepad++.exe $DIRsvcRM\tenants.config
+<#
 
 1.1. Inicie os Web Aplications
 
-#>
 <#===========================================================================================#>
 <#  Iniciando os WebAppPool
 <#===========================================================================================#> 
