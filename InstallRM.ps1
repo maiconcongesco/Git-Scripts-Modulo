@@ -17,7 +17,7 @@
 
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
-$VersionInstall = "RM_9.9.2.13" # Versão do que será instalada do Risk Manager ou do LGPD Manager (RM_x.x.x.x ou LGPD_x.x.x.x)
+$VersionInstall = "RM_9.10.2.4" # Versão do que será instalada do Risk Manager ou do LGPD Manager (RM_x.x.x.x ou LGPD_x.x.x.x)
 $NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
 $SubjectSSL = "RiskManager" # Subject do Certificado SSL
 $Instance = "" # Sigla do nome da instancia, caso essa instalação não seja intanciada deixe as aspas vazias ""
@@ -114,6 +114,10 @@ $cert = New-SelfSignedCertificate -Type Custom -KeySpec Signature `
 -Subject "CN=$SubjectSSL" -KeyExportPolicy Exportable `
 -HashAlgorithm sha256 -KeyLength 2048 `
 -CertStoreLocation "Cert:\LocalMachine\My" -KeyUsageProperty Sign -KeyUsage CertSign -NotAfter (Get-Date).AddYears(10) 
+
+<##### Criando certificado usando "makecert" - Util se estiver usando o Windows Server 2012R2, Windows 8.1 ou inferiores #####
+Copy-Item -Path "$Tools\makecert\makecert.exe" -Destination "C:\Windows\System32" -Force -Verbose
+makecert.exe -n "CN=RiskManagerX" -pe -ss My -sr LocalMachine -sky exchange -a sha1 -len 2048 -r  
 #>
 
 <#===========================================================================================#>
@@ -174,14 +178,13 @@ Set-Location "C:\Windows\system32\inetsrv\"
 .\appcmd.exe add apppool /name:"MMI$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
 
 <# Criar os Application Pools BCM #>
-# .\appcmd.exe add apppool /name:"BCM$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
+#.\appcmd.exe add apppool /name:"BCM$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 
 <# Criar os Application Pools ETL #>
-# .\appcmd.exe add apppool /name:"ETL$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
-#>
+#.\appcmd.exe add apppool /name:"ETL$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 
 <# Criar os Application LGPD #>
-.\appcmd.exe add apppool /name:"LGPD" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
+#.\appcmd.exe add apppool /name:"LGPD" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
 
 <#===========================================================================================#>
 <#   Realizando o Deploy das aplicações web
@@ -254,7 +257,7 @@ C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/MMI"  /applicati
 #>
 
 <# Configurando o web application LGPD: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/LGPD"  /applicationPool:"LGPD$Instance"
+#C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/LGPD"  /applicationPool:"LGPD$Instance"
 
 <#===========================================================================================#>
 <#  Copiando a biblioteca DevExpress para Apps/bin
@@ -262,8 +265,8 @@ C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/LGPD"  /applicat
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM$Instance\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF$Instance\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL$Instance\bin" -Force -Verbose
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\LGPD\bin" -Force -Verbose
-# Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
+#Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
+#Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\LGPD\bin" -Force -Verbose
 
 <#===========================================================================================#>
 <#  Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
