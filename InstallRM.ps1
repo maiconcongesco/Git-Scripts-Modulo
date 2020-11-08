@@ -351,6 +351,21 @@ icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 <#
 
 1. Confira se os Confgs estão OK, caso eles não tenham sido editados previamente será nessário editálos para que a aplicação funcione.
+
+<#===========================================================================================#>
+<#  Abrindo os configs com Notepad++ do pacote Tools
+<#===========================================================================================# 
+& $Tools\Notepad++\notepad++.exe $DirSiteRM\RM$Instance\Web.config
+& $Tools\Notepad++\notepad++.exe $DirSiteRM\PORTAL$Instance\Web.config
+& $Tools\Notepad++\notepad++.exe $DirSiteRM\WF$Instance\Web.config
+& $Tools\Notepad++\notepad++.exe $DirSiteRM\MMI$Instance\Web.config
+& $Tools\Notepad++\notepad++.exe $DirSiteRM\DataAnalyticsCacher$Instance\Web.config
+& $Tools\Notepad++\notepad++.exe $DirSiteRM\DataAnalyticsService$Instance\Web.config
+& $Tools\Notepad++\notepad++.exe $DirSiteRM\DataAnalyticsUI$Instance\Web.config
+& $Tools\Notepad++\notepad++.exe $DIRsvcRM\RM.Service.exe.config
+& $Tools\Notepad++\notepad++.exe $DIRsvcRM\tenants.config
+#>
+
 1.1. Inicie os Web Aplications
 
 <#===========================================================================================#>
