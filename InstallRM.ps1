@@ -142,10 +142,11 @@ New-Website -Name "$NameSite" -ApplicationPool "$NameSite" -IPAddress "*" -Physi
 
 <#===========================================================================================#>
 <#  Adicionando a ligação SSL ao site
-<#===========================================================================================#>
+<#===========================================================================================#
 $cert = Get-ChildItem -Path 'Cert:\LocalMachine\My' | Where-Object {$_.Subject -match '$SubjectSSL'}
 $binding = Get-WebBinding -Name '$NameSite'
 $binding.AddSslCertificate($cert.GetCertHashString(),'My')
+#>
 
 <#===========================================================================================#>
 <#  Criando os Applications Pool
