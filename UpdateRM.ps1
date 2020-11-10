@@ -67,6 +67,26 @@ $command.StartExecutionTime
 # Versão do PowerShell
 $PSVersionTable
 
+<#===========================================================================================#>
+<# Verificando se os Recursos do Windows requeridos estão instalados
+<#===========================================================================================#>
+# Get-WindowsFeature -Name web-server, web-webserver,  web-common-http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Http-Redirect, Web-Health, Web-Http-Logging, Web-Log-Libraries, Web-Request-Monitor, Web-Http-Tracing, Web-Performance, Web-Stat-Compression, Web-Security, Web-Filtering,  Web-App-Dev, Web-Net-Ext45, Web-AppInit, Web-ASP, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Console, Web-Mgmt-Compat, Web-Metabase, Web-Scripting-Tools, MSMQ-Services, MSMQ-Server, MSMQ-Directory, MSMQ-HTTP-Support, MSMQ-Triggers,  NET-Framework-45-Features, NET-Framework-45-Core, NET-Framework-45-ASPNET, NET-WCF-Services45, NET-WCF-TCP-PortSharing45 | Select-Object Name , InstallState
+
+<#===========================================================================================#>
+<#  Instalando os Recursos Windows		         				
+<#===========================================================================================#>
+# Add-WindowsFeature web-server, web-webserver, web-common-http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Http-Redirect,  Web-Health, Web-Http-Logging, Web-Log-Libraries, Web-Request-Monitor, Web-Http-Tracing, Web-Performance, Web-Stat-Compression, Web-Security, Web-Filtering,  Web-App-Dev, Web-Net-Ext45, Web-AppInit, Web-ASP, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Console, Web-Mgmt-Compat, Web-Metabase, Web-Scripting-Tools, MSMQ-Services, MSMQ-Server, MSMQ-Directory, MSMQ-HTTP-Support, MSMQ-Triggers,  NET-Framework-45-Features, NET-Framework-45-Core, NET-Framework-45-ASPNET, NET-WCF-Services45, NET-WCF-TCP-PortSharing45
+
+<#===========================================================================================#>
+<#  Desbloqueando arquivos baixados da internet
+<#===========================================================================================#>
+Unblock-File -Path "$RaizInstall\*"
+
+<#===========================================================================================#>
+<#  Descompactando o pacote de "Tools"
+<#===========================================================================================#>
+# Expand-Archive -Path "$RaizInstall\Tools.zip" -DestinationPath "$RaizInstall" -Verbose
+
 #===========================================================================================#
 #   Descompactando os arquivos das aplicações do Risk Manager
 #===========================================================================================#
@@ -158,31 +178,16 @@ If(!(test-path "$DIRbkp\$VersionBKPRM\Configs"))
 #===========================================================================================#
 
 # Copia os arquivos e a estrutura de Diretórios.
-Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkp\$VersionBKPRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkp\$VersionBKPRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionBKPRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkp\$VersionBKPRM\LicenseRM" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkp\$VersionRM\LicenseRM" -Recurse -Force -Verbose
 
 # Removendo os configs e estrutura de diretórios desnecessários.
-Remove-Item "$DIRbkp\$VersionBKPRM\Configs\BCM\Views" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionBKPRM\Configs\DataAnalyticsService\Views" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionBKPRM\Configs\DataAnalyticsUI\Views" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionBKPRM\Configs\MMI\Areas" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionBKPRM\Configs\MMI\Views" -Recurse -Verbose -Force
-Remove-Item "$DIRbkp\$VersionBKPRM\Configs\RM\MVC" -Recurse -Verbose -Force
-
-# Apaga diretórios vazios - Removendo pastas vazias (à última sub-pasta), executado varias vezes pra ir removendo as novas sub-pastas vazias.
-(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-(Get-ChildItem “$DIRbkp\$VersionBKPRM” -r | Where-Object {$_.PSIsContainer -eq $True}) | Where-Object{$_.GetFileSystemInfos().Count -eq 0} | remove-item -Verbose
-#>
+Remove-Item -recurse $DIRbkp\$VersionRM\Configs\*\* -exclude *.config -Verbose
 
 #===========================================================================================#
-#   Removeendo conteúdo das pastas dos Serviços e APPs
+#   Removendo conteúdo das pastas dos Serviços e APPs
 #===========================================================================================#
 Remove-Item -Path $DIRsvcRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
 Remove-Item -Path $DIRsvcScheduler\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
