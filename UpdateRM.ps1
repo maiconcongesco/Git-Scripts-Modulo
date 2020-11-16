@@ -123,7 +123,7 @@ Stop-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
+#Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #Stop-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
 #>
 
@@ -157,14 +157,6 @@ If(!(test-path $DIRbkp\$VersionBKPRM))
 #>
 
 #===========================================================================================#
-#   Fazendo o Backup do RiskManager
-#===========================================================================================#
-copy-item $DIRsvcRM "$DIRbkp\$VersionBKPRM" -Recurse -Verbose # Backup do Serviço do RiskManager
-copy-item $DIRsvcScheduler "$DIRbkp\$VersionBKPRM" -Recurse -Verbose # Backup do Serviço do Modulo Scheduler
-copy-item $DIRsiteRM "$DIRbkp\$VersionBKPRM" -Recurse -Verbose # Backup das Aplicações do Risk Manager
-#>
-
-#===========================================================================================#
 #   Criando diretório para Backup de Configs
 #===========================================================================================#
 If(!(test-path "$DIRbkp\$VersionBKPRM\Configs"))
@@ -178,20 +170,45 @@ If(!(test-path "$DIRbkp\$VersionBKPRM\Configs"))
 #===========================================================================================#
 
 # Copia os arquivos e a estrutura de Diretórios.
-Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkp\$VersionRM\LicenseRM" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkp\$VersionBKPRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkp\$VersionBKPRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionBKPRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkp\$VersionBKPRM\LicenseRM" -Recurse -Force -Verbose
 
 # Removendo os configs e estrutura de diretórios desnecessários.
-Remove-Item -recurse $DIRbkp\$VersionRM\Configs\*\* -exclude *.config -Verbose
+Remove-Item -recurse $DIRbkp\$VersionBKPRM\Configs\*\* -exclude *.config -Verbose
 
 #===========================================================================================#
-#   Removendo conteúdo das pastas dos Serviços e APPs
+#   Fazendo o Backup dos Serviços RiskManager e Modulo Scheduler
 #===========================================================================================#
-Remove-Item -Path $DIRsvcRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
-Remove-Item -Path $DIRsvcScheduler\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
-Remove-Item -Path $DIRsiteRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
+Move-item "$DIRsvcRM" "$DIRbkp\$VersionBKPRM" -Verbose -Force # Backup do Serviço do RiskManager
+Move-item "$DIRsvcScheduler" "$DIRbkp\$VersionBKPRM" -Verbose -Force # Backup do Serviço do Modulo Scheduler
+#>
+
+#===========================================================================================#
+#   Criando diretório para Backup do Site RiskManager
+#===========================================================================================#
+If(!(test-path "$DIRbkp\$VersionBKPRM\$NameSite"))
+{
+      New-Item -ItemType Directory -Force -Path "$DIRbkp\$VersionBKPRM\$NameSite"
+}
+#>
+
+#===========================================================================================#
+#   Fazendo o Backup do Site RiskManager (Movendo arquivos)
+#===========================================================================================#
+Move-item -Path "$DIRsiteRM\*" "$DIRbkp\$VersionBKPRM\$NameSite" -Verbose -Force # Backup das Aplicações do Risk Manager
+#>
+
+#===========================================================================================#
+#   Fazendo o Backup do RiskManager (Copiando arquivos) Removendo arquivos já arquivados
+#===========================================================================================#
+# copy-item $DIRsvcRM "$DIRbkp\$VersionBKPRM" -Recurse -Verbose # Backup do Serviço do RiskManager
+# copy-item $DIRsvcScheduler "$DIRbkp\$VersionBKPRM" -Recurse -Verbose # Backup do Serviço do Modulo Scheduler
+# copy-item $DIRsiteRM "$DIRbkp\$VersionBKPRM" -Recurse -Verbose # Backup das Aplicações do Risk Manager
+# Remove-Item -Path $DIRsvcRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
+# Remove-Item -Path $DIRsvcScheduler\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
+# Remove-Item -Path $DIRsiteRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
 #>
 
 #===========================================================================================#
@@ -243,7 +260,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI" 
 
 # Deploy da aplicação BCM 
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
+#.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
 
 # Deploy da aplicação ETL 
 #.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETLProcessor"
@@ -255,7 +272,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL\bin" -Force -Verbose
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
+#Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
