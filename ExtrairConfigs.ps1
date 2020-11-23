@@ -60,8 +60,8 @@ If(!(test-path "$DIRbkp\$VersionRM\Configs"))
 
 # Copia os arquivos e a estrutura de Diretórios.
 Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkp\$VersionRM\Configs\RiskManager" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionRM\Configs\RiskManager" -Recurse -Force -Verbose
 Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkp\$VersionRM\LicenseRM" -Recurse -Force -Verbose
 
 # Removendo os configs e estrutura de diretórios desnecessários.
@@ -69,7 +69,7 @@ Remove-Item -recurse $DIRbkp\$VersionRM\Configs\*\* -exclude *.config -Verbose
 
 # Compactando Pasta com configs
 Add-Type -Assembly "System.IO.Compression.FileSystem"
-[System.IO.Compression.ZipFile]::CreateFromDirectory("$DIRbkp\$VersionRM\Configs", "$DIRbkp\$VersionRM\Configs.zip")
+[System.IO.Compression.ZipFile]::CreateFromDirectory("$DIRbkp\$VersionRM\Configs\RiskManager", "$DIRbkp\$VersionRM\Configs.zip")
 
 # Abrindo pasta
 Set-Location "$DIRbkp\$VersionRM"
