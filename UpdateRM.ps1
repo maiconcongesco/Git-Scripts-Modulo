@@ -312,11 +312,9 @@ Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -V
 <#===========================================================================================#
 #   Atualizando os arquivos de Config a partir do Backup
 #===========================================================================================#
-Expand-Archive -Path "$ConfigRM" -DestinationPath "$DIRsiteRM/Config" -Force -Verbose
-Copy-Item -Path "$DIRsiteRM/Config/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
-Remove-Item -Path "$DIRsiteRM/Config/RiskManager.Service/" -Force -Recurse -Verbose
-Copy-Item -Path "$DIRsiteRM/Config/*" -Destination "$DIRsiteRM" -Force -Recurse -Verbose
-Remove-Item -Path "$DIRsiteRM/Config/" -Force -Recurse -Verbose
+Copy-Item -Path "$DIRbkp/$VersionBKPRM/Configs/*" -Destination "$DIRsiteRM" -Force -Recurse -Verbose
+Copy-Item -Path "$DIRbkp/$VersionBKPRM/Configs/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
+Remove-Item -Path "$DIRsiteRM/RiskManager.Service" -Force -Recurse -Verbose
 #>
 
 #===========================================================================================#
