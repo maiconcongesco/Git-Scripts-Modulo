@@ -74,10 +74,3 @@ Add-Type -Assembly "System.IO.Compression.FileSystem"
 # Abrindo pasta
 Set-Location "$DIRbkp\$VersionRM"
 Start-Process .
-
-#===========================================================================================#
-#   ERRO EM REMOÇÃO DE LOGS? PODE SER APENAS UM ERRO ESPERADO.
-#===========================================================================================#
-# ATENÇÃO: Se o Serviço e os Application pools não estiverem parados os logs do dia NÃO serão removidos.
-# Uma messagem de erro em vermelho aparecerá (...The process cannot access the file...because it is being used by another process...)
-# Não se preocupe, apesar de parecer um erro não é, a aplicação precisa manter-se escrevendo esse log, esse "erro" é esperado.
