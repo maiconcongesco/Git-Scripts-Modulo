@@ -33,7 +33,7 @@ Set-ExecutionPolicy RemoteSigned ### Os scripts baixados devem ser assinados por
 # Geralmente essas váriaveis precisarão ser alteradas
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
-$VersionRM = "9.10.2.4" # Versão do RM que será arquivado (Backup)
+$VersionBKPRM = "9.10.2.4" # Versão do RM que será arquivado (Backup)
 
 # Ocasionalmente pode ser necessário alterar essas variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
@@ -46,9 +46,9 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 #===========================================================================================#
 #   Criando diretório para Backup de Configs
 #===========================================================================================#
-If(!(test-path "$DIRbkp\$VersionRM\Configs"))
+If(!(test-path "$DIRbkp\$VersionBKPRM\Configs"))
 {
-      New-Item -ItemType Directory -Force -Path "$DIRbkp\$VersionRM\Configs"
+      New-Item -ItemType Directory -Force -Path "$DIRbkp\$VersionBKPRM\Configs"
 }
 #>
 
@@ -59,18 +59,18 @@ If(!(test-path "$DIRbkp\$VersionRM\Configs"))
 #===========================================================================================#
 
 # Copia os arquivos e a estrutura de Diretórios.
-Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkp\$VersionRM\Configs\RiskManager" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionRM\Configs\RiskManager" -Recurse -Force -Verbose
-Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkp\$VersionRM\LicenseRM" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkp\$VersionBKPRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkp\$VersionBKPRM\Configs\RiskManager" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionBKPRM\Configs\RiskManager" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkp\$VersionBKPRM\LicenseRM" -Recurse -Force -Verbose
 
 # Removendo os configs e estrutura de diretórios desnecessários.
-Remove-Item -recurse $DIRbkp\$VersionRM\Configs\*\* -exclude *.config -Verbose
+Remove-Item -recurse $DIRbkp\$VersionBKPRM\Configs\*\* -exclude *.config -Verbose
 
 # Compactando Pasta com configs
 Add-Type -Assembly "System.IO.Compression.FileSystem"
-[System.IO.Compression.ZipFile]::CreateFromDirectory("$DIRbkp\$VersionRM\Configs\RiskManager", "$DIRbkp\$VersionRM\Configs.zip")
+[System.IO.Compression.ZipFile]::CreateFromDirectory("$DIRbkp\$VersionBKPRM\Configs\RiskManager", "$DIRbkp\$VersionBKPRM\Configs.zip")
 
 # Abrindo pasta
-Set-Location "$DIRbkp\$VersionRM"
+Set-Location "$DIRbkp\$VersionBKPRM"
 Start-Process .
