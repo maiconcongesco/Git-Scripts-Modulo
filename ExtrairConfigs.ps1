@@ -53,28 +53,34 @@ If(!(test-path "$DIRbkp\$VersionBKPRM\Configs"))
 #>
 
 #===========================================================================================#
-#   Criando diretório para Backup do arquivo de licença
-#===========================================================================================#
-If(!(test-path "$DIRbkp\$VersionBKPRM\LicenseRM"))
-{
-      New-Item -ItemType Directory -Force -Path "$DIRbkp\$VersionBKPRM\LicenseRM"
-}
-#>
-
-#===========================================================================================#
-#   Backup de Configs do arquivo de licença do Risk Manager
+#   Backup dos Configs do Risk Manager
 #===========================================================================================#
 
 # Copia os arquivos e a estrutura de Diretórios.
 Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkp\$VersionBKPRM\Configs" -Recurse -Force -Verbose
 Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkp\$VersionBKPRM\Configs\RiskManager" -Recurse -Force -Verbose
 Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionBKPRM\Configs\RiskManager" -Recurse -Force -Verbose
-Copy-Item "$DIRsiteRM\RM\modulelicenses.config" -Destination "$DIRbkp\$VersionBKPRM\LicenseRM\modulelicenses.config" -Recurse -Force -Verbose
 
 # Removendo os configs e estrutura de diretórios desnecessários.
 Remove-Item -recurse $DIRbkp\$VersionBKPRM\Configs\*\* -exclude *.config -Verbose
 
+#===========================================================================================#
+#   Criando diretório para Backup do arquivo de licença
+#===========================================================================================#
+If(!(test-path "$DIRbkp\$VersionBKPRM\LicenseRM"))
+{
+      New-Item -ItemType Directory -Force -Path "$DIRbkp\$VersionBKPRM\Configs\RiskManager\LicenseRM"
+}
+#>
+
+#===========================================================================================#
+#   Backup do arquivo de licença do Risk Manager
+#===========================================================================================#
+Copy-Item "$DIRsiteRM\RM\modulelicenses.config" -Destination "$DIRbkp\$VersionBKPRM\Configs\RiskManager\LicenseRM\modulelicenses.config" -Recurse -Force -Verbose
+
+#===========================================================================================#
 # Compactando Pasta com configs
+#===========================================================================================#
 Add-Type -Assembly "System.IO.Compression.FileSystem"
 [System.IO.Compression.ZipFile]::CreateFromDirectory("$DIRbkp\$VersionBKPRM\Configs\RiskManager", "$DIRbkp\$VersionBKPRM\Configs.zip")
 

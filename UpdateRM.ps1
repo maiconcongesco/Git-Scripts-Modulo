@@ -14,25 +14,24 @@
 #===========================================================================================#
 
 # Será necessário alterar para os diretórios corretos
-$VersionRM = "9.10.2.4" # Versão do RM que será instalada
-$VersionBKPRM = "9.9.2.13" # Versão do RM que será arquivado (Backup)
+$VersionRM = "9.10.2.11" # Versão do RM que será instalada
+$VersionBKPRM = "9.10.2.7" # Versão do RM que será arquivado (Backup)
 $DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
 $NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
-$FileManual = "$RaizInstall\Manual_RM_9.9_pt_br.zip" # Caminho do Manual compactado.
+$FileManual = "$RaizInstall\Manual_RM_9.10_pt_br.zip" # Caminho do Manual compactado.
 
 # Ocasionalmente pode ser necessário alterar essas variáveis
 $PackInstallRM = "$RaizInstall\RM_$VersionRM" # Diretório descompactado dos arquivos de instalação do Risk Manager
 $PackRMZIP = "$RaizInstall\RM_$VersionRM.zip" # Caminho com o pacote de intalação compactado do Risk Manager
-$ConfigRM = "$RaizInstall\ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
+$ConfigRM = "$DIRbkp\$VersionBKPRM\Configs.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
 $ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*" | ft -Autosize] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler
 $RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*" | ft -Autosize] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler
 
 # Raramente será necessário alterar essas variáveis
-$FileLicense = "$DIRbkp\$VersionBKPRM\LicenseRM\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $XDays = 00  # Quantidade de dias que pretende reter o log.
 $Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos que serão deletados.
 $LogPath = "$DIRsvcRM", "$DIRsvcScheduler", "$DIRsiteRM"   # Caminho da pasta principal onde iremos buscar e limpar os logs, Separe por virgula se for mais de uma pasta.
@@ -123,7 +122,7 @@ Stop-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
 Stop-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
-#Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
 #Stop-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
 #>
 
@@ -166,17 +165,36 @@ If(!(test-path "$DIRbkp\$VersionBKPRM\Configs"))
 #>
 
 #===========================================================================================#
-#   Backup de Configs do arquivo de licença do Risk Manager
+#   Backup dos Configs do Risk Manager
 #===========================================================================================#
 
 # Copia os arquivos e a estrutura de Diretórios.
-Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkp\$VersionRM\Configs" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkp\$VersionRM\Configs\RiskManager" -Recurse -Force -Verbose
-Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionRM\Configs\RiskManager" -Recurse -Force -Verbose
-Copy-Item "$DIRsiteRM\RM" -Filter "modulelicenses*.config" -Destination "$DIRbkp\$VersionRM\LicenseRM" -Recurse -Force -Verbose
+Copy-Item "$DIRsiteRM" -Filter "Web.config" -Destination "$DIRbkp\$VersionBKPRM\Configs" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "RM.Service.exe.config" -Destination "$DIRbkp\$VersionBKPRM\Configs\RiskManager" -Recurse -Force -Verbose
+Copy-Item "$DIRsvcRM" -Filter "tenants.config" -Destination "$DIRbkp\$VersionBKPRM\Configs\RiskManager" -Recurse -Force -Verbose
 
 # Removendo os configs e estrutura de diretórios desnecessários.
-Remove-Item -recurse $DIRbkp\$VersionRM\Configs\*\* -exclude *.config -Verbose
+Remove-Item -recurse $DIRbkp\$VersionBKPRM\Configs\*\* -exclude *.config -Verbose
+
+#===========================================================================================#
+#   Criando diretório para Backup do arquivo de licença
+#===========================================================================================#
+If(!(test-path "$DIRbkp\$VersionBKPRM\LicenseRM"))
+{
+      New-Item -ItemType Directory -Force -Path "$DIRbkp\$VersionBKPRM\Configs\RiskManager\LicenseRM"
+}
+#>
+
+#===========================================================================================#
+#   Backup do arquivo de licença do Risk Manager
+#===========================================================================================#
+Copy-Item "$DIRsiteRM\RM\modulelicenses.config" -Destination "$DIRbkp\$VersionBKPRM\Configs\RiskManager\LicenseRM\modulelicenses.config" -Recurse -Force -Verbose
+
+#===========================================================================================#
+# Compactando Pasta com configs
+#===========================================================================================#
+Add-Type -Assembly "System.IO.Compression.FileSystem"
+[System.IO.Compression.ZipFile]::CreateFromDirectory("$DIRbkp\$VersionBKPRM\Configs\RiskManager", "$DIRbkp\$VersionBKPRM\Configs.zip")
 
 #===========================================================================================#
 #   Fazendo o Backup dos Serviços RiskManager e Modulo Scheduler
@@ -260,7 +278,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI" 
 
 # Deploy da aplicação BCM 
-#.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
 
 # Deploy da aplicação ETL 
 #.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETLProcessor"
@@ -272,7 +290,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL\bin" -Force -Verbose
-#Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
+Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
@@ -288,11 +306,6 @@ Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\DashboardDesigner
 #   Copiando os arquivos bin do MMI para o RM
 #===========================================================================================#
 Copy-Item -Path "$PackInstallRM\Web.Applications\MMI\bin\rm\*" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
-
-#===========================================================================================#
-#   Copiando o arquivo de licença
-#===========================================================================================#
-Copy-Item -Path "$FileLicense"  -Destination "$DIRsiteRM\RM" -Force -Verbose
 
 #===========================================================================================#
 #   Criando o diretório para o Manual
@@ -323,6 +336,13 @@ Remove-Item -Path "$DIRsiteRM/RiskManager.Service" -Force -Recurse -Verbose
 Expand-Archive -Path "$ConfigRM" -DestinationPath "$DIRsiteRM" -Force -Verbose
 Copy-Item -Path "$DIRsiteRM/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
 Remove-Item -Path "$DIRsiteRM/RiskManager.Service/" -Force -Recurse -Verbose
+#>
+
+#===========================================================================================#
+#   Atualização do arquivo de licença
+#===========================================================================================#
+Copy-Item -Path "$DIRsiteRM/LicenseRM/modulelicenses.config"  -Destination "$DIRsiteRM\RM" -Force -Verbose
+Remove-Item -Path "$DIRsiteRM/LicenseRM/" -Force -Recurse -Verbose
 #>
 
 #===========================================================================================#
