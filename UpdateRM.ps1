@@ -23,18 +23,20 @@ $RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do
 # Ocasionalmente pode ser necessário alterar essas variáveis
 $NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
 $FileManual = "$RaizInstall\Manual_RM_9.10_pt_br.zip" # Caminho do Manual compactado.
-$DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
-$DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
-$ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*" | ft -Autosize] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler
-$RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*" | ft -Autosize] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler
+$PORTAL = "PORTAL" # Indica se o portal foi criado com o nome "RM_PORTAL" ou "PORTAL"
+$BCM = "BCM" # Indica se o modulo Continuidade foi criado com o nome "BCM" ou "GCN"
+$ModuloSchedulerService = "ModuloSchedulerService" # Nome do Serviço do Modulo Scheduler  - Execute para descobrir [Get-Service -Name "Modulo*" | ft -Autosize]
+$RiskManagerService =  "RiskManagerService" # Nome do Serviço do Risk Manager - Execute para descobrir [Get-Service -Name "Risk*" | ft -Autosize]
 $ConfigRM = "$DIRbkp\$VersionBKPRM\Configs.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 
 # Raramente será necessário alterar essas variáveis
+$DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
+$DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
 $PackInstallRM = "$RaizInstall\RM_$VersionRM" # Diretório descompactado dos arquivos de instalação do Risk Manager
 $PackRMZIP = "$RaizInstall\RM_$VersionRM.zip" # Caminho com o pacote de intalação compactado do Risk Manager
 $XDays = 00  # Quantidade de dias que pretende reter o log.
 $Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos que serão deletados.
-$LogPath = "$DIRsvcRM", "$DIRsvcScheduler", "$DIRsiteRM"   # Caminho da pasta principal onde iremos buscar e limpar os logs, Separe por virgula se for mais de uma pasta.
+$LogPath = "$DIRsvcRM", "$DIRsvcScheduler", "$DIRsiteRM" # Caminho da pasta onde iremos buscar e limpar os logs, separe por virgula se for mais de uma pasta.
 
 <#==========================================================================================#
 #   >>> OBSERVAÇÕES IMPORTANTES <<<
@@ -47,11 +49,12 @@ Powershell 1.0 — Foi feito para Windows XP SP2, Windows Server 2003 SP1 e Wind
 Powershell 2.0 — Integrado com o Windows 7 e Windows Server 2008 R2. No Windows XP está disponível com o SP3, para o Windows Server 2003 com o SP2, e Windows Vista com o SP1.
 Powershell 3.0 — Integrado com o Windows 8 e Windows Server 2012. No Windows 7, Windows Server 2008 e Windows Server 2008 R2 está disponível nos respectivos SP1.
 Powershell 4.0 — Integrado com o Windows 8.1 e com o Windows Server 2012 R2. No Windows 7, Windows Server 2008 R2 e Windows Server 2012 está disponível nos respectivos SP1.
-Powershell 5.0 — Integrado com o Windows Server 2016, 2019 e Windows 10 (no update de aniversário). A compatibilidade com o Windows Vista e Seven (7), Windows Server 2008, 2008 R2, 2012 e 2012 R2.
+Powershell 5.0 — Integrado com o Windows Server 2016, 2019 e Windows 10 (no update de aniversário). Compatível com todos os Windows a partir do Vista e Windows Server 2008.
 #===========================================================================================#
 #===========================================================================================#
 # Em algumas situações pode ser necessário alterar a diretiva de execução de script do Windows.
-O cmdlet "Set-ExecutionPolicy" determina se os scripts PowerShell terão permissão de execução. O cmdlet "Get-ExecutionPolicy" verifica a política de execução corrente, o cmdlet aplica Set-ExecutionPolicy a política.
+O cmdlet "Get-ExecutionPolicy" verifica a política de execução corrente.
+O cmdlet "Set-ExecutionPolicy" determina se os scripts PowerShell terão permissão de execução. 
 Set-ExecutionPolicy Restricted ### O PowerShell só pode ser usado no modo interativo. O script não poderá pode ser executado. 
 Set-ExecutionPolicy Unrestricted ###  Todos os scripts do Windows PowerShell podem ser executados.
 Set-ExecutionPolicy AllSigned ### Somente scripts assinados por um editor confiável podem ser executados.
@@ -116,62 +119,25 @@ sc.exe delete "$ModuloSchedulerService"
 #===========================================================================================#
 Stop-WebAppPool "RiskManager"
 Stop-WebAppPool "RM"
+Stop-WebAppPool "$PORTAL"
 Stop-WebAppPool "WF"
 Stop-WebAppPool "DataAnalyticsCacher"
 Stop-WebAppPool "DataAnalyticsService"
 Stop-WebAppPool "DataAnalyticsUI"
 Stop-WebAppPool "MMI"
 
-# === Parando o PORTAL ou RM_PORTAL === #
-if(Test-Path IIS:\AppPools\PORTAL)
-{
-"Parando PORTAL"
-Stop-WebAppPool "PORTAL"
-return $true;
-}
-else
-{
-"PORTAL não existe"
-if(Test-Path IIS:\AppPools\RM_PORTAL)
-{
-"Parando RM_PORTAL"
-Stop-WebAppPool "RM_PORTAL"
-return $true;
-}
-else
-{
-"RM_PORTAL não existe"
-return $false;
-}
-return $false;
-}
-
-# === Parando o BCM === #
-if(Test-Path IIS:\AppPools\BCM)
+# === Parando o BCM/GCN === #
+if(Test-Path IIS:\AppPools\$BCM)
 {
 "Parando BCM"
-Stop-WebAppPool "BCM"
+Stop-WebAppPool "$BCM"
 return $true;
 }
 else
 {
-"BCM não existe"
+"BCM/GCN não existe"
 return $false;
 }
-
-# === Parando o ETLProcessor === #
-if(Test-Path IIS:\AppPools\ETLProcessor)
-{
-"Parando ETLProcessor"
-Stop-WebAppPool "ETLProcessor"
-return $true;
-}
-else
-{
-"ETLProcessor não existe"
-return $false;
-}
-#>
 
 #===========================================================================================#
 #   Verificando status dos WebAppPools
@@ -310,11 +276,11 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 # Deploy da aplicação RM  
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/RM"
 
+# Deploy da aplicação PORTAL  
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/$PORTAL"
+
 # Deploy da aplicação Workflow
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Workflow.Services.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/WF"
-
-# Deploy da aplicação PORTAL  
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/PORTAL"
 
 # Deploy da aplicação Data Analytics Cacher 
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsCacher.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsCacher"
@@ -328,6 +294,18 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 # Deploy da aplicação Data MMI 
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI" 
 
+# Deploy da aplicação BCM
+if(Test-Path IIS:\AppPools\$BCM)
+{
+"Realizando Deploy do BCM/GCN"
+.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/$BCM" 
+return $true;
+}
+else
+{
+"BCM/GCN não existe"
+return $false;
+}
 #>
 
 #===========================================================================================#
@@ -335,7 +313,7 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 #===========================================================================================#
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF\bin" -Force -Verbose
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL\bin" -Force -Verbose
+Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\$PORTAL\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
@@ -395,60 +373,23 @@ icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 #===========================================================================================# 
 Start-WebAppPool "RiskManager"
 Start-WebAppPool "RM"
-Start-WebAppPool "PORTAL"
+Start=WebAppPool "$PORTAL"
 Start-WebAppPool "WF"
 Start-WebAppPool "DataAnalyticsCacher"
 Start-WebAppPool "DataAnalyticsService"
 Start-WebAppPool "DataAnalyticsUI"
 Start-WebAppPool "MMI"
 
-# === Iniciando o PORTAL ou RM_PORTAL === #
-if(Test-Path IIS:\AppPools\PORTAL)
-{
-"Iniciando PORTAL"
-Start-WebAppPool "PORTAL"
-return $true;
-}
-else
-{
-"PORTAL não existe"
-if(Test-Path IIS:\AppPools\RM_PORTAL)
-{
-"Iniciando RM_PORTAL"
-Start-WebAppPool "RM_PORTAL"
-return $true;
-}
-else
-{
-"RM_PORTAL não existe"
-return $false;
-}
-return $false;
-}
-
 # === Iniciando o BCM === #
-if(Test-Path IIS:\AppPools\BCM)
+if(Test-Path IIS:\AppPools\$BCM)
 {
-"Iniciando BCM"
-Start-WebAppPool "BCM"
+"Iniciando BCM/GCN"
+Start-WebAppPool "$BCM"
 return $true;
 }
 else
 {
-"BCM não existe"
-return $false;
-}
-
-# === Iniciando o ETLProcessor === #
-if(Test-Path IIS:\AppPools\ETLProcessor)
-{
-"Iniciando ETLProcessor"
-Start-WebAppPool "ETLProcessor"
-return $true;
-}
-else
-{
-"ETLProcessor não existe"
+"BCM/GCN não existe"
 return $false;
 }
 #>
