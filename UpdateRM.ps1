@@ -13,25 +13,25 @@
 #   Variáveis >>> ATENÇÃO: Um erro no preenchimento dessas variaveis e todo o script é comprometido
 #===========================================================================================#
 
-# Será necessário alterar para os diretórios corretos
+# Normalmente é necessário alterar essas variáveis
 $VersionRM = "9.10.2.11" # Versão do RM que será instalada
 $VersionBKPRM = "9.10.2.7" # Versão do RM que será arquivado (Backup)
 $DIRbkp = "D:\BackupRM" # Diretório de backup do Risk Manager
 $DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
 $RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
-$NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
-$FileManual = "$RaizInstall\Manual_RM_9.10_pt_br.zip" # Caminho do Manual compactado.
 
 # Ocasionalmente pode ser necessário alterar essas variáveis
-$PackInstallRM = "$RaizInstall\RM_$VersionRM" # Diretório descompactado dos arquivos de instalação do Risk Manager
-$PackRMZIP = "$RaizInstall\RM_$VersionRM.zip" # Caminho com o pacote de intalação compactado do Risk Manager
-$ConfigRM = "$DIRbkp\$VersionBKPRM\Configs.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
+$NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
+$FileManual = "$RaizInstall\Manual_RM_9.10_pt_br.zip" # Caminho do Manual compactado.
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
 $ModuloSchedulerService = "ModuloSchedulerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*" | ft -Autosize] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler
 $RiskManagerService =  "RiskManagerService" # Execute o comando [Get-Service -Name "Modulo*", "Risk*" | ft -Autosize] sem os "[]" para descobrir o Nome do Serviço do Modulo Scheduler
+$ConfigRM = "$DIRbkp\$VersionBKPRM\Configs.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 
 # Raramente será necessário alterar essas variáveis
+$PackInstallRM = "$RaizInstall\RM_$VersionRM" # Diretório descompactado dos arquivos de instalação do Risk Manager
+$PackRMZIP = "$RaizInstall\RM_$VersionRM.zip" # Caminho com o pacote de intalação compactado do Risk Manager
 $XDays = 00  # Quantidade de dias que pretende reter o log.
 $Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos que serão deletados.
 $LogPath = "$DIRsvcRM", "$DIRsvcScheduler", "$DIRsiteRM"   # Caminho da pasta principal onde iremos buscar e limpar os logs, Separe por virgula se for mais de uma pasta.
@@ -114,22 +114,73 @@ sc.exe delete "$ModuloSchedulerService"
 #===========================================================================================#
 #   Parando os WebAppPools
 #===========================================================================================#
-Stop-WebAppPool "RiskManager" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "RM" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "PORTAL" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "WF" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
-#Stop-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
+Stop-WebAppPool "RiskManager"
+Stop-WebAppPool "RM"
+Stop-WebAppPool "WF"
+Stop-WebAppPool "DataAnalyticsCacher"
+Stop-WebAppPool "DataAnalyticsService"
+Stop-WebAppPool "DataAnalyticsUI"
+Stop-WebAppPool "MMI"
+
+# === Parando o PORTAL ou RM_PORTAL === #
+if(Test-Path IIS:\AppPools\PORTAL)
+{
+"Parando PORTAL"
+Stop-WebAppPool "PORTAL"
+return $true;
+}
+else
+{
+"PORTAL não existe"
+if(Test-Path IIS:\AppPools\RM_PORTAL)
+{
+"Parando RM_PORTAL"
+Stop-WebAppPool "RM_PORTAL"
+return $true;
+}
+else
+{
+"RM_PORTAL não existe"
+return $false;
+}
+return $false;
+}
+
+# === Parando o BCM === #
+if(Test-Path IIS:\AppPools\BCM)
+{
+"Parando BCM"
+Stop-WebAppPool "BCM"
+return $true;
+}
+else
+{
+"BCM não existe"
+return $false;
+}
+
+# === Parando o ETLProcessor === #
+if(Test-Path IIS:\AppPools\ETLProcessor)
+{
+"Parando ETLProcessor"
+Stop-WebAppPool "ETLProcessor"
+return $true;
+}
+else
+{
+"ETLProcessor não existe"
+return $false;
+}
 #>
 
 #===========================================================================================#
 #   Verificando status dos WebAppPools
 #===========================================================================================#
-Get-IISAppPool
+# Listando WebAppPools ativos
+Get-IISAppPool | Where {$_.State -eq "Started"}
+write-host "========" -ForegroundColor "DarkRed" -BackgroundColor white
+# Listando WebAppPools parados
+Get-IISAppPool | Where {$_.State -eq "Stopped"}
 
 #===========================================================================================#
 #	Limpando os Logs		>>> ATENÇÃO! Essa remoção pode ser irreversível
@@ -141,7 +192,7 @@ foreach ($File in $Files)
 {
     if ($NULL -ne $File)
     {
-        write-host "Deleting File $File" -ForegroundColor "DarkRed"
+        write-host "Deleting File $File" -ForegroundColor "DarkRed" -BackgroundColor white
         Remove-Item $File.FullName | out-null
 	}
 }
@@ -224,16 +275,16 @@ Move-item -Path "$DIRsiteRM\*" "$DIRbkp\$VersionBKPRM\$NameSite" -Verbose -Force
 # copy-item $DIRsvcRM "$DIRbkp\$VersionBKPRM" -Recurse -Verbose # Backup do Serviço do RiskManager
 # copy-item $DIRsvcScheduler "$DIRbkp\$VersionBKPRM" -Recurse -Verbose # Backup do Serviço do Modulo Scheduler
 # copy-item $DIRsiteRM "$DIRbkp\$VersionBKPRM" -Recurse -Verbose # Backup das Aplicações do Risk Manager
-# Remove-Item -Path $DIRsvcRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
-# Remove-Item -Path $DIRsvcScheduler\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
-# Remove-Item -Path $DIRsiteRM\* -Recurse -Verbose -Force # *> "$destinyPath\log-$date.txt"
+# Remove-Item -Path $DIRsvcRM\* -Recurse -Verbose -Force
+# Remove-Item -Path $DIRsvcScheduler\* -Recurse -Verbose -Force
+# Remove-Item -Path $DIRsiteRM\* -Recurse -Verbose -Force
 #>
 
 #===========================================================================================#
 #   Renomeando os arquivos dos serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
-rename-item -path "$PackInstallRM\Binaries\Modulo Scheduler Service.zipx" -newname "Modulo Scheduler Service.zip" -Verbose # *> "$destinyPath\log-$date.txt"
-rename-item -path "$PackInstallRM\Binaries\RiskManager.Service.zipx" -newname "RiskManager.Service.zip" -Verbose # *> "$destinyPath\log-$date.txt"
+rename-item -path "$PackInstallRM\Binaries\Modulo Scheduler Service.zipx" -newname "Modulo Scheduler Service.zip" -Verbose
+rename-item -path "$PackInstallRM\Binaries\RiskManager.Service.zipx" -newname "RiskManager.Service.zip" -Verbose
 #>
 
 #===========================================================================================#
@@ -277,11 +328,6 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 # Deploy da aplicação Data MMI 
 .\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI" 
 
-# Deploy da aplicação BCM 
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM"
-
-# Deploy da aplicação ETL 
-#.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETLProcessor"
 #>
 
 #===========================================================================================#
@@ -290,7 +336,6 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF\bin" -Force -Verbose
 Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL\bin" -Force -Verbose
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
@@ -322,14 +367,6 @@ If(!(test-path $DIRsiteRM\RM\Manual\pt))
 Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM\Manual\pt" -Verbose
 #>
 
-<#===========================================================================================#
-#   Atualizando os arquivos de Config a partir do Backup
-#===========================================================================================#
-Copy-Item -Path "$DIRbkp/$VersionBKPRM/Configs/*" -Destination "$DIRsiteRM" -Force -Recurse -Verbose
-Copy-Item -Path "$DIRbkp/$VersionBKPRM/Configs/RiskManager.Service/*.config" -Destination "$DIRsvcRM" -Force -Verbose
-Remove-Item -Path "$DIRsiteRM/RiskManager.Service" -Force -Recurse -Verbose
-#>
-
 #===========================================================================================#
 #   Atualização dos arquivos de config a partir de um pacote de configs
 #===========================================================================================#
@@ -353,37 +390,70 @@ icacls "$DIRsvcRM" /grant NetworkService:"(OI)(CI)F"
 icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 #>
 
-<#===========================================================================================#
-#   Parando os WebAppPools
 #===========================================================================================#
-Stop-WebAppPool "RiskManager" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "RM" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "PORTAL" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "WF" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
-Stop-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
-#Stop-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
-#>
-
-<#===========================================================================================#
 #   Iniciando os WebAppPool
 #===========================================================================================# 
-Start-WebAppPool "RiskManager" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "RM" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "PORTAL" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "WF" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "DataAnalyticsCacher" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "DataAnalyticsService" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "DataAnalyticsUI" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "MMI" # *> "$destinyPath\log-$date.txt"
-Start-WebAppPool "BCM" # *> "$destinyPath\log-$date.txt"
-#Start-WebAppPool "ETLProcessor" # *> "$destinyPath\log-$date.txt"
+Start-WebAppPool "RiskManager"
+Start-WebAppPool "RM"
+Start-WebAppPool "PORTAL"
+Start-WebAppPool "WF"
+Start-WebAppPool "DataAnalyticsCacher"
+Start-WebAppPool "DataAnalyticsService"
+Start-WebAppPool "DataAnalyticsUI"
+Start-WebAppPool "MMI"
+
+# === Iniciando o PORTAL ou RM_PORTAL === #
+if(Test-Path IIS:\AppPools\PORTAL)
+{
+"Iniciando PORTAL"
+Start-WebAppPool "PORTAL"
+return $true;
+}
+else
+{
+"PORTAL não existe"
+if(Test-Path IIS:\AppPools\RM_PORTAL)
+{
+"Iniciando RM_PORTAL"
+Start-WebAppPool "RM_PORTAL"
+return $true;
+}
+else
+{
+"RM_PORTAL não existe"
+return $false;
+}
+return $false;
+}
+
+# === Iniciando o BCM === #
+if(Test-Path IIS:\AppPools\BCM)
+{
+"Iniciando BCM"
+Start-WebAppPool "BCM"
+return $true;
+}
+else
+{
+"BCM não existe"
+return $false;
+}
+
+# === Iniciando o ETLProcessor === #
+if(Test-Path IIS:\AppPools\ETLProcessor)
+{
+"Iniciando ETLProcessor"
+Start-WebAppPool "ETLProcessor"
+return $true;
+}
+else
+{
+"ETLProcessor não existe"
+return $false;
+}
 #>
 
-<#===========================================================================================#
+#===========================================================================================#
 #   Verifcando os serviços Modulo Scheduler e Risk Manager
 #===========================================================================================#
 Get-Service -Name "Modulo*", "Risk*"
