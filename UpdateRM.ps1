@@ -191,10 +191,10 @@ $Files = Get-Childitem $LogPath -Include $Extensions -Recurse | Where-Object {$_
 foreach ($File in $Files) 
 {
     if ($NULL -ne $File)
-    {
-        write-host "Deleting File $File" -ForegroundColor "DarkRed" -BackgroundColor white
+      {
+        write-host "Deletando arquivo $File" -ForegroundColor "DarkRed" -BackgroundColor "white"
         Remove-Item $File.FullName | out-null
-	}
+      }
 }
 
 #===========================================================================================#

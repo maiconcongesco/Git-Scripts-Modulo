@@ -57,7 +57,7 @@ foreach ($File in $Files)
 {
     if ($NULL -ne $File)
     {
-        write-host "Deleting File $File" -ForegroundColor "DarkRed"
+        write-host "Deleting File $File" -ForegroundColor "DarkRed" -BackgroundColor "white"
         Remove-Item $File.FullName | out-null
 	}
 }
