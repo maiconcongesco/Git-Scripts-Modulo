@@ -32,8 +32,6 @@ $ConfigRM = "$DIRbkp\$VersionBKPRM\Configs.zip" # Configs editados e disponibili
 # Raramente será necessário alterar essas variáveis
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
-$PackInstallRM = "$RaizInstall\RM_$VersionRM" # Diretório descompactado dos arquivos de instalação do Risk Manager
-$PackRMZIP = "$RaizInstall\RM_$VersionRM.zip" # Caminho com o pacote de intalação compactado do Risk Manager
 $XDays = 00  # Quantidade de dias que pretende reter o log.
 $Extensions	= "*.slog" #  Separe por virgula as extensões dos arquivos que serão deletados.
 $LogPath = "$DIRsvcRM", "$DIRsvcScheduler", "$DIRsiteRM" # Caminho da pasta onde iremos buscar e limpar os logs, separe por virgula se for mais de uma pasta.
@@ -92,7 +90,7 @@ Unblock-File -Path "$RaizInstall\*"
 #===========================================================================================#
 #   Descompactando os arquivos das aplicações do Risk Manager
 #===========================================================================================#
-Expand-Archive -Path "$PackRMZIP" -DestinationPath "$RaizInstall" -Verbose
+Expand-Archive -Path "$RaizInstall\RM_$VersionRM.zip" -DestinationPath "$RaizInstall" -Verbose
 
 #===========================================================================================#
 #   Parando os serviços Modulo Scheduler e Risk Manager
@@ -162,20 +160,12 @@ foreach ($File in $Files)
         Remove-Item $File.FullName | out-null
       }
 }
-
-#===========================================================================================#
-#   Criando o diretório de Backup
-#===========================================================================================#
-If(!(test-path $DIRbkp\$VersionBKPRM))
-{
-      New-Item -ItemType Directory -Force -Path $DIRbkp\$VersionBKPRM
-}
 #>
 
 #===========================================================================================#
 #   Criando diretório para Backup de Configs
 #===========================================================================================#
-If(!(test-path "$DIRbkp\$VersionBKPRM\Configs"))
+If(!(test-path $DIRbkp\$VersionBKPRM\Configs))
 {
       New-Item -ItemType Directory -Force -Path "$DIRbkp\$VersionBKPRM\Configs"
 }
@@ -249,15 +239,15 @@ Move-item -Path "$DIRsiteRM\*" "$DIRbkp\$VersionBKPRM\$NameSite" -Verbose -Force
 #===========================================================================================#
 #   Renomeando os arquivos dos serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
-rename-item -path "$PackInstallRM\Binaries\Modulo Scheduler Service.zipx" -newname "Modulo Scheduler Service.zip" -Verbose
-rename-item -path "$PackInstallRM\Binaries\RiskManager.Service.zipx" -newname "RiskManager.Service.zip" -Verbose
+rename-item -path "$RaizInstall\RM_$VersionRM\Binaries\Modulo Scheduler Service.zipx" -newname "Modulo Scheduler Service.zip" -Verbose
+rename-item -path "$RaizInstall\RM_$VersionRM\Binaries\RiskManager.Service.zipx" -newname "RiskManager.Service.zip" -Verbose
 #>
 
 #===========================================================================================#
 #   Descompactando os arquivos dos serviços Risk Manager e Modulo Scheduler
 #===========================================================================================#
-Expand-Archive -Path "$PackInstallRM\Binaries\Modulo Scheduler Service.zip" -DestinationPath $DIRsvcScheduler -Verbose
-Expand-Archive -Path "$PackInstallRM\Binaries\RiskManager.Service.zip" -DestinationPath $DIRsvcRM -Verbose
+Expand-Archive -Path "$RaizInstall\RM_$VersionRM\Binaries\Modulo Scheduler Service.zip" -DestinationPath $DIRsvcScheduler -Verbose
+Expand-Archive -Path "$RaizInstall\RM_$VersionRM\Binaries\RiskManager.Service.zip" -DestinationPath $DIRsvcRM -Verbose
 #>
 
 <#===========================================================================================#
@@ -274,31 +264,31 @@ New-Service -BinaryPathName $DIRsvcScheduler/Modulo.Scheduler.Host.exe -Name Mod
 Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
 # Deploy da aplicação RM  
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/RM"
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\RM_$VersionRM\Web.Applications\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/RM"
 
 # Deploy da aplicação PORTAL  
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/$PORTAL"
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\RM_$VersionRM\Web.Applications\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/$PORTAL"
 
 # Deploy da aplicação Workflow
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Workflow.Services.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/WF"
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\RM_$VersionRM\Web.Applications\Workflow.Services.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/WF"
 
 # Deploy da aplicação Data Analytics Cacher 
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsCacher.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsCacher"
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\RM_$VersionRM\Web.Applications\DataAnalytics\DataAnalyticsCacher.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsCacher"
 
 # Deploy da aplicação Data Analytics Service 
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsService.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsService" 
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\RM_$VersionRM\Web.Applications\DataAnalytics\DataAnalyticsService.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsService" 
 
 # Deploy da aplicação Data Analytics UI 
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsUI.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsUI"
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\RM_$VersionRM\Web.Applications\DataAnalytics\DataAnalyticsUI.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsUI"
 
 # Deploy da aplicação Data MMI 
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI" 
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\RM_$VersionRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI" 
 
 # Deploy da aplicação BCM
 if(Test-Path IIS:\AppPools\$BCM)
 {
 "Realizando Deploy do BCM/GCN"
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/$BCM" 
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\RM_$VersionRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/$BCM" 
 return $true;
 }
 else
@@ -311,24 +301,24 @@ return $false;
 #===========================================================================================#
 #   Copiando a biblioteca DevExpress para Apps/bin
 #===========================================================================================#
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF\bin" -Force -Verbose
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\$PORTAL\bin" -Force -Verbose
+Copy-Item -Path "$RaizInstall\RM_$VersionRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
+Copy-Item -Path "$RaizInstall\RM_$VersionRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF\bin" -Force -Verbose
+Copy-Item -Path "$RaizInstall\RM_$VersionRM\DevExpress\*.dll" -Destination "$DIRsiteRM\$PORTAL\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
 #===========================================================================================#
-Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\Modulo.RiskManager.DataAnalytics.Bootstrap.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
+Copy-Item -Path "$RaizInstall\RM_$VersionRM\Web.Applications\DataAnalytics\Modulo.RiskManager.DataAnalytics.Bootstrap.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers
 #===========================================================================================#
-Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\DashboardDesignerInstallers\*" -Destination "$DIRsiteRM\DataAnalyticsUI\Files" -Force -Verbose
+Copy-Item -Path "$RaizInstall\RM_$VersionRM\Web.Applications\DataAnalytics\DashboardDesignerInstallers\*" -Destination "$DIRsiteRM\DataAnalyticsUI\Files" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando os arquivos bin do MMI para o RM
 #===========================================================================================#
-Copy-Item -Path "$PackInstallRM\Web.Applications\MMI\bin\rm\*" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
+Copy-Item -Path "$RaizInstall\RM_$VersionRM\Web.Applications\MMI\bin\rm\*" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Criando o diretório para o Manual
@@ -414,13 +404,5 @@ Get-Service -Name "RiskManagerService" | Start-Service
 Get-Service -Name "ModuloSchedulerService" | Start-Service
 #>
 
-
-Write-Output "Inicio da execução do Script" 
-
-$command.StartExecutionTime
-
-
-
 Write-Output "Fim da execução do Script" 
-
-Get-Date
+$command.EndExecutionTime
