@@ -18,10 +18,10 @@ $DIRsiteRM = "[Diretório do Site]" # Diretório do Site do Risk Manager
 $RaizInstall = "[Diretório onde estão os pacotes de instalação]" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
 $VersionInstall = "[Versão do instalação do Risk Manager]" # Versão do que será instalada do Risk Manager ou do LGPD Manager (RM_x.x.x.x ou LGPD_x.x.x.x)
 $NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
-$SubjectSSL = "RiskManager" # Subject do Certificado SSL
 $Instance = "" # Sigla do nome da instancia, caso essa instalação não seja intanciada deixe as aspas vazias ""
 <#===========================================================================================#>
 <# Ocasionalmente pode ser necessário alterar essa variáveis #>
+#$SubjectSSL = "RiskManager" # Subject do Certificado SSL
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service$Instance" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service$Instance" # Diretório do Serviço do Modulo Scheduler.
 $Tools = "$RaizInstall\Tools2.0" # Diretório onde ficam as ferramentas de troubleshooting.
