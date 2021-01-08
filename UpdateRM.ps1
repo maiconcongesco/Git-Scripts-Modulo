@@ -141,10 +141,10 @@ return $false;
 #   Verificando status dos WebAppPools
 #===========================================================================================#
 # Listando WebAppPools ativos
-Get-IISAppPool | Where {$_.State -eq "Started"}
+Get-IISAppPool | Where-Object {$_.State -eq "Started"}
 write-host "========" -ForegroundColor "DarkRed" -BackgroundColor white
 # Listando WebAppPools parados
-Get-IISAppPool | Where {$_.State -eq "Stopped"}
+Get-IISAppPool | Where-Object {$_.State -eq "Stopped"}
 
 #===========================================================================================#
 #	Limpando os Logs		>>> ATENÇÃO! Essa remoção pode ser irreversível
