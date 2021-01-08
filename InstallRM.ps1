@@ -14,10 +14,9 @@
 <#===========================================================================================#>
 <# >>> ATENÇÃO <<< 
 <# Geralmente essas váriaveis precisarão ser alteradas #>
-
-$DIRsiteRM = "D:\RiskManager" # Diretório do Site do Risk Manager
-$RaizInstall = "D:\FilesRiskManager" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
-$VersionInstall = "RM_9.10.2.4" # Versão do que será instalada do Risk Manager ou do LGPD Manager (RM_x.x.x.x ou LGPD_x.x.x.x)
+$DIRsiteRM = "[Diretório do Site]" # Diretório do Site do Risk Manager
+$RaizInstall = "[Diretório onde estão os pacotes de instalação]" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
+$VersionInstall = "[Versão do instalação do Risk Manager]" # Versão do que será instalada do Risk Manager ou do LGPD Manager (RM_x.x.x.x ou LGPD_x.x.x.x)
 $NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
 $SubjectSSL = "RiskManager" # Subject do Certificado SSL
 $Instance = "" # Sigla do nome da instancia, caso essa instalação não seja intanciada deixe as aspas vazias ""
@@ -25,12 +24,10 @@ $Instance = "" # Sigla do nome da instancia, caso essa instalação não seja in
 <# Ocasionalmente pode ser necessário alterar essa variáveis #>
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service$Instance" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service$Instance" # Diretório do Serviço do Modulo Scheduler.
-$Tools = "$RaizInstall\Tools" # Diretório onde ficam as ferramentas de troubleshooting.
+$Tools = "$RaizInstall\Tools2.0" # Diretório onde ficam as ferramentas de troubleshooting.
 $FileLicense = "$RaizInstall\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $ConfigRM = "$RaizInstall\ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
-$PackInstallRM = "$RaizInstall\$VersionInstall" # Diretório descompactado dos arquivos de instalação do Risk Manager
-$PackRMZIP = "$RaizInstall\$VersionInstall.zip" # Caminho com o pacote de intalação compactado do Risk Manager
-$FileManual = "$RaizInstall\Manual_RM_9.9_pt_br.zip" # Caminho do Manual compactado.
+$FileManual = "$RaizInstall\Manual_RM_9.10_pt_br.zip" # Caminho do Manual compactado.
 <#===========================================================================================#>
 
 <#==========================================================================================#>
@@ -71,7 +68,7 @@ $PSVersionTable
 <#===========================================================================================#>
 <#  Instalando os Recursos Windows		         				
 <#===========================================================================================#>
-# Add-WindowsFeature web-server, web-webserver, web-common-http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Http-Redirect,  Web-Health, Web-Http-Logging, Web-Log-Libraries, Web-Request-Monitor, Web-Http-Tracing, Web-Performance, Web-Stat-Compression, Web-Security, Web-Filtering,  Web-App-Dev, Web-Net-Ext45, Web-AppInit, Web-ASP, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Console, Web-Mgmt-Compat, Web-Metabase, Web-Scripting-Tools, MSMQ-Services, MSMQ-Server, MSMQ-Directory, MSMQ-HTTP-Support, MSMQ-Triggers,  NET-Framework-45-Features, NET-Framework-45-Core, NET-Framework-45-ASPNET, NET-WCF-Services45, NET-WCF-TCP-PortSharing45
+# Install-WindowsFeature web-server, web-webserver, web-common-http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Http-Redirect,  Web-Health, Web-Http-Logging, Web-Log-Libraries, Web-Request-Monitor, Web-Http-Tracing, Web-Performance, Web-Stat-Compression, Web-Security, Web-Filtering,  Web-App-Dev, Web-Net-Ext45, Web-AppInit, Web-ASP, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Console, Web-Mgmt-Compat, Web-Metabase, Web-Scripting-Tools, MSMQ-Services, MSMQ-Server, MSMQ-Directory, MSMQ-HTTP-Support, MSMQ-Triggers,  NET-Framework-45-Features, NET-Framework-45-Core, NET-Framework-45-ASPNET, NET-WCF-Services45, NET-WCF-TCP-PortSharing45
 
 <#===========================================================================================#>
 <#  Recurso de memoria no Servidor em GB | Requisito Recomendado é 12GB
@@ -91,19 +88,19 @@ Unblock-File -Path "$RaizInstall\*"
 <#===========================================================================================#>
 <#  Descompactando o pacote de "Tools"
 <#===========================================================================================#>
-Expand-Archive -Path "$RaizInstall\Tools.zip" -DestinationPath "$RaizInstall" -Verbose
+Expand-Archive -Path "$RaizInstall\Tools2.0.zip" -DestinationPath "$RaizInstall" -Verbose
 #>
 
 <#===========================================================================================#>
 <#  Instalando o WebDeploy		         				
 <#===========================================================================================#>
 Set-Location "$Tools\Web Deploy"
-MsiExec.exe /i WebDeploy_x86_en-US.msi ADDLOCAL=ALL /qn /norestart LicenseAccepted=”0″
+.\WebDeploy_amd64_en-US.msi
 
 <#===========================================================================================#>
 <#  Descompactando os arquivos das aplicações do Risk Manager
 <#===========================================================================================#>
-Expand-Archive -Path "$PackRMZIP" -DestinationPath "$RaizInstall" -Verbose
+Expand-Archive -Path "$RaizInstall\$VersionInstall.zip" -DestinationPath "$RaizInstall" -Verbose
 #>
 
 <#===========================================================================================#>
@@ -178,15 +175,6 @@ Set-Location "C:\Windows\system32\inetsrv\"
 <# Criar os Application MMI #>
 .\appcmd.exe add apppool /name:"MMI$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
 
-<# Criar os Application Pools BCM #>
-#.\appcmd.exe add apppool /name:"BCM$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
-
-<# Criar os Application Pools ETL #>
-#.\appcmd.exe add apppool /name:"ETL$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
-
-<# Criar os Application LGPD #>
-#.\appcmd.exe add apppool /name:"LGPD" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
-
 <#===========================================================================================#>
 <#   Realizando o Deploy das aplicações web
 <#===========================================================================================#>
@@ -194,34 +182,25 @@ Set-Location "C:\Windows\system32\inetsrv\"
 Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
 <# Deploy da aplicação RM #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/RM$Instance"
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\RM.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/RM$Instance"
 
 <# Deploy da aplicação Workflow #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Workflow.Services.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/WF$Instance"
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\Workflow.Services.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/WF$Instance"
 
 <# Deploy da aplicação PORTAL #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/PORTAL$Instance"
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\RM.PORTAL.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/PORTAL$Instance"
 
 <# Deploy da aplicação Data Analytics Cacher #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsCacher.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsCacher$Instance"
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\DataAnalytics\DataAnalyticsCacher.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsCacher$Instance"
 
 <# Deploy da aplicação Data Analytics Service #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsService.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsService$Instance" 
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\DataAnalytics\DataAnalyticsService.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsService$Instance" 
 
 <# Deploy da aplicação Data Analytics UI #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\DataAnalytics\DataAnalyticsUI.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsUI$Instance"
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\DataAnalytics\DataAnalyticsUI.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/DataAnalyticsUI$Instance"
 
 <# Deploy da aplicação MMI #>
-.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI$Instance" 
-
-<# Deploy da aplicação BCM #>
-#.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM$Instance"
-
-<# Deploy da aplicação ETL #>
-#.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETL$Instance"
-
-<# Deploy da aplicação LGPD #>
-#.\msdeploy.exe -verb=sync -source:package="$PackInstallRM\Web.Applications\LGPD.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/LGPD" 
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\MMI\packages\Modulo.SICC.WebApplication.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/MMI$Instance" 
 
 <#===========================================================================================#>
 <#  Configurando o web application
@@ -249,38 +228,27 @@ C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsUI"
 <# Configurando o web application MMI: #>
 C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/MMI"  /applicationPool:"MMI$Instance"
 
-<# Configurando o web application BCM: #>
-#C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/BCM" /applicationPool:"BCM$Instance"
-
-<# Configurando o web application ETL: #>
-#C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETL" /applicationPool:"ETL$Instance"
-
-<# Configurando o web application LGPD: #>
-#C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/LGPD"  /applicationPool:"LGPD$Instance"
-
 <#===========================================================================================#>
 <#  Copiando a biblioteca DevExpress para Apps/bin
 <#===========================================================================================#>
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM$Instance\bin" -Force -Verbose
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF$Instance\bin" -Force -Verbose
-Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL$Instance\bin" -Force -Verbose
-#Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
-#Copy-Item -Path "$PackInstallRM\DevExpress\*.dll" -Destination "$DIRsiteRM\LGPD\bin" -Force -Verbose
+Copy-Item -Path "$RaizInstall\$VersionInstall\DevExpress\*.dll" -Destination "$DIRsiteRM\RM$Instance\bin" -Force -Verbose
+Copy-Item -Path "$RaizInstall\$VersionInstall\DevExpress\*.dll" -Destination "$DIRsiteRM\WF$Instance\bin" -Force -Verbose
+Copy-Item -Path "$RaizInstall\$VersionInstall\DevExpress\*.dll" -Destination "$DIRsiteRM\PORTAL$Instance\bin" -Force -Verbose
 
 <#===========================================================================================#>
 <#  Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
 <#===========================================================================================#>
-Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\Modulo.RiskManager.DataAnalytics.Bootstrap.dll" -Destination "$DIRsiteRM\RM$Instance\bin" -Force -Verbose
+Copy-Item -Path "$RaizInstall\$VersionInstall\Web.Applications\DataAnalytics\Modulo.RiskManager.DataAnalytics.Bootstrap.dll" -Destination "$DIRsiteRM\RM$Instance\bin" -Force -Verbose
 
 <#===========================================================================================#>
 <#  Copiando o conteúdo da pasta do pacote Data Analytics\DashboardDesignerInstallers
 <#===========================================================================================#>
-Copy-Item -Path "$PackInstallRM\Web.Applications\DataAnalytics\DashboardDesignerInstallers\*" -Destination "$DIRsiteRM\DataAnalyticsUI$Instance\Files" -Force -Verbose
+Copy-Item -Path "$RaizInstall\$VersionInstall\Web.Applications\DataAnalytics\DashboardDesignerInstallers\*" -Destination "$DIRsiteRM\DataAnalyticsUI$Instance\Files" -Force -Verbose
 
 <#===========================================================================================#>
 <#  Copiando os arquivos bin do MMI para o RM
 <#===========================================================================================#>
-Copy-Item -Path "$PackInstallRM\Web.Applications\MMI\bin\rm\*" -Destination "$DIRsiteRM\RM$Instance\bin" -Force -Verbose
+Copy-Item -Path "$RaizInstall\$VersionInstall\Web.Applications\MMI\bin\rm\*" -Destination "$DIRsiteRM\RM$Instance\bin" -Force -Verbose
 
 <#===========================================================================================#>
 <#  Copiando o arquivo de licença
@@ -305,15 +273,15 @@ Expand-Archive -Path "$FileManual" -DestinationPath "$DIRsiteRM\RM$Instance\Manu
 <#===========================================================================================#>
 <#  Alterando extensão dos arquivos dos serviços Risk Manager e Modulo Scheduler
 <#===========================================================================================#>
-rename-item -path "$PackInstallRM\Binaries\Modulo Scheduler Service.zipx" -newname "Modulo Scheduler Service.zip" -Verbose
-rename-item -path "$PackInstallRM\Binaries\RiskManager.Service.zipx" -newname "RiskManager.Service.zip" -Verbose
+rename-item -path "$RaizInstall\$VersionInstall\Binaries\Modulo Scheduler Service.zipx" -newname "Modulo Scheduler Service.zip" -Verbose
+rename-item -path "$RaizInstall\$VersionInstall\Binaries\RiskManager.Service.zipx" -newname "RiskManager.Service.zip" -Verbose
 #>
 
 <#===========================================================================================#>
 <#  Descompactando os arquivos dos serviços Risk Manager e Modulo Scheduler
 <#===========================================================================================#>
-Expand-Archive -Path "$PackInstallRM\Binaries\Modulo Scheduler Service.zip" -DestinationPath $DIRsvcScheduler -Verbose
-Expand-Archive -Path "$PackInstallRM\Binaries\RiskManager.Service.zip" -DestinationPath $DIRsvcRM -Verbose
+Expand-Archive -Path "$RaizInstall\$VersionInstall\Binaries\Modulo Scheduler Service.zip" -DestinationPath $DIRsvcScheduler -Verbose
+Expand-Archive -Path "$RaizInstall\$VersionInstall\Binaries\RiskManager.Service.zip" -DestinationPath $DIRsvcRM -Verbose
 #>
 
 <#===========================================================================================#>
@@ -327,6 +295,52 @@ New-Service -BinaryPathName $DIRsvcScheduler/Modulo.Scheduler.Host.exe -Name Mod
 <#   Verificando se os serviços foram criados adequadamente
 <#===========================================================================================#>
 Get-Service -Name "ModuloSchedulerService", "RiskManagerService" | Format-Table -Property Status,Name,DisplayName -AutoSize -Wrap
+#>
+
+<#===========================================================================================#>
+<#   Instalando o BCM (Modulo instalado sob demanda)
+<#===========================================================================================#
+# Criar os Application Pools BCM #
+.\appcmd.exe add apppool /name:"BCM$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
+
+# Deploy da aplicação BCM #
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM$Instance"
+
+# Configurando o web application BCM #
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/BCM" /applicationPool:"BCM$Instance"
+
+# Copiando a biblioteca DevExpress para Apps/bin #
+Copy-Item -Path "$RaizInstall\$VersionInstall\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
+#>
+
+<#===========================================================================================#>
+<#   Instalando o ETL Processor (Modulo instalado sob demanda)
+<#===========================================================================================#
+# Criar os Application Pools ETL #
+.\appcmd.exe add apppool /name:"ETL$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
+
+# Deploy da aplicação ETL #
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETL$Instance"
+
+# Configurando o web application ETL: #
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETL" /applicationPool:"ETL$Instance"
+#>
+
+<#===========================================================================================#>
+<#   Instalando o LGPD Manager (É uma ferramento com licenciamento próprio)
+<#   (Entre em contato com o seu gerente de contas caso queira contar com essa ferramenta)
+<#===========================================================================================#
+# Criar os Application LGPD #
+.\appcmd.exe add apppool /name:"LGPD" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
+
+# Deploy da aplicação LGPD #
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\LGPD.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/LGPD" 
+
+# Configurando o web application LGPD: #
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/LGPD"  /applicationPool:"LGPD$Instance"
+
+Copy-Item -Path "$RaizInstall\$VersionInstall\DevExpress\*.dll" -Destination "$DIRsiteRM\LGPD\bin" -Force -Verbose
+#>
 
 <#===========================================================================================#>
 <#  Atualização dos arquivos de Config
@@ -422,17 +436,5 @@ Get-Service -Name "ModuloSchedulerService$Instance" | Start-Service
 4.8.	Após a importação do pacote de conhecimento o sistema apresentará uma mensagem informando o sucesso da importação.  
 #>
 
-
-<# Versão do PowerShell #>
-$PSVersionTable
-
-
-Write-Output "Inicio da execução do Script" 
-
-$command.StartExecutionTime
-
-
-
-Write-Output "Fim da execução do Script""
-
-Get-Date
+Write-Output "Fim da execução do Script" 
+$command.EndExecutionTime
