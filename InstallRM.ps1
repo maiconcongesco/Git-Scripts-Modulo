@@ -306,14 +306,14 @@ Copy-Item -Path "$RaizInstall\$VersionInstall\DevExpress\*.dll" -Destination "$D
 <#===========================================================================================#>
 <#   Instalando o ETL Processor (Modulo instalado sob demanda)
 <#===========================================================================================#
-# Criar os Application Pools ETL #
-.\appcmd.exe add apppool /name:"ETL$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
+# Criar os Application Pools ETLProcessor #
+.\appcmd.exe add apppool /name:"ETLProcessor$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
 
-# Deploy da aplicação ETL #
-.\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETL$Instance"
+# Deploy da aplicação ETLProcessor #
+.\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETLProcessor$Instance"
 
-# Configurando o web application ETL: #
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETL" /applicationPool:"ETL$Instance"
+# Configurando o web application ETLProcessor: #
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETLProcessor" /applicationPool:"ETLProcessor$Instance"
 #>
 
 <#===========================================================================================#>
