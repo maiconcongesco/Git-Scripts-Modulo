@@ -186,7 +186,7 @@ Remove-Item -recurse $DIRbkp\$VersionBKPRM\Configs\*\* -exclude *.config -Verbos
 #===========================================================================================#
 #   Criando diretório para Backup do arquivo de licença
 #===========================================================================================#
-If(!(test-path "$DIRbkp\$VersionBKPRM\LicenseRM"))
+If(!(test-path "$DIRbkp\$VersionBKPRM\Configs\RiskManager\LicenseRM"))
 {
       New-Item -ItemType Directory -Force -Path "$DIRbkp\$VersionBKPRM\Configs\RiskManager\LicenseRM"
 }

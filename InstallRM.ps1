@@ -290,8 +290,14 @@ Get-Service -Name "ModuloSchedulerService", "RiskManagerService" | Format-Table 
 <#===========================================================================================#>
 <#   Instalando o BCM (Modulo instalado sob demanda)
 <#===========================================================================================#
+# Navegue até o diretório do IIS #
+Set-Location "C:\Windows\system32\inetsrv\"
+
 # Criar os Application Pools BCM #
 .\appcmd.exe add apppool /name:"BCM$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
+
+# Navegue até interface do IIS com a conexão à Internet
+Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
 # Deploy da aplicação BCM #
 .\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\BCM.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/BCM$Instance"
@@ -306,8 +312,14 @@ Copy-Item -Path "$RaizInstall\$VersionInstall\DevExpress\*.dll" -Destination "$D
 <#===========================================================================================#>
 <#   Instalando o ETL Processor (Modulo instalado sob demanda)
 <#===========================================================================================#
+# Navegue até o diretório do IIS #
+Set-Location "C:\Windows\system32\inetsrv\"
+
 # Criar os Application Pools ETLProcessor #
 .\appcmd.exe add apppool /name:"ETLProcessor$Instance" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"  
+
+# Navegue até interface do IIS com a conexão à Internet
+Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
 # Deploy da aplicação ETLProcessor #
 .\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\Modulo.Intelligence.EtlProcessor.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/ETLProcessor$Instance"
@@ -320,8 +332,14 @@ C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/ETLProcessor" /a
 <#   Instalando o LGPD Manager (É uma ferramento com licenciamento próprio)
 <#   (Entre em contato com o seu gerente de contas caso queira contar com essa ferramenta)
 <#===========================================================================================#
+# Navegue até o diretório do IIS #
+Set-Location "C:\Windows\system32\inetsrv\"
+
 # Criar os Application LGPD #
 .\appcmd.exe add apppool /name:"LGPD" /managedRuntimeVersion:v4.0 /autoStart:true /startMode:OnDemand /processModel.identityType:NetworkService /processModel.idleTimeout:00:00:00 /recycling.periodicRestart.time:00:00:0 "/+recycling.periodicRestart.schedule.[value='03:00:00']"
+
+# Navegue até interface do IIS com a conexão à Internet
+Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
 # Deploy da aplicação LGPD #
 .\msdeploy.exe -verb=sync -source:package="$RaizInstall\$VersionInstall\Web.Applications\LGPD.Web.zip" -dest:Auto -setParam:"IIS Web Application Name""=$NameSite/LGPD" 
