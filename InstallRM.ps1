@@ -445,9 +445,9 @@ Get-Service -Name "ModuloSchedulerService$Instance" | Start-Service
 #>
 
 <#===========================================================================================#
-#   Instalar nova versão do ModSIC
+#   Instalando ModSIC
 #===========================================================================================#>
-.$RaizInstall\$VersionInstall\Binaries\Modulo.Collect.Service.v.3.0.12.msi
+.$RaizInstall\$VersionInstall\Binaries\Modulo.Collect.Service*.msi
 #>
 
 Write-Output "Fim da execução do Script" 
