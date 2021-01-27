@@ -76,9 +76,18 @@ Get-WindowsFeature -Name web-server, web-webserver,  web-common-http, Web-Defaul
 Unblock-File -Path "$RaizInstall\*"
 
 <#===========================================================================================#>
+<#  Criando pasta para o Tools 2.0
+<#===========================================================================================#>
+If(!(test-path $Tools))
+{
+      New-Item -ItemType Directory -Force -Path $Tools
+}
+#>
+
+<#===========================================================================================#>
 <#  Descompactando o pacote de "Tools"
 <#===========================================================================================#>
-Expand-Archive -Path "$RaizInstall\Tools2.0.zip" -DestinationPath "$RaizInstall" -Verbose
+Expand-Archive -Path "$RaizInstall\Tools2.0.zip" -DestinationPath "$Tools" -Verbose
 #>
 
 <#===========================================================================================#>
