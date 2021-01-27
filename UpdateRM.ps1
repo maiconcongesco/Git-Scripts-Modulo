@@ -30,6 +30,7 @@ $RiskManagerService =  "RiskManagerService" # Nome do Serviço do Risk Manager -
 $ConfigRM = "$DIRbkp\$VersionBKPRM\Configs.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 
 # Raramente será necessário alterar essas variáveis
+$Tools = "B:\OneDrive\- Modulo\- Risk Manager\Tools\Tools2.0"
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
 $XDays = 00  # Quantidade de dias que pretende reter o log.
@@ -268,9 +269,27 @@ New-Service -BinaryPathName $DIRsvcRM/RM.Service.exe -Name RiskManagerService -D
 New-Service -BinaryPathName $DIRsvcScheduler/Modulo.Scheduler.Host.exe -Name ModuloSchedulerService -Description "Modulo Scheduler Background Service Host" -DisplayName "Modulo Scheduler Service" -Verbose
 #>
 
+<#===========================================================================================#
+#    Verificando se a versão 3 do Microsoft Web Deploy está instalado
+#===========================================================================================#>
+if(Test-Path "C:\Program Files\IIS\Microsoft Web Deploy V3")
+{
+"Web Deploy V3 está instalado"
+return $true;
+}
+else
+{
+"Web Deploy V3 não está instalado, vamos instalar"
+#Set-Location "$Tools\WebDeploy" && .\WebDeploy_amd64_en-US.msi
+.$Tools\WebDeploy\WebDeploy_amd64_en-US.msi
+return $false;
+}
+#>
+
 #===========================================================================================#
 #    Realizando o Deploy das aplicações web
 #===========================================================================================#
+
 # Navegue até interface do IIS com a conexão à Internet
 Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 
