@@ -444,5 +444,11 @@ Get-Service -Name "ModuloSchedulerService$Instance" | Start-Service
 4.8.	Após a importação do pacote de conhecimento o sistema apresentará uma mensagem informando o sucesso da importação.  
 #>
 
+<#===========================================================================================#
+#   Instalar nova versão do ModSIC
+#===========================================================================================#>
+.$RaizInstall\$VersionInstall\Binaries\Modulo.Collect.Service.v.3.0.12.msi
+#>
+
 Write-Output "Fim da execução do Script" 
 $command.EndExecutionTime
