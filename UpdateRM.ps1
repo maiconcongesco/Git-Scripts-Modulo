@@ -280,7 +280,6 @@ return $true;
 else
 {
 "Web Deploy V3 não está instalado, vamos instalar"
-#Set-Location "$Tools\WebDeploy" && .\WebDeploy_amd64_en-US.msi
 .$Tools\WebDeploy\WebDeploy_amd64_en-US.msi
 return $false;
 }
@@ -432,6 +431,32 @@ Get-Service -Name "ModuloSchedulerService" | Stop-Service
 #===========================================================================================#
 Get-Service -Name "RiskManagerService" | Start-Service
 Get-Service -Name "ModuloSchedulerService" | Start-Service
+#>
+
+<#===========================================================================================#
+#   Verificar versão do ModSIC - A versão atual é a 3.0.12.0
+#===========================================================================================#>
+Get-WmiObject -Class Win32_Product -Filter "Name = 'modSIC 3.0'"
+Get-WmiObject -Class Win32_Product -Filter "Name = 'modSIC 2.0'"
+#>
+
+<#===========================================================================================#
+#   Desinstalar ModSIC
+#===========================================================================================#>
+$application = Get-WmiObject -Class Win32_Product -Filter "Name = 'modSIC 3.0'"
+$application.Uninstall()
+#>
+
+<#===========================================================================================#
+#   Limpar sobras do ModSIC 
+#===========================================================================================#>
+Remove-Item -Path "C:\Program Files (x86)\modSIC3" -Force -Recurse -Verbose
+#>
+
+<#===========================================================================================#
+#   Instalar nova versão do ModSIC
+#===========================================================================================#>
+.$RaizInstall\RM_$VersionRM\Binaries\Modulo.Collect.Service.v.3.0.12.msi
 #>
 
 Write-Output "Fim da execução do Script" 
