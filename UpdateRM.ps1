@@ -434,29 +434,29 @@ Get-Service -Name "ModuloSchedulerService" | Start-Service
 #>
 
 <#===========================================================================================#
-#   Verificar versão do ModSIC - A versão atual é a 3.0.12.0
+#   Verificando versão do ModSIC - A versão atual é a 3.0.12.0
 #===========================================================================================#>
 Get-WmiObject -Class Win32_Product -Filter "Name = 'modSIC 3.0'"
 Get-WmiObject -Class Win32_Product -Filter "Name = 'modSIC 2.0'"
 #>
 
 <#===========================================================================================#
-#   Desinstalar ModSIC
+#   Desinstalando ModSIC
 #===========================================================================================#>
 $application = Get-WmiObject -Class Win32_Product -Filter "Name = 'modSIC 3.0'"
 $application.Uninstall()
 #>
 
 <#===========================================================================================#
-#   Limpar sobras do ModSIC 
+#   Limpando sobras do ModSIC 
 #===========================================================================================#>
 Remove-Item -Path "C:\Program Files (x86)\modSIC3" -Force -Recurse -Verbose
 #>
 
 <#===========================================================================================#
-#   Instalar nova versão do ModSIC
+#   Instalando nova versão do ModSIC
 #===========================================================================================#>
-.$RaizInstall\RM_$VersionRM\Binaries\Modulo.Collect.Service.v.3.0.12.msi
+.$RaizInstall\RM_$VersionRM\Binaries\Modulo.Collect.Service*.msi
 #>
 
 Write-Output "Fim da execução do Script" 
