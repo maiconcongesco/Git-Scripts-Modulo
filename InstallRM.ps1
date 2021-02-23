@@ -21,7 +21,6 @@ $NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
 $Instance = "" # Sigla do nome da instancia, caso essa instalação não seja intanciada deixe as aspas vazias ""
 <#===========================================================================================#>
 <# Ocasionalmente pode ser necessário alterar essa variáveis #>
-#$SubjectSSL = "RiskManager" # Subject do Certificado SSL
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service$Instance" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service$Instance" # Diretório do Serviço do Modulo Scheduler.
 $Tools = "$RaizInstall\Tools2.0" # Diretório onde ficam as ferramentas de troubleshooting.
@@ -106,6 +105,7 @@ Expand-Archive -Path "$RaizInstall\$VersionInstall.zip" -DestinationPath "$RaizI
 <#  Criando um certificado auto assinado para o Risk Manager
 <#===========================================================================================#>
 <#
+$SubjectSSL = "RiskManager"
 $cert = New-SelfSignedCertificate -Type Custom -KeySpec Signature `
 -Subject "CN=$SubjectSSL" -KeyExportPolicy Exportable `
 -HashAlgorithm sha256 -KeyLength 2048 `
