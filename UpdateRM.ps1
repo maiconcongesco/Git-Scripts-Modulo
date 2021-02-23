@@ -30,7 +30,7 @@ $RiskManagerService =  "RiskManagerService" # Nome do Serviço do Risk Manager -
 $ConfigRM = "$DIRbkp\$VersionBKPRM\Configs.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 
 # Raramente será necessário alterar essas variáveis
-$Tools = "B:\OneDrive\- Modulo\- Risk Manager\Tools\Tools2.0"
+$Tools = "$RaizInstall\Tools2.0"
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
 $XDays = 00  # Quantidade de dias que pretende reter o log.
@@ -213,7 +213,7 @@ Copy-Item "$DIRsiteRM\RM\modulelicenses.config" -Destination "$DIRbkp\$VersionBK
 # Compactando Pasta com configs
 #===========================================================================================#
 Add-Type -Assembly "System.IO.Compression.FileSystem"
-[System.IO.Compression.ZipFile]::CreateFromDirectory("$DIRbkp\$VersionBKPRM\Configs\RiskManager", "$DIRbkp\$VersionBKPRM\Configs.zip")
+[System.IO.Compression.ZipFile]::CreateFromDirectory("$DIRbkp\$VersionBKPRM\Configs", "$DIRbkp\$VersionBKPRM\Configs.zip")
 
 #===========================================================================================#
 #   Fazendo o Backup dos Serviços RiskManager e Modulo Scheduler
@@ -392,7 +392,7 @@ icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 #===========================================================================================# 
 Start-WebAppPool "RiskManager"
 Start-WebAppPool "RM"
-Start=WebAppPool "$PORTAL"
+Start-WebAppPool "$PORTAL"
 Start-WebAppPool "WF"
 Start-WebAppPool "DataAnalyticsCacher"
 Start-WebAppPool "DataAnalyticsService"
