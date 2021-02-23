@@ -87,13 +87,13 @@ If(!(test-path $Tools))
 <#===========================================================================================#>
 <#  Descompactando o pacote de "Tools"
 <#===========================================================================================#>
-Expand-Archive -Path "$RaizInstall\Tools2.0.zip" -DestinationPath "$Tools" -Verbose
+Expand-Archive -Path "$RaizInstall\Tools2.0.zip" -DestinationPath "$Tools\Tools2.0" -Verbose
 #>
 
 <#===========================================================================================#>
 <#  Instalando o WebDeploy		         				
 <#===========================================================================================#>
-Set-Location "$Tools\Web Deploy"
+Set-Location "$Tools\WebDeploy"
 .\WebDeploy_amd64_en-US.msi
 
 <#===========================================================================================#>
@@ -207,25 +207,25 @@ Set-Location "C:\Program Files\IIS\Microsoft Web Deploy V3"
 # Nota: Manter o mesmo nome dos Applications Pools criados anteriormente.
 
 <# Configurando o web application Risk Manager: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/RM" /applicationPool:"RM$Instance"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/RM$Instance" /applicationPool:"RM$Instance"
 
 <# Configurando o web application PORTAL: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/PORTAL" /applicationPool:"PORTAL$Instance"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/PORTAL$Instance" /applicationPool:"PORTAL$Instance"
 
 <# Configurando o web application Workflow: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/WF" /applicationPool:"WF$Instance"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/WF$Instance" /applicationPool:"WF$Instance"
 
 <# Configurando o web application DataAnalyticsCacher: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsCacher" /applicationPool:"DataAnalyticsCacher$Instance"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsCacher$Instance" /applicationPool:"DataAnalyticsCacher$Instance"
 
 <# Configurando o web application DataAnalyticsService: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsService"  /applicationPool:"DataAnalyticsService$Instance"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsService$Instance"  /applicationPool:"DataAnalyticsService$Instance"
 
 <# Configurando o web application DataAnalyticsUI: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsUI" /applicationPool:"DataAnalyticsUI$Instance"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/DataAnalyticsUI$Instance" /applicationPool:"DataAnalyticsUI$Instance"
 
 <# Configurando o web application MMI: #>
-C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/MMI"  /applicationPool:"MMI$Instance"
+C:\Windows\system32\inetsrv\appcmd set app /app.name:"$NameSite/MMI$Instance"  /applicationPool:"MMI$Instance"
 
 <#===========================================================================================#>
 <#  Copiando a biblioteca DevExpress para Apps/bin
