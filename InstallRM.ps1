@@ -1,4 +1,4 @@
-##
+.##.
 <#===========================================================================================#>
 <#===========================================================================================#>
 <#
@@ -16,13 +16,13 @@
 <# Geralmente essas váriaveis precisarão ser alteradas #>
 $DIRsiteRM = "[Diretório do Site]" # Diretório do Site do Risk Manager
 $RaizInstall = "[Diretório onde estão os pacotes de instalação]" # Diretório onde se encontrará a pasta do pacote de instalação depois de descompactado
-$VersionInstall = "[Versão do instalação do Risk Manager]" # Versão do que será instalada do Risk Manager ou do LGPD Manager (RM_x.x.x.x ou LGPD_x.x.x.x)
+$VersionInstall = "RM_[Versão do instalação do Risk Manager]" # Versão do que será instalada do Risk Manager ou do LGPD Manager (RM_x.x.x.x ou LGPD_x.x.x.x
 $NameSite = "RiskManager" # Nome do Site do Risk Manager no IIS
 $Instance = "" # Sigla do nome da instancia, caso essa instalação não seja intanciada deixe as aspas vazias ""
 <#===========================================================================================#>
 <# Ocasionalmente pode ser necessário alterar essa variáveis #>
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service$Instance" # Diretório do Serviço do Risk Manager.
-$DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service$Instance" # Diretório do Serviço do Modulo Scheduler.
+$DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
 $Tools = "$RaizInstall\Tools2.0" # Diretório onde ficam as ferramentas de troubleshooting.
 $FileLicense = "$RaizInstall\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $ConfigRM = "$RaizInstall\ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
@@ -68,6 +68,17 @@ Get-WindowsFeature -Name web-server, web-webserver,  web-common-http, Web-Defaul
 <#  Instalando os Recursos Windows		         				
 <#===========================================================================================#>
 # Install-WindowsFeature web-server, web-webserver, web-common-http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Http-Redirect,  Web-Health, Web-Http-Logging, Web-Log-Libraries, Web-Request-Monitor, Web-Http-Tracing, Web-Performance, Web-Stat-Compression, Web-Security, Web-Filtering,  Web-App-Dev, Web-Net-Ext45, Web-AppInit, Web-ASP, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Console, Web-Mgmt-Compat, Web-Metabase, Web-Scripting-Tools, MSMQ-Services, MSMQ-Server, MSMQ-Directory, MSMQ-HTTP-Support, MSMQ-Triggers,  NET-Framework-45-Features, NET-Framework-45-Core, NET-Framework-45-ASPNET, NET-WCF-Services45, NET-WCF-TCP-PortSharing45  
+
+<#===========================================================================================#>
+<# Validando diretórios e arquivos
+<#===========================================================================================#>
+test-path $RaizInstall
+test-path $RaizInstall\$VersionInstall.zip
+test-path $FileManual
+test-path $FileLicense
+test-path $Tools
+# test-path $ConfigRM
+#>
 
 <#===========================================================================================#>
 <#  Desbloqueando arquivos baixados da internet
