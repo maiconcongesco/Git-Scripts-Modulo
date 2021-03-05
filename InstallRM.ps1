@@ -88,7 +88,7 @@ Unblock-File -Path "$RaizInstall\*"
 <#===========================================================================================#>
 <#  Descompactando o pacote de "Tools"
 <#===========================================================================================#>
-Expand-Archive -Path "$RaizInstall\Tools2.0.zip" -DestinationPath "$RaizInstall" -Verbose
+Expand-Archive -Path "$RaizInstall\Tools2.0.zip" -DestinationPath "$RaizInstall\Tools2.0" -Verbose
 #>
 
 <#===========================================================================================#>
@@ -387,7 +387,7 @@ icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 <#===========================================================================================#>
 <#  Abrindo os configs com Notepad++ do pacote Tools
 <#===========================================================================================#>
-& $Tools\Notepad++\notepad++.exe $DirSiteRM\RM$Instance\Web.config
+"$Tools\Notepad++\notepad++.exe $DirSiteRM\RM$Instance\Web.config"
 & $Tools\Notepad++\notepad++.exe $DirSiteRM\PORTAL$Instance\Web.config
 & $Tools\Notepad++\notepad++.exe $DirSiteRM\WF$Instance\Web.config
 & $Tools\Notepad++\notepad++.exe $DirSiteRM\MMI$Instance\Web.config
