@@ -77,7 +77,7 @@ test-path $RaizInstall\RM_$VersionRM.zip
 test-path $FileManual
 test-path $DIRsvcRM 
 test-path $DIRsvcScheduler
-#>
+test-path $Tools
 
 <#===========================================================================================#>
 <# Verificando se os Recursos do Windows requeridos estão instalados
@@ -386,6 +386,28 @@ icacls "$DIRsiteRM" /grant NetworkService:"(OI)(CI)F"
 icacls "$DIRsvcRM" /grant NetworkService:"(OI)(CI)F"
 icacls "$DIRsvcScheduler" /grant NetworkService:"(OI)(CI)F"
 #>
+
+<#===========================================================================================#>
+<#  Abrindo os configs com Notepad++ do pacote Tools
+<#===========================================================================================#>
+& $RaizInstall\Tools2.0\Notepad++\notepad++.exe $DirSiteRM\RM$Instance\Web.config
+Start-Sleep 1
+& $RaizInstall\Tools2.0\Notepad++\notepad++.exe $DirSiteRM\PORTAL$Instance\Web.config
+Start-Sleep 1
+& $RaizInstall\Tools2.0\Notepad++\notepad++.exe $DirSiteRM\WF$Instance\Web.config
+Start-Sleep 1
+& $RaizInstall\Tools2.0\Notepad++\notepad++.exe $DirSiteRM\MMI$Instance\Web.config
+Start-Sleep 1
+& $RaizInstall\Tools2.0\Notepad++\notepad++.exe $DirSiteRM\DataAnalyticsCacher$Instance\Web.config
+Start-Sleep 1
+& $RaizInstall\Tools2.0\Notepad++\notepad++.exe $DirSiteRM\DataAnalyticsService$Instance\Web.config
+Start-Sleep 1
+& $RaizInstall\Tools2.0\Notepad++\notepad++.exe $DirSiteRM\DataAnalyticsUI$Instance\Web.config
+Start-Sleep 1
+& $RaizInstall\Tools2.0\Notepad++\notepad++.exe $DIRsvcRM\RM.Service.exe.config
+Start-Sleep 1
+& $RaizInstall\Tools2.0\Notepad++\notepad++.exe $DIRsvcRM\tenants.config
+<#
 
 #===========================================================================================#
 #   Iniciando os WebAppPool
