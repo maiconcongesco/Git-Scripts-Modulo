@@ -23,7 +23,7 @@ $Instance = "" # Sigla do nome da instancia, caso essa instalação não seja in
 <# Ocasionalmente pode ser necessário alterar essa variáveis #>
 $DIRsvcRM = "C:\Program Files (x86)\RiskManager.Service$Instance" # Diretório do Serviço do Risk Manager.
 $DIRsvcScheduler = "C:\Program Files (x86)\Modulo Scheduler Service" # Diretório do Serviço do Modulo Scheduler.
-$Tools = "$RaizInstall\Tools2.0" # Diretório onde ficam as ferramentas de troubleshooting.
+$Tools = "$RaizInstall\Tools2.0.zip" # Diretório onde ficam as ferramentas de troubleshooting.
 $FileLicense = "$RaizInstall\modulelicenses.config" # Caminho do Arquivo de licença do RiskManager.
 $ConfigRM = "$RaizInstall\ConfigRM.zip" # Configs editados e disponibilizados na estrutura correta de pastas para o Risk Manager
 $FileManual = "$RaizInstall\Manual_RM_9.10_pt_br.zip" # Caminho do Manual compactado.
@@ -88,13 +88,13 @@ Unblock-File -Path "$RaizInstall\*"
 <#===========================================================================================#>
 <#  Descompactando o pacote de "Tools"
 <#===========================================================================================#>
-Expand-Archive -Path "$RaizInstall\Tools2.0.zip" -DestinationPath "$RaizInstall\Tools2.0" -Verbose
+Expand-Archive -Path "$RaizInstall\Tools2.0.zip" -DestinationPath "$RaizInstall\" -Verbose
 #>
 
 <#===========================================================================================#>
 <#  Instalando o WebDeploy		         				
 <#===========================================================================================#>
-Set-Location "$Tools\WebDeploy"
+Set-Location "$RaizInstall\Tools2.0\WebDeploy"
 .\WebDeploy_amd64_en-US.msi
 
 <#===========================================================================================#>
