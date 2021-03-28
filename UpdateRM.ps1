@@ -414,6 +414,15 @@ return $false;
 #>
 
 #===========================================================================================#
+#   Verificando status dos WebAppPools
+#===========================================================================================#
+# Listando WebAppPools ativos
+Get-IISAppPool | Where-Object {$_.State -eq "Started"}
+write-host "========" -ForegroundColor "DarkRed" -BackgroundColor white
+# Listando WebAppPools parados
+Get-IISAppPool | Where-Object {$_.State -eq "Stopped"}
+
+#===========================================================================================#
 #   Verifcando os serviços Modulo Scheduler e Risk Manager
 #===========================================================================================#
 Get-Service -Name "Modulo*", "Risk*"
