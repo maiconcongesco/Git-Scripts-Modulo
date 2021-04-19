@@ -86,10 +86,26 @@ test-path $Tools
 Unblock-File -Path "$RaizInstall\*"
 
 <#===========================================================================================#>
+<#  Criando o diretório para o Tools
+<#===========================================================================================#>
+If(!(test-path $DIRsiteRM))
+{
+      New-Item -ItemType Directory -Force -Path "$RaizInstall\Tools2.0"
+}
+#>
+
+<#===========================================================================================#>
 <#  Descompactando o pacote de "Tools"
 <#===========================================================================================#>
-Expand-Archive -Path "$RaizInstall\Tools2.0.zip" -DestinationPath "$RaizInstall\" -Verbose
+Expand-Archive -Path "$RaizInstall\Tools2.0.zip" -DestinationPath "$RaizInstall\Tools2.0" -Verbose
 #>
+
+<#===========================================================================================#>
+<#  Baixando e instalando o Google Chrome		         				
+<#===========================================================================================#>
+Set-Location "$RaizInstall\Tools2.0"
+Start-BitsTransfer https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-463C-AFF1-A69D9E530F96%7D%26iid%3D%7B3864D63D-7E12-B3AA-B419-FA43FE879C47%7D%26lang%3Dpt-BR%26browser%3D4%26usagestats%3D1%26appname%3DGoogle%2520Chrome%26needsadmin%3Dprefers%26ap%3Dx64-stable-statsdef_1%26installdataindex%3Dempty/chrome/install/ChromeStandaloneSetup64.exe 
+.\ChromeStandaloneSetup64.exe
 
 <#===========================================================================================#>
 <#  Instalando o WebDeploy		         				
