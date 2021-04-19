@@ -411,6 +411,8 @@ Start-Sleep 1
 Start-Sleep 1
 & $RaizInstall\Tools2.0\Notepad++\notepad++.exe $DirSiteRM\MMI$Instance\Web.config
 Start-Sleep 1
+#& $RaizInstall\Tools2.0\Notepad++\notepad++.exe $DirSiteRM\BCM$Instance\Web.config
+#Start-Sleep 1
 & $RaizInstall\Tools2.0\Notepad++\notepad++.exe $DirSiteRM\DataAnalyticsCacher$Instance\Web.config
 Start-Sleep 1
 & $RaizInstall\Tools2.0\Notepad++\notepad++.exe $DirSiteRM\DataAnalyticsService$Instance\Web.config
