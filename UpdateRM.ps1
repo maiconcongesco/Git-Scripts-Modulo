@@ -333,6 +333,7 @@ return $false;
 Copy-Item -Path "$RaizInstall\RM_$VersionRM\DevExpress\*.dll" -Destination "$DIRsiteRM\RM\bin" -Force -Verbose
 Copy-Item -Path "$RaizInstall\RM_$VersionRM\DevExpress\*.dll" -Destination "$DIRsiteRM\WF\bin" -Force -Verbose
 Copy-Item -Path "$RaizInstall\RM_$VersionRM\DevExpress\*.dll" -Destination "$DIRsiteRM\$PORTAL\bin" -Force -Verbose
+# Copy-Item -Path "$RaizInstall\RM_$VersionRM\DevExpress\*.dll" -Destination "$DIRsiteRM\BCM\bin" -Force -Verbose
 
 #===========================================================================================#
 #   Copiando o arquivo Modulo.RiskManager.DataAnalytics.Bootstrap
